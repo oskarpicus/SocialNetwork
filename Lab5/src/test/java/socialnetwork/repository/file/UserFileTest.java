@@ -2,9 +2,8 @@ package socialnetwork.repository.file;
 
 import org.junit.Test;
 import socialnetwork.domain.User;
+import socialnetwork.domain.validators.UserValidator;
 import socialnetwork.domain.validators.Validator;
-import socialnetwork.factory.ValidatorFactory;
-import socialnetwork.utils.ValidatorStrategy;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -18,12 +17,12 @@ import static org.junit.Assert.*;
 
 public class UserFileTest {
 
+    private final String fileName="data/test/usersTest.csv";
+    private final Validator<User> validator = new UserValidator();
+    UserFile userFile = new UserFile(fileName,validator);
+
     @Test
     public void save() {
-        Validator<User> validator = (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER);
-        String fileName = "data/usersTest.csv";
-        UserFile userFile = new UserFile(fileName,validator);
-
         User user1 = new User("a","b");
         userFile.save(user1);
 
@@ -40,10 +39,6 @@ public class UserFileTest {
 
     @Test
     public void delete() {
-        Validator<User> validator = (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER);
-        String fileName = "data/usersTest.csv";
-        UserFile userFile = new UserFile(fileName,validator);
-
         User user;
         if(userFile.findOne(1L).isEmpty())
             fail();
@@ -64,10 +59,6 @@ public class UserFileTest {
 
     @Test
     public void update(){
-        Validator<User> validator = (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER);
-        String fileName = "data/usersTest.csv";
-        UserFile userFile = new UserFile(fileName,validator);
-
         if(userFile.findOne(1L).isEmpty())
             fail();
         User oldUser = userFile.findOne(1L).get();
@@ -97,10 +88,6 @@ public class UserFileTest {
 
     @Test
     public void extractEntity() {
-        Validator<User> validator = (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER);
-        String fileName = "data/usersTest.csv";
-        UserFile userFile = new UserFile(fileName,validator);
-
         List<String> list = new ArrayList<>();
         list.add("1"); list.add("ana"); list.add("pop");
         User user = userFile.extractEntity(list);
@@ -114,10 +101,6 @@ public class UserFileTest {
 
     @Test
     public void createEntityAsString() {
-        Validator<User> validator = (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER);
-        String fileName = "data/usersTest.csv";
-        UserFile userFile = new UserFile(fileName,validator);
-
         User user = new User("ana","pop");
         String s = user.getId() +";ana;pop";
         assertEquals(s,userFile.createEntityAsString(user));

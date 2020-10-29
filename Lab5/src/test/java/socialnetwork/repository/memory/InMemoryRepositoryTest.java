@@ -2,10 +2,8 @@ package socialnetwork.repository.memory;
 
 import org.junit.Test;
 import socialnetwork.domain.User;
+import socialnetwork.domain.validators.UserValidator;
 import socialnetwork.domain.validators.ValidationException;
-import socialnetwork.domain.validators.Validator;
-import socialnetwork.factory.ValidatorFactory;
-import socialnetwork.utils.ValidatorStrategy;
 
 import java.util.Optional;
 
@@ -13,12 +11,10 @@ import static org.junit.Assert.*;
 
 public class InMemoryRepositoryTest {
 
+    private final InMemoryRepository<Long,User> repo = new InMemoryRepository<>(new UserValidator());
+
     @Test
     public void findOne() {
-        InMemoryRepository<Long, User> repo;
-        Validator<User> validator = (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER);
-        repo = new InMemoryRepository<>(validator);
-
         User user1 = new User("a","b");
         repo.save(user1);
         User user2 = new User("a","b");
@@ -39,10 +35,6 @@ public class InMemoryRepositoryTest {
 
     @Test
     public void save() {
-        InMemoryRepository<Long, User> repo;
-        Validator<User> validator = (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER);
-        repo = new InMemoryRepository<>(validator);
-
         User user1 = new User("a","b");
         repo.save(user1);
         assertEquals(Optional.of(user1),repo.findOne(user1.getId()));
@@ -65,10 +57,6 @@ public class InMemoryRepositoryTest {
 
     @Test
     public void delete() {
-        InMemoryRepository<Long, User> repo;
-        Validator<User> validator = (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER);
-        repo = new InMemoryRepository<>(validator);
-
         try{
             repo.delete(null);
             fail();
@@ -84,10 +72,6 @@ public class InMemoryRepositoryTest {
 
     @Test
     public void update() {
-        InMemoryRepository<Long, User> repo;
-        Validator<User> validator = (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER);
-        repo = new InMemoryRepository<>(validator);
-
         try{
             repo.update(null);
             fail();

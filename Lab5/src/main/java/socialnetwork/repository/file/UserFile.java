@@ -24,4 +24,5 @@ public class UserFile extends AbstractFileRepository<Long, User> {
     protected String createEntityAsString(User entity) {
         return entity.getId()+";"+entity.getFirstName()+";"+entity.getLastName();
     }
+
 }

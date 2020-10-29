@@ -2,11 +2,9 @@ package socialnetwork;
 
 import socialnetwork.config.ApplicationContext;
 import socialnetwork.domain.User;
-import socialnetwork.domain.validators.Validator;
-import socialnetwork.factory.ValidatorFactory;
+import socialnetwork.domain.validators.UserValidator;
 import socialnetwork.repository.Repository;
 import socialnetwork.repository.file.UserFile;
-import socialnetwork.utils.ValidatorStrategy;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,7 +17,7 @@ public class Main {
 //                , new UtilizatorValidator());
 
         Repository<Long, User> userFileRepository = new UserFile(fileName
-                , (Validator<User>) ValidatorFactory.getInstance().createValidator(ValidatorStrategy.VALIDATE_USER));
+                , new UserValidator());
 
 //
 //        Repository<Long,Utilizator> userFileRepository2 = new UtilizatorFile(fileName

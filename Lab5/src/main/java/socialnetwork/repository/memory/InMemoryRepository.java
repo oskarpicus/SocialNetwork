@@ -4,22 +4,18 @@ import socialnetwork.domain.Entity;
 import socialnetwork.domain.validators.Validator;
 import socialnetwork.repository.Repository;
 
-
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class InMemoryRepository<ID, E extends Entity<ID>> implements Repository<ID,E> {
 
-    private Validator<E> validator;
+    private final Validator<E> validator;
     Map<ID,E> entities;
 
     public InMemoryRepository(Validator<E> validator) {
         this.validator = validator;
-        entities=new HashMap<ID,E>();
+        entities= new HashMap<>();
     }
 
     @Override

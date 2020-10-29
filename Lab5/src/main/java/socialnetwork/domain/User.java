@@ -1,12 +1,13 @@
 package socialnetwork.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class User extends Entity<Long>{
     private String firstName;
     private String lastName;
-    private List<User> friends;
+    private final List<User> friends;
 
     //
     private static Long NUMBEROFUSERS = 1L;
@@ -16,6 +17,7 @@ public class User extends Entity<Long>{
         this.lastName = lastName;
         //
         super.setId(getProperNUMBEROFUSERS());
+        this.friends = new ArrayList<>();
     }
 
     public String getFirstName() {
@@ -38,12 +40,15 @@ public class User extends Entity<Long>{
         return friends;
     }
 
+    public void addFriend(User friend){
+        friends.add(friend);
+    }
+
     @Override
     public String toString() {
         return "Utilizator{" +
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", friends=" + friends +
                 '}';
     }
 
