@@ -47,6 +47,7 @@ public class User extends Entity<Long>{
     @Override
     public String toString() {
         return "Utilizator{" +
+                "ID= "+getId()+'\''+
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 '}';
@@ -64,7 +65,7 @@ public class User extends Entity<Long>{
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFirstName(), getLastName(), getFriends());
+        return Objects.hash(getFirstName(), getLastName());
     }
 
     private Long getProperNUMBEROFUSERS(){

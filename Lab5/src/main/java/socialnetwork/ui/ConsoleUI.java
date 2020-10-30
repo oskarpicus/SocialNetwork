@@ -3,9 +3,7 @@ package socialnetwork.ui;
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
-import socialnetwork.service.FriendshipService;
 import socialnetwork.service.MasterService;
-import socialnetwork.service.UserService;
 
 import java.util.List;
 import java.util.Scanner;
@@ -27,7 +25,7 @@ public class ConsoleUI implements UI {
             switch (arguments[0]){
                 case "help" -> displayMenu();
                 case "addUser" -> addUser(arguments);
-                case "displayUsers" -> displayAllUsers();
+                case "displayUsers" -> displayUsers(this.masterService.getAllUsers());
                 case "removeUser" -> removeUser(arguments);
                 case "addFriend" -> addFriend(arguments);
                 case "removeFriend" -> removeFriend(arguments);
@@ -53,7 +51,7 @@ public class ConsoleUI implements UI {
         System.out.println("addFriend ID1 ID2 : To add a friendship between users");
         System.out.println("removeFriend ID1 ID2 : To remove a friendship between users");
         System.out.println("------");
-        System.out.println("// getCommunities : To get the number of communities");
+        System.out.println("getCommunities : To get the number of communities");
         System.out.println("------");
         System.out.println("exit : To terminate the session");
         System.out.println("--------------------------------------------------------------");
@@ -76,9 +74,7 @@ public class ConsoleUI implements UI {
         }
     }
 
-    @Override
-    public void displayAllUsers() {
-        List<User> list = this.masterService.getAllUsers();
+    public void displayUsers(List<User> list) {
         System.out.format("%5s%20s%20s\n","ID","First Name","Last Name");
         list.forEach(user -> System.out.format("%5d%20s%20s\n",user.getId(),user.getFirstName(),user.getLastName()));
     }
@@ -149,6 +145,6 @@ public class ConsoleUI implements UI {
     }
 
     private void getCommunities(){
-        System.out.println(this.masterService.getNumberOfCommunities());
+        System.out.println("There are in total "+this.masterService.getNumberOfCommunities()+" communities");
     }
 }
