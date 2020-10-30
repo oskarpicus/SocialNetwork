@@ -3,14 +3,13 @@ package socialnetwork.service;
 import socialnetwork.domain.User;
 import socialnetwork.repository.Repository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class Community {
     private final Repository<Long, User> repositoryUsers;
+    private static int TIME =0;
 
     public Community(Repository<Long, User> repositoryUsers) {
         this.repositoryUsers = repositoryUsers;
@@ -32,21 +31,13 @@ public class Community {
     public int getNumberOfCommunities() {
         Map<User, Boolean> visited = new HashMap<>();
         Map<User, User> parents = new HashMap<>();
+        Map<User,Integer> discovered = new HashMap<>();
+        Map<User,Integer> finished = new HashMap<>();
 
-        List<User> adjacencyList = getAdjacencyList();
-
-        for (User node : adjacencyList) {
-            visited.put(node, false);
-            parents.put(node, null);
-        }
-
-        for (User node : adjacencyList) {
-            if (!visited.get(node)) {
-                DFS_visit(node, visited, parents);
-            }
-        }
+        DFS_procedure(visited,parents,discovered,finished);
 
         int result = 0;
+        // total number of connected components = total number of nodes without a parent
         for (User parent : parents.values()) {
             if (parent == null)
                 result++;
@@ -55,20 +46,90 @@ public class Community {
     }
 
     /**
+     * Method for obtaining the most sociable community
+     * ( the connected component with the longest path )
+     * @return list : List<User>, contains all of the users in the most sociable community
+     */
+    public List<User> getMostSociableCommunity(){
+        Map<User, User> parents = new HashMap<>();
+        Map<User, Boolean> visited = new HashMap<>();
+        Map<User,Integer> discovered = new HashMap<>();
+        Map<User,Integer> finished = new HashMap<>();
+        List<User> result = new ArrayList<>();
+
+        DFS_procedure(visited,parents,discovered,finished);
+
+        // we determine the maximum between discovered and finished times
+        int maximum = -1;
+        User node = null;
+
+        for(User user : getAdjacencyList()){
+            int d = discovered.get(user);
+            int f = finished.get(user);
+            if(f-d > maximum){
+                maximum = f-d;
+                node = user;
+            }
+        }
+
+        // we recreate the path, using the node
+        Stack<User> stack = new Stack<>();
+        stack.push(node);
+        result.add(node);
+        while(!stack.empty()){
+            User u = stack.pop();
+            List<User> partialResult = parents.entrySet().stream()
+                    .filter(userUserEntry -> userUserEntry.getValue()!=null && userUserEntry.getValue().equals(u))
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+            result.addAll(partialResult);
+            partialResult.forEach(stack::push);
+        }
+
+        return result;
+    }
+
+
+    private void DFS_procedure(Map<User,Boolean> visited,Map<User,User> parents,Map<User,Integer> discovered,
+                               Map<User,Integer> finished)
+    {
+        for (User node : getAdjacencyList()) { // initialization
+            visited.put(node, false);
+            parents.put(node, null);
+        }
+        TIME = 0;
+        for (User node : getAdjacencyList()) {
+            if (!visited.get(node)) {
+                DFS_visit(node, visited, parents,discovered,finished);
+            }
+        }
+
+    }
+
+    /**
      * Method for visiting a node in a Depth First fashion
      * @param node : User, the node to be visited
      * @param visited : Map<User,Long>, for keeping track if a node was visited or not
      * @param parents : Map<User,Long>, for keeping track of each node's parent
+     * @param discovered : Map<User,Long>, for keeping track of each nodes' discovery time
+     * @param finished : Map<User,Long>, for keeping track of each nodes' finish time of exploring
      */
-    private void DFS_visit(User node, Map<User, Boolean> visited, Map<User, User> parents) {
+    private void DFS_visit(User node, Map<User, Boolean> visited, Map<User, User> parents,
+                           Map<User,Integer> discovered,Map<User,Integer> finished)
+    {
+        TIME++;
+        discovered.put(node,TIME);
         visited.replace(node, true);
 
         for (User adjacentNode : node.getFriends()) {
             if (!visited.get(adjacentNode)) {
                 parents.put(adjacentNode, node);
-                DFS_visit(adjacentNode, visited, parents);
+                DFS_visit(adjacentNode, visited, parents,discovered,finished);
             }
         }
+
+        TIME++;
+        finished.put(node,TIME);
     }
 }
 

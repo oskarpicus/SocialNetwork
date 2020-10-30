@@ -10,6 +10,7 @@ import socialnetwork.repository.Repository;
 import socialnetwork.repository.file.FriendshipFile;
 import socialnetwork.repository.file.UserFile;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -127,5 +128,40 @@ public class MasterServiceTest {
         masterService.removeUser(userSaved.getId());
         masterService.removeFriendship(new Tuple<>(1L,2L));
         masterService.removeFriendship(new Tuple<>(2L,3L));
+    }
+
+    @Test
+    public void getMostSociable(){
+        List<User> result = this.masterService.getMostSociable();
+        assertEquals(2,result.size());
+        User user = result.get(0);
+        assertTrue(user.getId().equals(1L) || user.getId().equals(4L));
+        user = result.get(1);
+        assertTrue(user.getId().equals(1L) || user.getId().equals(4L));
+
+        //we add friendships
+        Friendship friendship = new Friendship();
+        friendship.setId(new Tuple<>(2L,3L));
+        this.masterService.addFriendship(friendship);
+        friendship.setId(new Tuple<>(3L,5L));
+        this.masterService.addFriendship(friendship);
+
+        result = this.masterService.getMostSociable();
+        assertEquals(3,result.size());
+        user = result.get(0);
+        assertTrue(user.getId().equals(2L) || user.getId().equals(3L) || user.getId().equals(5L));
+        user = result.get(1);
+        assertTrue(user.getId().equals(2L) || user.getId().equals(3L) || user.getId().equals(5L));
+        user = result.get(2);
+        assertTrue(user.getId().equals(2L) || user.getId().equals(3L) || user.getId().equals(5L));
+
+        friendship.setId(new Tuple<>(4L,5L));
+        this.masterService.addFriendship(friendship);
+        result = this.masterService.getMostSociable();
+        assertEquals(5,result.size());
+
+        masterService.removeFriendship(new Tuple<>(2L,3L));
+        masterService.removeFriendship(new Tuple<>(3L,5L));
+        masterService.removeFriendship(new Tuple<>(4L,5L));
     }
 }

@@ -8,15 +8,12 @@ public class User extends Entity<Long>{
     private String firstName;
     private String lastName;
     private final List<User> friends;
-
-    //
     private static Long NUMBEROFUSERS = 1L;
 
     public User(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        //
-        super.setId(getProperNUMBEROFUSERS());
+        super.setId((NUMBEROFUSERS++));
         this.friends = new ArrayList<>();
     }
 
@@ -47,7 +44,7 @@ public class User extends Entity<Long>{
     @Override
     public String toString() {
         return "Utilizator{" +
-                "ID= "+getId()+'\''+
+                "ID='"+getId()+'\''+
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 '}';
@@ -66,12 +63,6 @@ public class User extends Entity<Long>{
     @Override
     public int hashCode() {
         return Objects.hash(getFirstName(), getLastName());
-    }
-
-    private Long getProperNUMBEROFUSERS(){
-        if(NUMBEROFUSERS.equals(7331115341259248461L)) //this is will be reserved for all tests
-            NUMBEROFUSERS++;
-        return (NUMBEROFUSERS++);
     }
 
 }

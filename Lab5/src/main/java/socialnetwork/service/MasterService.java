@@ -12,7 +12,7 @@ public class MasterService {
 
     private final FriendshipService friendshipService;
     private final UserService userService;
-    private static boolean updatedFriends = false;
+    private  boolean updatedFriends = false;
 
     public MasterService(FriendshipService friendshipService, UserService userService) {
         this.friendshipService = friendshipService;
@@ -128,6 +128,19 @@ public class MasterService {
             updatedFriends=true;
         }
         return this.friendshipService.getNumberOfCommunities();
+    }
+
+    /**
+     * Method for obtaining the most sociable community
+     * ( the connected component with the longest path )
+     * @return list : List<User>, contains all of the users in the most sociable community
+     */
+    public List<User> getMostSociable(){
+        if(!updatedFriends){
+            updateAllUsersFriends();
+            updatedFriends=true;
+        }
+        return friendshipService.getMostSociable();
     }
 
     /**

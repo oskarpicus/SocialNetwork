@@ -30,6 +30,7 @@ public class ConsoleUI implements UI {
                 case "addFriend" -> addFriend(arguments);
                 case "removeFriend" -> removeFriend(arguments);
                 case "getCommunities" -> getCommunities();
+                case "getMostSociable" -> getMostSociable();
                 case "exit" -> {
                     return;
                 }
@@ -52,6 +53,7 @@ public class ConsoleUI implements UI {
         System.out.println("removeFriend ID1 ID2 : To remove a friendship between users");
         System.out.println("------");
         System.out.println("getCommunities : To get the number of communities");
+        System.out.println("getMostSociable : To get the most sociable community");
         System.out.println("------");
         System.out.println("exit : To terminate the session");
         System.out.println("--------------------------------------------------------------");
@@ -146,5 +148,10 @@ public class ConsoleUI implements UI {
 
     private void getCommunities(){
         System.out.println("There are in total "+this.masterService.getNumberOfCommunities()+" communities");
+    }
+
+    private void getMostSociable(){
+        System.out.println("The most sociable community is composed of:");
+        displayUsers(this.masterService.getMostSociable());
     }
 }

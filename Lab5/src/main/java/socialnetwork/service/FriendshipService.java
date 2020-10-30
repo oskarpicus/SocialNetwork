@@ -71,4 +71,13 @@ public class FriendshipService implements Service<Tuple<Long,Long>,Friendship> {
         return this.community.getNumberOfCommunities();
     }
 
+    /**
+     * Method for obtaining the most sociable community
+     * ( the connected component with the longest path )
+     * @return list : List<User>, contains all of the users in the most sociable community
+     */
+    public List<User> getMostSociable(){
+        return community.getMostSociableCommunity();
+    }
+
 }
