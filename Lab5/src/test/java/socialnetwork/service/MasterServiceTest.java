@@ -35,7 +35,7 @@ public class MasterServiceTest {
         user.setId(7331115341259248461L);
         assertTrue(masterService.addUser(user).isEmpty()); // it was saved
         assertTrue(masterService.getAllUsers().contains(user));
-        userRepository.delete(7331115341259248461L);
+        masterService.removeUser(7331115341259248461L);
     }
 
     @Test

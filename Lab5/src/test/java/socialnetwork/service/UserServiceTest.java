@@ -49,8 +49,8 @@ public class UserServiceTest {
     public void findOne(){
         assertFalse(userService.findOne(7331115341259248461L).isPresent());
         assertTrue(userService.findOne(1L).isPresent());
-        Optional<User> result = userService.findOne(2L);
+        Optional<User> result = userService.findOne(3L);
         assertTrue(result.isPresent());
-        assertEquals(2L, (long) result.get().getId());
+        assertEquals(3L, (long) result.get().getId());
     }
 }
