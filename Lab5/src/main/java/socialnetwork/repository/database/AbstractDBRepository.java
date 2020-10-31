@@ -5,18 +5,37 @@ import socialnetwork.domain.validators.Validator;
 import socialnetwork.repository.Repository;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements Repository<ID,E> {
 
-    private Connection c;
+    Map<ID,E> allEntities = null;
+    String dataBaseName;
+    protected Connection c;
     private final Validator<E> validator;
 
-    protected AbstractDBRepository(Validator<E> validator) {
+    protected AbstractDBRepository(Validator<E> validator,String dataBaseName) {
         this.validator = validator;
+        this.dataBaseName = dataBaseName;
         connectToDataBase();
+        loadFromDataBase();
+    }
+
+    private void loadFromDataBase(){
+        allEntities = new HashMap<>();
+        try{
+            Statement statement = c.createStatement();
+            String command = getFindAllCommand();
+            ResultSet resultSet = statement.executeQuery(command);
+            while(resultSet.next()){
+                E entity = extractEntityFromResultSet(resultSet);
+                allEntities.put(entity.getId(),entity);
+            }
+            statement.close();
+            resultSet.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -25,7 +44,6 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
     private void connectToDataBase(){
         try {
             Class.forName("org.postgresql.Driver");
-            String dataBaseName = "social_network";
             c = DriverManager
                     .getConnection("jdbc:postgresql://localhost:5432/"+ dataBaseName,
                             "postgres", "florenta28");
@@ -39,6 +57,11 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
         if(id==null)
             throw new IllegalArgumentException("id must not be null");
 
+        E entity;
+        if((entity = this.allEntities.get(id))!=null){ // if it's in memory
+            return Optional.of(entity);
+        }
+        // if it's in the data base
         try{
             Statement statement = c.createStatement();
             String command = getFindOneCommand(id);
@@ -48,7 +71,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
                 return Optional.empty();
             }
 
-            E entity = extractEntityFromResultSet(resultSet);
+            entity = extractEntityFromResultSet(resultSet);
             statement.close();
             resultSet.close();
             return Optional.of(entity);
@@ -60,22 +83,23 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
 
     @Override
     public Iterable<E> findAll() {
-        List<E> list = new ArrayList<>();
-        try{
-            Statement statement = c.createStatement();
-            String command = getFindAllCommand();
-            ResultSet resultSet = statement.executeQuery(command);
-            while(resultSet.next()){
-                E entity = extractEntityFromResultSet(resultSet);
-                list.add(entity);
-            }
-            statement.close();
-            resultSet.close();
-            return list;
-        }catch (Exception e){
-            e.printStackTrace();
-            return null;
-        }
+        return allEntities.values();
+//        List<E> allEntities = new ArrayList<>();
+//        try{
+//            Statement statement = c.createStatement();
+//            String command = getFindAllCommand();
+//            ResultSet resultSet = statement.executeQuery(command);
+//            while(resultSet.next()){
+//                E entity = extractEntityFromResultSet(resultSet);
+//                allEntities.add(entity);
+//            }
+//            statement.close();
+//            resultSet.close();
+//            return allEntities;
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            return null;
+//        }
     }
 
     @Override
@@ -89,12 +113,14 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             String command = getSaveCommand(entity);
             statement.executeUpdate(command);
             statement.close();
+            allEntities.put(entity.getId(),entity);
             return Optional.empty();
         }catch (Exception e){
-            e.printStackTrace();
+           // e.printStackTrace();
             return Optional.of(entity);
         }
     }
+
 
     @Override
     public Optional<E> delete(ID id) {
@@ -111,6 +137,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             String command = getDeleteCommand(id);
             statement.executeUpdate(command);
             statement.close();
+            allEntities.remove(id);
             return entity;
         }catch (Exception e){
             e.printStackTrace();

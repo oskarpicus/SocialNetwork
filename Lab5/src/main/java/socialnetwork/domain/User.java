@@ -65,4 +65,8 @@ public class User extends Entity<Long>{
         return Objects.hash(getFirstName(), getLastName());
     }
 
+    public static void setNUMBEROFUSERS(Long numberofusers){
+        NUMBEROFUSERS = numberofusers;
+    }
+
 }

@@ -7,9 +7,10 @@ import java.sql.*;
 
 public class FriendshipDBRepository extends AbstractDBRepository<Tuple<Long,Long>, Friendship> {
 
-    public FriendshipDBRepository(Validator<Friendship> validator) {
-        super(validator);
+    public FriendshipDBRepository(Validator<Friendship> validator,String dataBaseName) {
+        super(validator,dataBaseName);
     }
+
 
     @Override
     protected String getSaveCommand(Friendship entity) {

@@ -2,14 +2,16 @@ package socialnetwork.repository.database;
 
 import socialnetwork.domain.User;
 import socialnetwork.domain.validators.Validator;
-import java.sql.*;
+
+import java.sql.ResultSet;
 
 
 public class UserDBRepository extends AbstractDBRepository<Long,User> {
 
-    public UserDBRepository(Validator<User> validator) {
-        super(validator);
+    public UserDBRepository(Validator<User> validator,String dataBaseName) {
+        super(validator,dataBaseName);
     }
+
 
     @Override
     protected String getSaveCommand(User entity) {
@@ -41,6 +43,8 @@ public class UserDBRepository extends AbstractDBRepository<Long,User> {
             String secondName = resultSet.getString("secondName");
             User user = new User(firstName,secondName);
             user.setId((long)id);
+            id++;
+            User.setNUMBEROFUSERS((long)id);
             return user;
         }catch (Exception e){
             e.printStackTrace();

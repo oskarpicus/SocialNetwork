@@ -1,4 +1,4 @@
-create database Social_Network;
+create database Social_Network_Test;
 
 create table Users
 (
@@ -18,14 +18,8 @@ create table Friendships
     constraint pk_Friendships primary key(id1,id2)
 );
 
-insert into Users(firstName,secondName)
-values ('Aprogramatoarei','Ionut'),
-       ('Apetrei','Ileana'),('Pop','Dan'),('Zaharia','Stancu');
+insert into Users(firstName, secondName) VALUES
+('Popescu','Ion'),('Iancu','Mihaela'),('Anghel','Diana'),
+('Barbu','Andrei'),('Popa','Maria');
 
-
-insert into Friendships(id1,id2)
-values (1,3),(2,3),(3,4);
-
-
-
-
+insert into Friendships(id1, id2) VALUES (1,4);
