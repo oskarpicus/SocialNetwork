@@ -12,7 +12,7 @@ public class MasterService {
 
     private final FriendshipService friendshipService;
     private final UserService userService;
-    private  boolean updatedFriends = false;
+    private boolean updatedFriends = false;
 
     public MasterService(FriendshipService friendshipService, UserService userService) {
         this.friendshipService = friendshipService;
@@ -79,18 +79,9 @@ public class MasterService {
         Optional<Friendship> result1 = this.friendshipService.remove(id);
         if(result1.isPresent()){
             deleteOneUsersFriends(id);
-            return result1;
         }
-        //we determine the inverse of the tuple
-        Tuple<Long,Long> inverseID = new Tuple<>(id.getRight(),id.getLeft());
-        Optional<Friendship> result2 = this.friendshipService.remove(inverseID);
-
-        if(result2.isPresent()) {
-            deleteOneUsersFriends(id);
-        }
-        return result2;
+        return result1;
     }
-
 
     /**
      * Method for obtaining all the saved users
@@ -144,7 +135,7 @@ public class MasterService {
     }
 
     /**
-     * Method for adding one user's friend list, based on a friendship
+     * Method for updating one user's friend list, based on a friendship
      * @param friendship : Friendship
      * @return true, if the update was successful, false, otherwise
      */
@@ -176,7 +167,7 @@ public class MasterService {
     }
 
     /**
-     * Method for updating users' friendlist, after deleting a particular friendship
+     * Method for updating users' friend list, after deleting a particular friendship
      * @param ids : ID of the friendship that was deleted
      * The friendship between the users with those ids is deleted from their lists, as well
      */

@@ -3,7 +3,6 @@ package socialnetwork.repository.database;
 import socialnetwork.domain.Entity;
 import socialnetwork.domain.validators.Validator;
 import socialnetwork.repository.Repository;
-
 import java.sql.*;
 import java.util.*;
 
@@ -84,22 +83,6 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
     @Override
     public Iterable<E> findAll() {
         return allEntities.values();
-//        List<E> allEntities = new ArrayList<>();
-//        try{
-//            Statement statement = c.createStatement();
-//            String command = getFindAllCommand();
-//            ResultSet resultSet = statement.executeQuery(command);
-//            while(resultSet.next()){
-//                E entity = extractEntityFromResultSet(resultSet);
-//                allEntities.add(entity);
-//            }
-//            statement.close();
-//            resultSet.close();
-//            return allEntities;
-//        }catch (Exception e){
-//            e.printStackTrace();
-//            return null;
-//        }
     }
 
     @Override

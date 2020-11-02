@@ -107,9 +107,13 @@ public class ConsoleUI implements UI {
             return;
         }
         try{
-            Long id1 = Long.parseLong(arguments[1]);
             Long id2 = Long.parseLong(arguments[2]);
-            Tuple<Long,Long> ids = new Tuple<>(id1,id2);
+            Long id1 = Long.parseLong(arguments[1]);
+            Tuple<Long,Long> ids;
+            if(id1.compareTo(id2)<0)
+                ids = new Tuple<>(id1,id2);
+            else
+                ids=new Tuple<>(id2,id1);
             Friendship friendship = new Friendship();
             friendship.setId(ids);
             this.masterService.addFriendship(friendship).ifPresentOrElse(
@@ -133,7 +137,11 @@ public class ConsoleUI implements UI {
         try{
             Long id1 = Long.parseLong(arguments[1]);
             Long id2 = Long.parseLong(arguments[2]);
-            Tuple<Long,Long> ids = new Tuple<>(id1,id2);
+            Tuple<Long,Long> ids;
+            if(id1.compareTo(id2)<0)
+                ids = new Tuple<>(id1,id2);
+            else
+                ids=new Tuple<>(id2,id1);
             this.masterService.removeFriendship(ids).ifPresentOrElse(
                     x -> System.out.println("Friendship removed successfully"),
                     () -> System.out.println("No friendship between "+id1+" and "+id2+" exists")

@@ -17,7 +17,6 @@ public class FriendshipService implements Service<Tuple<Long,Long>,Friendship> {
     private final Repository<Long, User> userRepository;
 
     public FriendshipService(Repository<Tuple<Long, Long>, Friendship> repo, Repository<Long, User> userRepository) {
-        //community = new Community(repo);
         community = new Community(userRepository);
         this.repo = repo;
         this.userRepository = userRepository;
