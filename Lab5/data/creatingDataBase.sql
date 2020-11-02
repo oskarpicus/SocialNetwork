@@ -26,6 +26,9 @@ values ('Aprogramatoarei','Ionut'),
 insert into Friendships(id1,id2)
 values (1,3),(2,3),(3,4);
 
+alter table Friendships
+add column date date;
+
 
 
 

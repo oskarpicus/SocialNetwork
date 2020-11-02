@@ -62,7 +62,7 @@ public class MasterServiceTest {
         Friendship friendship = new Friendship();
         friendship.setId(new Tuple<>(4L,2L));
         assertEquals(Optional.empty(),masterService.addFriendship(friendship));
-        assertTrue(masterService.removeFriendship(new Tuple<>(2L,4L)).isPresent());
+        assertTrue(masterService.removeFriendship(new Tuple<>(4L,2L)).isPresent());
 
         // we check if the friendship was saved in the users' lists
         Optional<User> userOptional2 = userRepository.findOne(2L);

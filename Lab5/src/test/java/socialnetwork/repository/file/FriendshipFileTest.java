@@ -4,8 +4,9 @@ import org.junit.Test;
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.validators.FriendshipValidator;
-import socialnetwork.domain.validators.UserValidator;
 import socialnetwork.domain.validators.Validator;
+
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class FriendshipFileTest {
 
     @Test
     public void extractEntity() {
-        String line = "1;4";
+        String line = "1;4;2020-01-02";
         List<String> attributes = Arrays.asList(line.split(";"));
         Friendship friendship = friendshipFile.extractEntity(attributes);
         Friendship correct = new Friendship();
@@ -31,6 +32,7 @@ public class FriendshipFileTest {
     public void createEntityAsString() {
         Friendship friendship = new Friendship();
         friendship.setId(new Tuple<>(1L,4L));
-        assertEquals("1;4",friendshipFile.createEntityAsString(friendship));
+        friendship.setDate(LocalDateTime.parse("2018-05-05T11:50:55"));
+        assertEquals("1;4;2018-05-05",friendshipFile.createEntityAsString(friendship));
     }
 }

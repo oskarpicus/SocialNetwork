@@ -99,7 +99,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             allEntities.put(entity.getId(),entity);
             return Optional.empty();
         }catch (Exception e){
-           // e.printStackTrace();
+            e.printStackTrace();
             return Optional.of(entity);
         }
     }

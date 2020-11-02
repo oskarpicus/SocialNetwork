@@ -4,30 +4,38 @@ import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.validators.Validator;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 public class FriendshipDBRepository extends AbstractDBRepository<Tuple<Long,Long>, Friendship> {
 
-    public FriendshipDBRepository(Validator<Friendship> validator,String dataBaseName) {
-        super(validator,dataBaseName);
+    public FriendshipDBRepository(Validator<Friendship> validator, String dataBaseName) {
+        super(validator, dataBaseName);
     }
 
 
     @Override
     protected String getSaveCommand(Friendship entity) {
-        Tuple<Long,Long> ids = entity.getId();
-        return "INSERT INTO Friendships(id1,id2) VALUES ("+ids.getLeft()
-                +","+ids.getRight()+");";
+        Tuple<Long, Long> ids = entity.getId();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String date = formatter.format(entity.getDate());
+        return "INSERT INTO Friendships(id1,id2,date) VALUES (" + ids.getLeft()
+                + "," + ids.getRight() + ",'"+date+"');";
     }
 
     @Override
     protected String getDeleteCommand(Tuple<Long, Long> id) {
-        return "DELETE FROM Friendships WHERE id1="+id.getLeft()+" AND id2="+id.getRight()+";";
+        return "DELETE FROM Friendships WHERE id1=" + id.getLeft() + " AND id2=" + id.getRight() + ";";
     }
 
     @Override
     protected String getFindOneCommand(Tuple<Long, Long> id) {
-        return "SELECT * FROM Friendships "+
-                "WHERE id1="+id.getLeft()+" AND id2="+id.getRight()+";";
+        return "SELECT * FROM Friendships " +
+                "WHERE id1=" + id.getLeft() + " AND id2=" + id.getRight() + ";";
     }
 
     @Override
@@ -37,33 +45,21 @@ public class FriendshipDBRepository extends AbstractDBRepository<Tuple<Long,Long
 
     @Override
     protected Friendship extractEntityFromResultSet(ResultSet resultSet) {
-        try{
+        try {
             int id1 = resultSet.getInt("id1");
             int id2 = resultSet.getInt("id2");
+            Date time = resultSet.getDate("date");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String timeString=dateFormat.format(time);
+            LocalDateTime time1=LocalDateTime.parse(timeString+"T11:50:55");
             Friendship friendship = new Friendship();
-            friendship.setId(new Tuple<>((long)id1,(long)id2));
+            friendship.setDate(time1);
+            friendship.setId(new Tuple<>((long) id1, (long) id2));
             return friendship;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
-
-
-//    @Override
-//    public Optional<Friendship> findOne(Tuple<Long, Long> longLongTuple) {
-//        try{
-//            Statement statement = c.createStatement();
-//            ResultSet resultSet = statement.executeQuery("SELECT * FROM Friendships f WHERE " +
-//                    "(f.id1="+longLongTuple.getRight()+" AND f.id2="+longLongTuple.getLeft()+
-//                    ")OR (f.id1="+longLongTuple.getLeft()+" AND f.id2="+longLongTuple.getRight()+");");
-//
-//
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        return Optional.empty();
-//    }
-
 
 }

@@ -5,6 +5,8 @@ import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.validators.FriendshipValidator;
 
+import java.time.LocalDateTime;
+
 import static org.junit.Assert.*;
 
 public class FriendshipDBRepositoryTest {
@@ -15,7 +17,8 @@ public class FriendshipDBRepositoryTest {
     public void getSaveCommand() {
         Friendship friendship = new Friendship();
         friendship.setId(new Tuple<>(4L,2L));
-        assertEquals("INSERT INTO Friendships(id1,id2) VALUES (4,2);",friendshipDBRepository.getSaveCommand(friendship));
+        friendship.setDate(LocalDateTime.parse("2020-01-02T11:50:55"));
+        assertEquals("INSERT INTO Friendships(id1,id2,date) VALUES (4,2,'2020-01-02');",friendshipDBRepository.getSaveCommand(friendship));
     }
 
     @Test

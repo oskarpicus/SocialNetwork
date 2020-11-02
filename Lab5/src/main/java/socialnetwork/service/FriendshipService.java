@@ -30,6 +30,7 @@ public class FriendshipService implements Service<Tuple<Long,Long>,Friendship> {
      *                             - the user (id already exists)
      */
     public Optional<Friendship> add(Friendship friendship) {
+        friendship.setDate();
         // we check if the ids of the friendship refer to users
         Tuple<Long,Long> ids = friendship.getId();
         Optional<User> user1 = this.userRepository.findOne(ids.getLeft());

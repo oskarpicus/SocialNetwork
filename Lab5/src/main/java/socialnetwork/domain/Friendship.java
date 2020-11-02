@@ -9,10 +9,13 @@ public class Friendship extends Entity<Tuple<Long,Long>> {
         this.date = LocalDateTime.now();
     }
 
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
     LocalDateTime date;
 
     public Friendship() {
-        setDate();
     }
 
     /**

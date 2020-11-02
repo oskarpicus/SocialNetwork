@@ -76,6 +76,8 @@ public class MasterService {
      *            - the removed entity, otherwise
      */
     public Optional<Friendship> removeFriendship(Tuple<Long,Long> id){
+        if(id.getLeft().compareTo(id.getRight())>0)
+            id=new Tuple<>(id.getRight(),id.getLeft());
         Optional<Friendship> result1 = this.friendshipService.remove(id);
         if(result1.isPresent()){
             deleteOneUsersFriends(id);
@@ -98,6 +100,11 @@ public class MasterService {
      *                             - the user (id already exists)
      */
     public Optional<Friendship> addFriendship(Friendship friendship){
+        Tuple<Long,Long> ids = friendship.getId();
+        if(ids.getLeft().compareTo(ids.getRight())>0) {
+            ids = new Tuple<>(ids.getRight(), ids.getLeft());
+            friendship.setId(ids);
+        }
         Optional<Friendship> result = this.friendshipService.add(friendship);
         if(result.isPresent()) //if the friendship was not saved
             return result;

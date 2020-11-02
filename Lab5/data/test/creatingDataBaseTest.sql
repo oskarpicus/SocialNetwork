@@ -23,3 +23,6 @@ insert into Users(firstName, secondName) VALUES
 ('Barbu','Andrei'),('Popa','Maria');
 
 insert into Friendships(id1, id2) VALUES (1,4);
+
+alter table Friendships
+add column date date;
