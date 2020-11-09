@@ -27,4 +27,14 @@ public interface Service<ID,E extends Entity<ID>> {
      */
     Optional<E> remove(ID id);
 
+    /**
+     *
+     * @param id -the id of the entity to be returned
+     *           id must not be null
+     * @return an {@code Optional} encapsulating the entity with the given id
+     * @throws IllegalArgumentException
+     *                  if id is null.
+     */
+    Optional<E> findOne(ID id);
+
 }

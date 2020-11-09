@@ -75,7 +75,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             resultSet.close();
             return Optional.of(entity);
         }catch (Exception e){
-            e.printStackTrace();
+          //  e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -99,7 +99,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             allEntities.put(entity.getId(),entity);
             return Optional.empty();
         }catch (Exception e){
-            e.printStackTrace();
+           // e.printStackTrace();
             return Optional.of(entity);
         }
     }
@@ -123,7 +123,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             allEntities.remove(id);
             return entity;
         }catch (Exception e){
-            e.printStackTrace();
+          //  e.printStackTrace();
             return Optional.empty();
         }
     }

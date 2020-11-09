@@ -54,6 +54,11 @@ public class FriendshipService implements Service<Tuple<Long,Long>,Friendship> {
         return repo.delete(ids);
     }
 
+    @Override
+    public Optional<Friendship> findOne(Tuple<Long, Long> longLongTuple) {
+        return this.repo.findOne(longLongTuple);
+    }
+
     /**
      * Method for obtaining all the saved friendships
      * @return : list : List<Friendship>, which stores all the saved users

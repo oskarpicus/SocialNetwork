@@ -1,10 +1,13 @@
 package socialnetwork.ui;
 
 import socialnetwork.domain.Friendship;
+import socialnetwork.domain.FriendshipDTO;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
 
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -31,6 +34,7 @@ public class ConsoleUI implements UI {
                 case "removeFriend" -> removeFriend(arguments);
                 case "getCommunities" -> getCommunities();
                 case "getMostSociable" -> getMostSociable();
+                case "filterFriendships" -> filterFriendships(arguments);
                 case "exit" -> {
                     return;
                 }
@@ -54,6 +58,9 @@ public class ConsoleUI implements UI {
         System.out.println("------");
         System.out.println("getCommunities : To get the number of communities");
         System.out.println("getMostSociable : To get the most sociable community");
+        System.out.println("------");
+        System.out.println("filterFriendships ID : To display one's friendships");
+        System.out.println("filterFriendships ID Month : To display one's friendships made in a particular month");
         System.out.println("------");
         System.out.println("exit : To terminate the session");
         System.out.println("--------------------------------------------------------------");
@@ -161,5 +168,46 @@ public class ConsoleUI implements UI {
     private void getMostSociable(){
         System.out.println("The most sociable community is composed of:");
         displayUsers(this.masterService.getMostSociable());
+    }
+
+    private void filterFriendships(String[] arguments){
+        switch (arguments.length){
+            case 2 -> filterFriendshipsID(arguments);
+            case 3 -> filterFriendshipsIDMonth(arguments);
+            default ->
+                System.out.println("Invalid syntax");
+        }
+    }
+
+    private void filterFriendshipsID(String[] arguments){
+        try{
+            Long id = Long.parseLong(arguments[1]);
+            List<FriendshipDTO> list = this.masterService.filterFriendshipsID(id);
+            printFriendshipsDTO(list);
+        }catch (NumberFormatException e){
+            System.out.println("Invalid argument");
+        }
+    }
+
+    private void filterFriendshipsIDMonth(String[] arguments){
+        try{
+            Long id = Long.parseLong(arguments[1]);
+            Month month = Month.valueOf(arguments[2].toUpperCase());
+            List<FriendshipDTO> list = this.masterService.filterFriendshipsIDMonth(id,month);
+            printFriendshipsDTO(list);
+        }catch (IllegalArgumentException e){
+            System.out.println("Invalid arguments");
+        }
+    }
+
+    private void printFriendshipsDTO(List<FriendshipDTO> list){
+        if(list.isEmpty()){
+            System.out.println("There are no friendships");
+            return;
+        }
+        System.out.format("%20s%20s%20s\n","First Name","Last Name","Date");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        list.forEach(x -> System.out.format("%20s%20s%20s\n",
+                x.getFirstName(),x.getLastName(),x.getDate().format(formatter)));
     }
 }

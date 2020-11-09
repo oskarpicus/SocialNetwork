@@ -6,6 +6,9 @@ import socialnetwork.domain.validators.UserValidator;
 import socialnetwork.repository.Repository;
 import socialnetwork.repository.file.UserFile;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Main {
     public static void main(String[] args) {
         String fileName=ApplicationContext.getPROPERTIES().getProperty("data.socialnetwork.users");
@@ -26,7 +29,6 @@ public class Main {
         userFileRepository.findAll().forEach(System.out::println);
         System.out.println("okish");
 
-    }
-}
+}}
 
 

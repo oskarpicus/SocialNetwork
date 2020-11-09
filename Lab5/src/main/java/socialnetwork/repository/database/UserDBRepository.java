@@ -15,8 +15,8 @@ public class UserDBRepository extends AbstractDBRepository<Long,User> {
 
     @Override
     protected String getSaveCommand(User entity) {
-        return "INSERT INTO Users(firstName,secondName) "
-                + "VALUES ('"+entity.getFirstName()+"', '"
+        return "INSERT INTO Users(id,firstName,secondName) "
+                + "VALUES ("+entity.getId()+",'"+entity.getFirstName()+"', '"
                 + entity.getLastName()+"');";
     }
 

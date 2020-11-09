@@ -1,12 +1,15 @@
 package socialnetwork.service;
 
 import socialnetwork.domain.Friendship;
+import socialnetwork.domain.FriendshipDTO;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
 
+import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class MasterService {
 
@@ -185,6 +188,53 @@ public class MasterService {
             user1.get().getFriends().removeIf(user -> user.getId().equals(ids.getRight()));
             user2.get().getFriends().removeIf(user -> user.getId().equals(ids.getLeft()));
         }
+    }
+
+    /**
+     * Method for filtering friendships, based on a user ID
+     * @param userID : Long, ID of the user
+     * @return List<FriendshipDTO>, contains all the friendships of userID
+     */
+    public List<FriendshipDTO> filterFriendshipsID(Long userID){
+        Predicate<Friendship> predicate = friendship ->
+                friendship.getId().getLeft().equals(userID) ||
+                friendship.getId().getRight().equals(userID);
+        return filterFriendships(userID,predicate);
+    }
+
+    /**
+     * Method for filtering friendships, based on a user ID and a month
+     * @param userID : Long, ID of the user
+     * @param month : Month
+     * @return List<FriendshipDTO>, contains all the friendships of userID
+     */
+    public List<FriendshipDTO> filterFriendshipsIDMonth(Long userID, Month month){
+        Predicate<Friendship> predicateUser = friendship ->
+                friendship.getId().getLeft().equals(userID) || friendship.getId().getRight().equals(userID);
+        Predicate<Friendship> predicateUserMonth = predicateUser.and(friendship ->
+                friendship.getDate().getMonth().equals(month));
+        return filterFriendships(userID,predicateUserMonth);
+    }
+
+    /**
+     * Generic method for filtering Friendships of one User and based on further conditions
+     * @param userID : Long, ID of a User
+     * @param predicate : Predicat<Friendships>, the further conditions to be met
+     * @return List<FriendshipDTO>, contains all the entries that are correct
+     */
+    private List<FriendshipDTO> filterFriendships(Long userID, Predicate<Friendship> predicate){
+        return this.friendshipService.findAll().stream()
+                .filter(predicate)
+                .map(friendship -> {
+                    Long id = friendship.getId().getLeft().equals(userID) ?
+                            friendship.getId().getRight() :
+                            friendship.getId().getLeft();
+                    Optional<User> user = this.userService.findOne(id);
+                    if(user.isEmpty())
+                        return null;
+                    return new FriendshipDTO(user.get().getFirstName(), user.get().getLastName(), friendship.getDate());
+                })
+                .collect(Collectors.toList());
     }
 
 }

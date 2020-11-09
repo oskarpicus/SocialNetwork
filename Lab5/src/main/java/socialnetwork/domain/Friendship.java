@@ -25,4 +25,14 @@ public class Friendship extends Entity<Tuple<Long,Long>> {
     public LocalDateTime getDate() {
         return date;
     }
+
+    @Override
+    public String toString() {
+        return "Friendship{" +
+                "id1= "+getId().getLeft()+
+                "id2= "+getId().getRight()+
+             //   "date=" + date +
+                '}';
+    }
 }
+
