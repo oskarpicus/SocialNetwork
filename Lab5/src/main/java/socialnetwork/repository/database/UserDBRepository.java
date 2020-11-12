@@ -52,5 +52,12 @@ public class UserDBRepository extends AbstractDBRepository<Long,User> {
         }
     }
 
+    @Override
+    protected String getUpdateCommand(User entity) {
+        return "UPDATE Users "+
+                "SET firstname='"+entity.getFirstName()+"',lastname='"+entity.getLastName()+"' "+
+                "WHERE id="+entity.getId()+";";
+    }
+
 
 }

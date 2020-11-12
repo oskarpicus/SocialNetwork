@@ -1,9 +1,6 @@
 package socialnetwork.ui;
 
-import socialnetwork.domain.Friendship;
-import socialnetwork.domain.FriendshipDTO;
-import socialnetwork.domain.Tuple;
-import socialnetwork.domain.User;
+import socialnetwork.domain.*;
 import socialnetwork.service.MasterService;
 
 import java.time.Month;
@@ -35,6 +32,10 @@ public class ConsoleUI implements UI {
                 case "getCommunities" -> getCommunities();
                 case "getMostSociable" -> getMostSociable();
                 case "filterFriendships" -> filterFriendships(arguments);
+                case "sendFriendRequest" -> sendFriendRequest(arguments);
+                case "acceptFriendRequest" -> acceptFriendRequest(arguments);
+                case "rejectFriendRequest" -> rejectFriendRequest(arguments);
+                case "displayFriendRequests" -> displayFriendRequests();
                 case "exit" -> {
                     return;
                 }
@@ -61,6 +62,11 @@ public class ConsoleUI implements UI {
         System.out.println("------");
         System.out.println("filterFriendships ID : To display one's friendships");
         System.out.println("filterFriendships ID Month : To display one's friendships made in a particular month");
+        System.out.println("------");
+        System.out.println("sendFriendRequest fromId toId : To send a friend request");
+        System.out.println("acceptFriendRequest ID : To accept a friend request");
+        System.out.println("rejectFriendRequest ID : To reject a friend request");
+        System.out.println("displayFriendRequests : To display all of the friend requests");
         System.out.println("------");
         System.out.println("exit : To terminate the session");
         System.out.println("--------------------------------------------------------------");
@@ -209,5 +215,68 @@ public class ConsoleUI implements UI {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         list.forEach(x -> System.out.format("%20s%20s%20s\n",
                 x.getFirstName(),x.getLastName(),x.getDate().format(formatter)));
+    }
+
+    private void sendFriendRequest(String[] arguments){
+        if(arguments.length!=3){
+            System.out.println("Invalid syntax");
+            return;
+        }
+        try{
+            Long fromId = Long.parseLong(arguments[1]);
+            Long toId = Long.parseLong(arguments[2]);
+            this.masterService.sendFriendRequest(fromId,toId).ifPresentOrElse(
+                    (x) -> System.out.println("Friend Request was already sent"),
+                    () -> System.out.println("Friend Request sent successfully"));
+        }
+        catch (NumberFormatException e){
+            System.out.println("Invalid arguments");
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void acceptFriendRequest(String[] arguments){
+        if(arguments.length!=2){
+            System.out.println("Invalid syntax");
+            return;
+        }
+        try{
+            Long id = Long.parseLong(arguments[1]);
+            this.masterService.acceptFriendRequest(id).ifPresentOrElse(
+                    (x) -> System.out.println("The friend request could not be accepted"),
+                    () -> System.out.println("Friend Request accepted successfully")
+            );
+        }catch (NumberFormatException e){
+            System.out.println("Invalid arguments");
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void rejectFriendRequest(String[] arguments){
+        if(arguments.length!=2){
+            System.out.println("Invalid syntax");
+            return;
+        }
+        try{
+            Long id = Long.parseLong(arguments[1]);
+            this.masterService.rejectFriendRequest(id).ifPresentOrElse(
+                    (x) -> System.out.println("The friend request could not be rejected"),
+                    () -> System.out.println("Friend Request rejected successfully")
+            );
+        }catch (NumberFormatException e){
+            System.out.println("Invalid arguments");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void displayFriendRequests(){
+        List<FriendRequest> all = this.masterService.getAllFriendRequests();
+        System.out.format("%10s%10s%10s%10s\n","ID","ID From","ID To","Status");
+        all.forEach(request -> System.out.format("%10d%10d%10d%10s\n",request.getId(),request.getFromUser(),request.getToUser(),request.getStatus()));
     }
 }

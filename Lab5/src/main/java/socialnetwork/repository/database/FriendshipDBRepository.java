@@ -62,4 +62,14 @@ public class FriendshipDBRepository extends AbstractDBRepository<Tuple<Long,Long
         }
     }
 
+    @Override
+    protected String getUpdateCommand(Friendship entity) {
+        Tuple<Long,Long> ids = entity.getId();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String date = formatter.format(entity.getDate());
+        return "UPDATE Friendships "+
+                "SET id1="+ids.getLeft()+",id2="+ids.getRight()+",date='"+date+"' "+
+                "WHERE id1="+ids.getLeft()+" AND id2="+ids.getRight()+";";
+    }
+
 }

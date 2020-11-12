@@ -19,6 +19,19 @@ create table Friendships
     constraint pk_Friendships primary key(id1,id2)
 );
 
+create table FriendRequests
+(
+  id int,
+  fromUser int,
+  toUser int,
+  status varchar(20),
+  constraint fk1_FriendRequests foreign key(fromUser) references Users(id)
+        on delete cascade,
+  constraint fk2_FriendRequests foreign key(toUser) references Users(id)
+        on delete cascade,
+  constraint pk_FriendRequests primary key(id)
+);
+
 insert into Users(id,firstName,secondName)
 values (1,'Aprogramatoarei','Ionut'),
        (2,'Apetrei','Ileana'),(3,'Pop','Dan'),(4,'Zaharia','Stancu');

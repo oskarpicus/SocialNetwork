@@ -25,7 +25,7 @@ public class MasterServiceTest {
             new UserValidator());
     private final FriendshipService friendshipService = new FriendshipService(repo,userRepository);
     private final UserService userService = new UserService(userRepository);
-    private final MasterService masterService = new MasterService(friendshipService,userService);
+    private final MasterService masterService = new MasterService(friendshipService,userService, friendRequestService);
 
     @Test
     public void addUser() {

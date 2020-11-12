@@ -130,7 +130,19 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
 
     @Override
     public Optional<E> update(E entity) {
-        return Optional.empty();
+        if (entity==null)
+            throw new IllegalArgumentException("entity must not be null");
+        validator.validate(entity);
+
+        try{
+            Statement statement = c.createStatement();
+            String command = getUpdateCommand(entity);
+            statement.executeUpdate(command);
+            statement.close();
+            return Optional.empty();
+        }catch (Exception e){
+            return Optional.of(entity);
+        }
     }
 
     /**
@@ -166,5 +178,12 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
      * @return entity : E, composed of the data from resultSet
      */
     protected abstract E extractEntityFromResultSet(ResultSet resultSet);
+
+    /**
+     * Method for obtaining the SQL Command, in order to update the entity
+     * @param entity : the updated entity
+     * @return command : String, it it's executed it will update the entity in the data base
+     */
+    protected abstract String getUpdateCommand(E entity);
 
 }
