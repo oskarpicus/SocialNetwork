@@ -32,7 +32,7 @@ public class UserDBRepository extends AbstractDBRepository<Long,User> {
 
     @Override
     protected String getFindAllCommand() {
-        return "SELECT * FROM Users;";
+        return "SELECT * FROM Users ORDER BY id;";
     }
 
     @Override

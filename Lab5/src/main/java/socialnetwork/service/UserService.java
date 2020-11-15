@@ -30,10 +30,10 @@ public class UserService implements Service<Long,User>{
      * Method for obtaining all the saved users
      * @return : list : List<User>, which stores all the saved users
      */
-    public List<User> getAllUsers() {
+    public List<User> findAll() {
         //este echivalent cu copiatul tuturor studentilor intr-o lista
-        Iterable<User> students = repo.findAll();
-        return StreamSupport.stream(students.spliterator(), false).collect(Collectors.toList());
+        Iterable<User> all = repo.findAll();
+        return StreamSupport.stream(all.spliterator(), false).collect(Collectors.toList());
     }
 
     public List<User> filterUsersName(String s) {

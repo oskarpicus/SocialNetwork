@@ -3,6 +3,7 @@ package socialnetwork.service;
 import socialnetwork.domain.Entity;
 import socialnetwork.domain.validators.ValidationException;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface Service<ID,E extends Entity<ID>> {
@@ -36,5 +37,8 @@ public interface Service<ID,E extends Entity<ID>> {
      *                  if id is null.
      */
     Optional<E> findOne(ID id);
+
+
+    List<E> findAll();
 
 }

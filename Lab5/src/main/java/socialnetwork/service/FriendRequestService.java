@@ -1,7 +1,6 @@
 package socialnetwork.service;
 
 import socialnetwork.domain.FriendRequest;
-import socialnetwork.domain.Friendship;
 import socialnetwork.repository.Repository;
 
 import java.util.List;

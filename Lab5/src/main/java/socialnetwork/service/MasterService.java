@@ -1,10 +1,11 @@
 package socialnetwork.service;
 
 import socialnetwork.domain.*;
+import socialnetwork.domain.validators.FriendRequestVerifier;
+import socialnetwork.domain.validators.MessageVerifier;
 
 import java.time.Month;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -14,11 +15,17 @@ public class MasterService {
     private final UserService userService;
     private boolean updatedFriends = false;
     private final FriendRequestService friendRequestService;
+    private final FriendRequestVerifier friendRequestVerifier;
+    private final MessageService messageService;
+    private final MessageVerifier messageVerifier;
 
-    public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService) {
+    public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService,MessageService messageService) {
         this.friendshipService = friendshipService;
         this.userService = userService;
         this.friendRequestService = friendRequestService;
+        friendRequestVerifier = new FriendRequestVerifier(friendshipService,userService,friendRequestService);
+        this.messageService=messageService;
+        this.messageVerifier=new MessageVerifier(userService,messageService);
     }
 
 
@@ -42,13 +49,21 @@ public class MasterService {
      */
     public Optional<User> removeUser(Long id){
         Optional<User> result = this.userService.remove(id);
-
         if(result.isEmpty())
             return result;
+        this.updateOnUserDeleted(result.get());
+        return result;
+    }
 
+    /**
+     * Method for updating the other entities upon the deletion of a user
+     * @param userDeleted : User, the user that was deleted
+     * The friendships, messages and friend requests of user are deleted
+     */
+    private void updateOnUserDeleted(User userDeleted){
         //deleting in cascade all the friendships that belong to the user
-        Predicate<Friendship> friendshipPredicate = friendship -> friendship.getId().getLeft().equals(id)
-                || friendship.getId().getRight().equals(id);
+        Predicate<Friendship> friendshipPredicate = friendship -> friendship.getId().getLeft().equals(userDeleted.getId())
+                || friendship.getId().getRight().equals(userDeleted.getId());
 
         List<Friendship> allFriendships = this.friendshipService.findAll();
         allFriendships.forEach(friendship -> {
@@ -58,16 +73,16 @@ public class MasterService {
         });
 
         //deleting all of the user's appearances in the other users' friends list
-        Predicate<User> userPredicate = user -> user.getFriends().contains(result.get());
-        this.userService.getAllUsers().forEach(user -> {
+        Predicate<User> userPredicate = user -> user.getFriends().contains(userDeleted);
+        this.userService.findAll().forEach(user -> {
             if(userPredicate.test(user)){
-                user.getFriends().remove(result.get());
+                user.getFriends().remove(userDeleted);
             }
         });
 
         //deleting all of the user's friend requests
         Predicate<FriendRequest> friendRequestPredicate = friendRequest ->
-                friendRequest.getToUser().equals(id) || friendRequest.getFromUser().equals(id);
+                friendRequest.getToUser().equals(userDeleted.getId()) || friendRequest.getFromUser().equals(userDeleted.getId());
         List<FriendRequest> allRequests = this.friendRequestService.findAll();
         allRequests.forEach(friendRequest -> {
             if(friendRequestPredicate.test(friendRequest)){
@@ -75,9 +90,13 @@ public class MasterService {
             }
         });
 
-        return result;
+        //delete the messages that the user sent
+        List<Message> allMessages = this.messageService.findAll();
+        allMessages.forEach(message -> {
+            if(message.getFrom().equals(userDeleted.getId()) || message.getTo().contains(userDeleted.getId()))
+                this.messageService.remove(message.getId());
+        });
     }
-
 
     /**
      *  removes the friendship with the specified id
@@ -102,7 +121,7 @@ public class MasterService {
      * @return list : List<User>, which stores all the saved users
      */
     public List<User> getAllUsers(){
-        return this.userService.getAllUsers();
+        return this.userService.findAll();
     }
 
     /**
@@ -266,36 +285,7 @@ public class MasterService {
      *          - the friend request was already sent
      */
     public Optional<FriendRequest> sendFriendRequest(Long fromId,Long toId){
-
-        //we verify that the IDs refer actual users
-        Optional<User> user1 = this.userService.findOne(fromId);
-        if(user1.isEmpty())
-            throw new ServiceException(fromId+" does not refer a user");
-
-        //TODO add validator - functie separata pentru fiecare validare
-
-        Optional<User> user2 = this.userService.findOne(toId);
-        if(user2.isEmpty())
-            throw new ServiceException(toId+"  does not refer a user");
-
-        //we verify that there is no friendship between these users
-        Tuple<Long,Long> ids = (fromId < toId) ? new Tuple<>(fromId,toId) : new Tuple<>(toId,fromId);
-        Optional<Friendship> friendship = this.friendshipService.findOne(ids);
-        if(friendship.isPresent())
-            throw new ServiceException(fromId+" and "+toId+" are already friends");
-
-        //we verify is the friend request was already sent (either in the same form, or inverse)
-        Predicate<FriendRequest> predicateInverse = friendRequest -> friendRequest.getFromUser().equals(toId) &&
-                friendRequest.getToUser().equals(fromId);
-        Predicate<FriendRequest> predicate = predicateInverse.or(friendRequest ->
-                        friendRequest.getFromUser().equals(fromId) &&
-                                friendRequest.getToUser().equals(toId) &&
-                                friendRequest.getStatus().equals("pending")
-                );
-        List<FriendRequest> list = this.friendRequestService.findAll();
-      //  if(list.stream().anyMatch(predicate))
-        //    throw new ServiceException("The friend request was already sent");
-
+        this.friendRequestVerifier.validate(fromId,toId);
         return this.friendRequestService.add(new FriendRequest(fromId,toId));
     }
 
@@ -334,6 +324,65 @@ public class MasterService {
      */
     public Optional<FriendRequest> rejectFriendRequest(Long id){
         return this.friendRequestService.rejectFriendRequest(id);
+    }
+
+
+    public Optional<Message> sendMessage(Message message){
+        return this.messageService.add(message);
+    }
+
+    /**
+     *
+     * @param messageId : Long, id of the message to reply to
+     * @param userToId : Long, id of the user that replies to the message
+     * @param text : String, the content of the message
+     * @return an {@code Optional}
+     *              - empty, if the messages was replied successfully
+     *              - otherwise, return the message
+     */
+    public Optional<Message> replyMessage(Long messageId,Long userToId,String text){
+
+        messageVerifier.verifyForReply(messageId,userToId);
+        Optional<Message> message = this.messageService.findOne(messageId);
+        if(message.isEmpty())
+            throw new ServiceException("Message does not exist");
+
+        //we add the reply message
+        Long destination=message.get().getFrom();
+        Message replyMessage = new Message(userToId, Arrays.asList(destination),text);
+        Optional<Message> result= this.messageService.add(replyMessage);
+
+        //we update the message that was replied
+        message.get().addReply(replyMessage.getId());
+        message.get().setLastReplied(userToId);
+        this.messageService.update(message.get());
+
+        return result;
+    }
+
+    /**
+     * Method for obtaining the entire conversation between users
+     * @param id1 : Long, id of one user
+     * @param id2 : Long, id of another user
+     * @return List<MessageDTO>, contains all the messages between id1 and id2
+     */
+    public List<MessageDTO> getConversation(Long id1,Long id2){
+        Predicate<Message> predicate = message -> (message.getFrom().equals(id1)
+                && message.getTo().contains(id2)) || (message.getFrom().equals(id2)
+                && message.getTo().contains(id1));
+
+        User user1 = this.messageVerifier.userExists(id1);
+        User user2 = this.messageVerifier.userExists(id2);
+
+        return this.messageService.findAll()
+                .stream()
+                .filter(predicate)
+                .sorted(Comparator.comparing(Message::getDate))
+                .map(message -> {
+                    User user = message.getFrom().equals(id1) ? user1 : user2;
+                    return new MessageDTO(user, message.getMessage(), message.getDate());
+                })
+                .collect(Collectors.toList());
     }
 
 }

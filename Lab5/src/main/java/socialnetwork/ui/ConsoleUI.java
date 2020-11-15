@@ -5,6 +5,7 @@ import socialnetwork.service.MasterService;
 
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -36,6 +37,9 @@ public class ConsoleUI implements UI {
                 case "acceptFriendRequest" -> acceptFriendRequest(arguments);
                 case "rejectFriendRequest" -> rejectFriendRequest(arguments);
                 case "displayFriendRequests" -> displayFriendRequests();
+                case "sendMessage" -> sendMessage(arguments);
+                case "replyMessage" -> replyMessage(arguments);
+                case "getConversation" -> getConversation(arguments);
                 case "exit" -> {
                     return;
                 }
@@ -67,6 +71,10 @@ public class ConsoleUI implements UI {
         System.out.println("acceptFriendRequest ID : To accept a friend request");
         System.out.println("rejectFriendRequest ID : To reject a friend request");
         System.out.println("displayFriendRequests : To display all of the friend requests");
+        System.out.println("------");
+        System.out.println("sendMessage IDFrom IDTo1 ... IDToN : To send a message");
+        System.out.println("replyMessage IDMessage IDTo : To reply to a message");
+        System.out.println("getConversation IdUser1 IdUser2 : To get the conversation between 2 users");
         System.out.println("------");
         System.out.println("exit : To terminate the session");
         System.out.println("--------------------------------------------------------------");
@@ -198,7 +206,7 @@ public class ConsoleUI implements UI {
     private void filterFriendshipsIDMonth(String[] arguments){
         try{
             Long id = Long.parseLong(arguments[1]);
-            Month month = Month.valueOf(arguments[2].toUpperCase());
+            Month month = Month.of(Integer.parseInt(arguments[2]));
             List<FriendshipDTO> list = this.masterService.filterFriendshipsIDMonth(id,month);
             printFriendshipsDTO(list);
         }catch (IllegalArgumentException e){
@@ -278,5 +286,74 @@ public class ConsoleUI implements UI {
         List<FriendRequest> all = this.masterService.getAllFriendRequests();
         System.out.format("%10s%10s%10s%10s\n","ID","ID From","ID To","Status");
         all.forEach(request -> System.out.format("%10d%10d%10d%10s\n",request.getId(),request.getFromUser(),request.getToUser(),request.getStatus()));
+    }
+
+    private void getConversation(String[] arguments){
+        if(arguments.length!=3){
+            System.out.println("Invalid syntax");
+            return;
+        }
+        try{
+            Long id1= Long.parseLong(arguments[1]);
+            Long id2= Long.parseLong(arguments[2]);
+            List<MessageDTO> all = this.masterService.getConversation(id1,id2);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            System.out.format("%15s%15s%20s %10s\n","First Name","Last Name","Text","Date");
+            all.forEach(messageDTO ->
+                System.out.format("%15s%15s%20s %10s\n",
+                        messageDTO.getFrom().getFirstName(),
+                        messageDTO.getFrom().getLastName(),
+                        messageDTO.getText(),formatter.format(messageDTO.getDate()))
+            );
+        }catch (NumberFormatException e){
+            System.out.println("Invalid arguments");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void sendMessage(String[] arguments){
+        if(arguments.length < 3){
+            System.out.println("Invalid syntax");
+            return;
+        }
+        try{
+            Long fromId = Long.parseLong(arguments[1]);
+            List<Long> toIds = new ArrayList<>();
+            for(int i=2;i<arguments.length;i++)
+                toIds.add(Long.parseLong(arguments[i]));
+            System.out.println("What would you like to say ?");
+            String text = scanner.nextLine();
+            this.masterService.sendMessage(new Message(fromId,toIds,text)).ifPresentOrElse(
+                    (x) -> System.out.println("Message could not be sent"),
+                    () -> System.out.println("Message sent successfully")
+            );
+        }catch (NumberFormatException e){
+            System.out.println("Invalid arguments");
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void replyMessage(String[] arguments){
+        if(arguments.length!=3){
+            System.out.println("Invalid syntax");
+            return;
+        }
+        try{
+            Long messageId = Long.parseLong(arguments[1]);
+            Long userToId = Long.parseLong(arguments[2]);
+            System.out.println("What would you like to say?");
+            String text = scanner.nextLine();
+            this.masterService.replyMessage(messageId,userToId,text).ifPresentOrElse(
+                    (x) -> System.out.println("The message could not be replied to"),
+                    () -> System.out.println("The message was replied successfully")
+            );
+        }catch (NumberFormatException e){
+            System.out.println("Invalid arguments");
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 }

@@ -29,7 +29,7 @@ public class FriendRequestDBRepository extends AbstractDBRepository<Long, Friend
 
     @Override
     protected String getFindAllCommand() {
-        return "SELECT * FROM FriendRequests;";
+        return "SELECT * FROM FriendRequests ORDER BY id;";
     }
 
     @Override

@@ -24,13 +24,13 @@ public class UserServiceTest {
         assertTrue(userService.add(user).isPresent()); //it was not saved
         user.setId(7331115341259248461L);
         assertEquals(Optional.empty(),userService.add(user)); //it was saved
-        assertTrue(userService.getAllUsers().contains(user));
+        assertTrue(userService.findAll().contains(user));
         userRepository.delete(user.getId());
     }
 
     @Test
     public void getAllUsers() {
-        assertEquals(5, userService.getAllUsers().size());
+        assertEquals(5, userService.findAll().size());
     }
 
 
