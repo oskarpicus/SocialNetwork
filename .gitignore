@@ -1,0 +1,13 @@
+build.gradle
+*.iml
+gradlew.bat
+gradlew
+settings.gradle
+gradle
+.idea
+data
+gradle
+lab3map
+out
+build
+.gradle
