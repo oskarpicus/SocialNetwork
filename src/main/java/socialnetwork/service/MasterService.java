@@ -1,6 +1,8 @@
 package socialnetwork.service;
 
 import socialnetwork.domain.*;
+import socialnetwork.domain.dtos.FriendshipDTO;
+import socialnetwork.domain.dtos.MessageDTO;
 import socialnetwork.domain.validators.FriendRequestVerifier;
 import socialnetwork.domain.validators.MessageVerifier;
 
@@ -366,7 +368,7 @@ public class MasterService {
      * @param id2 : Long, id of another user
      * @return List<MessageDTO>, contains all the messages between id1 and id2
      */
-    public List<MessageDTO> getConversation(Long id1,Long id2){
+    public List<MessageDTO> getConversation(Long id1, Long id2){
         Predicate<Message> predicate = message -> (message.getFrom().equals(id1)
                 && message.getTo().contains(id2)) || (message.getFrom().equals(id2)
                 && message.getTo().contains(id1));

@@ -1,4 +1,6 @@
-package socialnetwork.domain;
+package socialnetwork.domain.dtos;
+
+import socialnetwork.domain.User;
 
 import java.time.LocalDateTime;
 

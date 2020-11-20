@@ -6,7 +6,6 @@ settings.gradle
 gradle
 .idea
 data
-gradle
 lab3map
 out
 build

@@ -1,6 +1,8 @@
 package socialnetwork.ui;
 
 import socialnetwork.domain.*;
+import socialnetwork.domain.dtos.FriendshipDTO;
+import socialnetwork.domain.dtos.MessageDTO;
 import socialnetwork.service.MasterService;
 
 import java.time.Month;
