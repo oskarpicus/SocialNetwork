@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="/style/logging.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="/style/logging.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.LoggingController">
     <padding>
         <Insets left="20" right="20" />
     </padding>
@@ -30,16 +30,16 @@
           <Insets />
         </GridPane.margin>
     </Label>
-    <PasswordField GridPane.columnIndex="1" GridPane.rowIndex="3" />
-    <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" />
-    <Button mnemonicParsing="false" text="Log in" GridPane.rowIndex="4">
+    <PasswordField fx:id="passwordFieldId" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <TextField fx:id="textFieldLastName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Button fx:id="buttonLogIn" mnemonicParsing="false" onAction="#handleButtonLogInClicked" text="Log in" GridPane.rowIndex="4">
       <GridPane.margin>
          <Insets />
       </GridPane.margin></Button>
-    <Button mnemonicParsing="false" text="Create New Account" GridPane.columnIndex="1" GridPane.rowIndex="4">
+    <Button fx:id="buttonAddUser" mnemonicParsing="false" onAction="#handleButtonAddUserClicked" text="Create New Account" GridPane.columnIndex="1" GridPane.rowIndex="4">
       <GridPane.margin>
          <Insets />
       </GridPane.margin></Button>
    <Label text="First Name" GridPane.rowIndex="1" />
-   <TextField GridPane.columnIndex="1" GridPane.rowIndex="1" />
+   <TextField fx:id="textFieldFirstName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 </GridPane>

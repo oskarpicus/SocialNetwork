@@ -5,6 +5,7 @@
 
 .button{
     -fx-font-weight: bold;
+    -fx-border-color: #3f72af;
 }
 
 .button:hover{
@@ -23,3 +24,10 @@
 #labelTitle:hover{
     -fx-text-fill: #3f72af;
 }
+
+/*
+f9f7f7
+dbe2ef
+3f72af
+112d4e
+ */
