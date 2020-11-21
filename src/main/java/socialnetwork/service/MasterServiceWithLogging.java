@@ -19,14 +19,16 @@ public class MasterServiceWithLogging extends MasterService {
      * @throws ServiceException - if there is no user with ID userId
      */
     @Override
-    public User logging(Long userId){
+    public User logging(String firstName, String lastName, Long userId){
         super.findOneUser(userId).ifPresentOrElse(
                 result -> loggedUser = result,
                 () -> {
-                    throw new ServiceException("Invalid ID");
+                    throw new ServiceException("Invalid credentials");
                 }
         );
-        return loggedUser;
+        if(loggedUser.getLastName().equals(lastName) && loggedUser.getFirstName().equals(firstName))
+            return loggedUser;
+        throw new ServiceException("Invalid credentials");
     }
 
     private void checkFriendRequestIsForLoggedUser(Long id){

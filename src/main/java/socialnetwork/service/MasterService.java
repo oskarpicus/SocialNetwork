@@ -398,7 +398,7 @@ public class MasterService {
         return this.userService.findOne(id);
     }
 
-    public User logging(Long id){
+    public User logging(String firstName, String lastName, Long id){
         return null;
     }
 

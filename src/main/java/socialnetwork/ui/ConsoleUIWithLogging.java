@@ -52,10 +52,15 @@ public class ConsoleUIWithLogging extends ConsoleUI {
     }
 
     private void logging(){
-        System.out.print("Enter your credentials\nID: ");
+        System.out.print("Enter your credentials\n");
         try{
+            System.out.print("First Name: ");
+            String firstName = scanner.nextLine();
+            System.out.print("Last name: ");
+            String lastName = scanner.nextLine();
+            System.out.print("ID: ");
             Long id = Long.parseLong(scanner.nextLine());
-            loggedUser = masterService.logging(id);
+            loggedUser = masterService.logging(firstName,lastName,id);
             System.out.println("Hello "+loggedUser.getFirstName()+" "+loggedUser.getLastName());
         }catch (NumberFormatException e){
             System.out.println("Invalid argument");
