@@ -13,8 +13,8 @@ import java.util.Scanner;
 
 public class ConsoleUI implements UI {
 
-    private final MasterService masterService;
-    private final Scanner scanner = new Scanner(System.in);
+    protected final MasterService masterService;
+    protected final Scanner scanner = new Scanner(System.in);
 
     public ConsoleUI(MasterService masterService){
         this.masterService=masterService;
@@ -51,7 +51,7 @@ public class ConsoleUI implements UI {
     }
 
 
-    private void displayMenu(){
+    protected void displayMenu(){
         System.out.println("--------------------------------------------------------------");
         System.out.println("Available functionalities");
         System.out.println("help : To display the menu");
@@ -124,7 +124,7 @@ public class ConsoleUI implements UI {
         }
     }
 
-    private void addFriend(String[] arguments){
+    protected void addFriend(String[] arguments){
         if(arguments.length!=3){
             System.out.println("Invalid syntax");
             return;
@@ -152,7 +152,7 @@ public class ConsoleUI implements UI {
     }
 
 
-    private void removeFriend(String[] arguments) {
+    protected void removeFriend(String[] arguments) {
         if(arguments.length!=3){
             System.out.println("Invalid syntax");
             return;
@@ -186,7 +186,7 @@ public class ConsoleUI implements UI {
         displayUsers(this.masterService.getMostSociable());
     }
 
-    private void filterFriendships(String[] arguments){
+    protected void filterFriendships(String[] arguments){
         switch (arguments.length){
             case 2 -> filterFriendshipsID(arguments);
             case 3 -> filterFriendshipsIDMonth(arguments);
@@ -227,7 +227,7 @@ public class ConsoleUI implements UI {
                 x.getFirstName(),x.getLastName(),x.getDate().format(formatter)));
     }
 
-    private void sendFriendRequest(String[] arguments){
+    protected void sendFriendRequest(String[] arguments){
         if(arguments.length!=3){
             System.out.println("Invalid syntax");
             return;
@@ -290,7 +290,7 @@ public class ConsoleUI implements UI {
         all.forEach(request -> System.out.format("%10d%10d%10d%10s\n",request.getId(),request.getFromUser(),request.getToUser(),request.getStatus()));
     }
 
-    private void getConversation(String[] arguments){
+    protected void getConversation(String[] arguments){
         if(arguments.length!=3){
             System.out.println("Invalid syntax");
             return;
@@ -314,7 +314,7 @@ public class ConsoleUI implements UI {
         }
     }
 
-    private void sendMessage(String[] arguments){
+    protected void sendMessage(String[] arguments){
         if(arguments.length < 3){
             System.out.println("Invalid syntax");
             return;
@@ -337,7 +337,7 @@ public class ConsoleUI implements UI {
         }
     }
 
-    private void replyMessage(String[] arguments){
+    protected void replyMessage(String[] arguments){
         if(arguments.length!=3){
             System.out.println("Invalid syntax");
             return;

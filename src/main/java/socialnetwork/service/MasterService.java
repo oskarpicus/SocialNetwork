@@ -16,7 +16,7 @@ public class MasterService {
     private final FriendshipService friendshipService;
     private final UserService userService;
     private boolean updatedFriends = false;
-    private final FriendRequestService friendRequestService;
+    protected final FriendRequestService friendRequestService;
     private final FriendRequestVerifier friendRequestVerifier;
     private final MessageService messageService;
     private final MessageVerifier messageVerifier;
@@ -385,6 +385,21 @@ public class MasterService {
                     return new MessageDTO(user, message.getMessage(), message.getDate());
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Method for finding a user by their id
+     * @param id : Long , id of the user
+     * @return an {@code Optional}
+     *              - the user, if id refers a user
+     *              - null , if there is no user with that id
+     */
+    public Optional<User> findOneUser(Long id){
+        return this.userService.findOne(id);
+    }
+
+    public User logging(Long id){
+        return null;
     }
 
 }
