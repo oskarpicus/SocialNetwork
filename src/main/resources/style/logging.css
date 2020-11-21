@@ -1,0 +1,25 @@
+
+.label{
+    -fx-font-weight: bold;
+}
+
+.button{
+    -fx-font-weight: bold;
+}
+
+.button:hover{
+    -fx-background-color: #3f72af;
+    -fx-text-fill: white;
+}
+
+.root{
+    -fx-background-color: #dbe2ef;
+}
+
+#labelTitle{
+    -fx-font-size: 30px;
+}
+
+#labelTitle:hover{
+    -fx-text-fill: #3f72af;
+}

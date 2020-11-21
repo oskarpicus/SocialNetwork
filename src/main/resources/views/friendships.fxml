@@ -4,6 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.geometry.Insets?>
 <AnchorPane prefHeight="520.0" prefWidth="667.0" stylesheets="/style/friendships.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
     <SplitPane dividerPositions="0.07528957528957529" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="100.0" styleClass="anchorPaneGreeting">
@@ -17,7 +18,7 @@
                 </ImageView>
             </HBox>
             <AnchorPane layoutY="64.0" prefHeight="406.0" prefWidth="665.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="62.0">
-                <SplitPane dividerPositions="0.8059701492537313" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <SplitPane dividerPositions="0.8613861386138614" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="688.0">
                         <TableView minHeight="-Infinity" minWidth="-Infinity" prefHeight="381.0" prefWidth="663.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <columns>
@@ -31,11 +32,14 @@
                         </TableView>
                     </AnchorPane>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" styleClass="anchorPaneButtons">
-                        <HBox prefHeight="75.0" prefWidth="643.0" spacing="40" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <HBox layoutY="9.0" prefHeight="66.0" prefWidth="643.0" spacing="40" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <Button mnemonicParsing="false" text="Remove Friend" />
                             <Button mnemonicParsing="false" text="Send Friend Request" />
                             <Button mnemonicParsing="false" text="Your Friend Requests" />
                         </HBox>
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="7.0" />
+                        </padding>
                     </AnchorPane>
                 </SplitPane>
             </AnchorPane>

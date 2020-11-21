@@ -12,7 +12,7 @@ public class MainFX extends Application {
     public void start(Stage primaryStage) throws Exception{
         System.out.println("ok");
       //  initView(primaryStage);
-        Parent root = FXMLLoader.load(getClass().getResource("/views/friendships.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/views/logging.fxml"));
         primaryStage.setScene(new Scene(root,300,300));
         primaryStage.setTitle("Social Network");
         primaryStage.show();
