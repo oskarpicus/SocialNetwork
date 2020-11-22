@@ -15,7 +15,11 @@
     -fx-font-style: italic;
 }
 
-.anchorPaneGreeting{
+.labelGreeting:hover{
+    -fx-text-fill: #ffc93c;
+}
+
+.anchorPaneGreeting, #anchorPaneFriendRequests{
     -fx-background-color: #40a8c4;
 }
 
@@ -43,7 +47,8 @@
 }
 
 .table-view{
-    -fx-border-width: 10px;
+    -fx-border-width: 2px;
     -fx-border-radius: 10px;
+    -fx-border-color: black;
 }
 

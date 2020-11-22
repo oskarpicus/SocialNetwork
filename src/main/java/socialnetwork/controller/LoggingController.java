@@ -57,7 +57,6 @@ public class LoggingController {
         System.out.println("S-a apasat acest buton");
         closeWindow();
         showCreateAccountWindow();
-        //TODO
     }
 
     private void showCreateAccountWindow(){

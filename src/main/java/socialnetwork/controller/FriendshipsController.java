@@ -4,16 +4,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.UserDTO;
 import socialnetwork.service.MasterServiceWithLogging;
 import socialnetwork.utils.observer.Observer;
 
-import java.util.List;
+import java.io.IOException;
 
 public class FriendshipsController implements Observer {
 
@@ -88,7 +92,21 @@ public class FriendshipsController implements Observer {
         }
     }
 
-    public void handleYourFriendRequests(ActionEvent actionEvent) {//TODO
+    public void handleYourFriendRequests(ActionEvent actionEvent) {
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/views/friendRequests.fxml"));
+            Pane pane = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(pane));
+
+            FriendRequestsController controller = loader.getController();
+            controller.setService(service);
+
+            stage.show();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public void handleTextFieldNameKeyTyped(KeyEvent keyEvent) {

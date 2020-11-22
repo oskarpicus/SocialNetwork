@@ -4,6 +4,7 @@ import socialnetwork.domain.FriendRequest;
 import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
+import socialnetwork.domain.dtos.FriendRequestDTO;
 import socialnetwork.domain.dtos.UserDTO;
 import socialnetwork.utils.observer.Observable;
 import socialnetwork.utils.observer.Observer;
@@ -18,7 +19,8 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
     private User loggedUser;
     private Long loggedUserId;
     private List<UserDTO> allUsers = null;
-    private List<Observer> observers = new ArrayList<>();;
+    private final List<Observer> observers = new ArrayList<>();
+    private  List<FriendRequestDTO> allFriendRequests;
 
     public MasterServiceWithLogging(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService, MessageService messageService) {
         super(friendshipService, userService, friendRequestService, messageService);
@@ -53,12 +55,14 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
         checkFriendRequestIsForLoggedUser(id);
         Optional<FriendRequest> result = super.acceptFriendRequest(id);
         if(result.isEmpty()){
-            //we update the DTOs list
+            //we update the DTOs lists
             Optional<FriendRequest> request = super.friendRequestService.findOne(id);
             if(request.isPresent()){
                 Long other = request.get().getFromUser();
                 setFriendship(other,true);
             }
+            updateFriendRequestList(id,"accepted");
+            notifyObservers();
         }
         return result;
     }
@@ -66,7 +70,13 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
     @Override
     public Optional<FriendRequest> rejectFriendRequest(Long id) {
         checkFriendRequestIsForLoggedUser(id);
-        return super.rejectFriendRequest(id);
+        Optional<FriendRequest> result= super.rejectFriendRequest(id);
+        if(result.isEmpty()){
+            //update the dto list
+            updateFriendRequestList(id,"rejected");
+            notifyObservers();
+        }
+        return result;
     }
 
     /**
@@ -127,6 +137,26 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
                 .ifPresent(userDTO -> {
                     userDTO.setFriendsWithLoggedUser(friendships);
                 });
+    }
+
+    public List<FriendRequestDTO> getAllFriendRequestsDTO(){
+        return (allFriendRequests=super.friendRequestService.findAll()
+                .stream()
+                .filter(request -> request.getToUser().equals(loggedUserId))
+                .map(request -> {
+                    Optional<User> fromUser=super.userService.findOne(request.getFromUser());
+                    return fromUser.map(user -> new FriendRequestDTO(request.getId(), user.getFirstName(),
+                            user.getLastName(),
+                            request.getStatus(), request.getDate())).orElse(null);
+                })
+                .collect(Collectors.toList()));
+    }
+
+    private void updateFriendRequestList(Long id,String newStatus){
+        allFriendRequests.stream()
+                .filter(request -> request.getId().equals(id))
+                .findAny()
+                .ifPresent(request -> request.setStatus(newStatus));
     }
 
     @Override
