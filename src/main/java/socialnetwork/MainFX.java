@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import socialnetwork.controller.FriendshipsController;
 import socialnetwork.controller.LoggingController;
 import socialnetwork.domain.*;
 import socialnetwork.domain.validators.FriendRequestValidator;
@@ -55,7 +56,6 @@ public class MainFX extends Application {
         primaryStage.setScene(new Scene(pane));
         LoggingController loggingController = loader.getController();
         loggingController.setService(service);
-
     }
 
     private MasterService getMasterService(){

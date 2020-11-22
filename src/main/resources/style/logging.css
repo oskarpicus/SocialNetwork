@@ -17,11 +17,11 @@
     -fx-background-color: #dbe2ef;
 }
 
-#labelTitle{
+.labelTitle{
     -fx-font-size: 30px;
 }
 
-#labelTitle:hover{
+.labelTitle:hover{
     -fx-text-fill: #3f72af;
 }
 
