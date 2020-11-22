@@ -15,7 +15,7 @@
     -fx-font-style: italic;
 }
 
-.anchorPaneGreeting, .anchorPaneMain{
+.anchorPaneGreeting{
     -fx-background-color: #40a8c4;
 }
 
@@ -25,7 +25,12 @@
 }
 
 .table-row-cell:selected {
-    -fx-background-color:#08d9d6 ;
+    -fx-background-color:#40a8c4 ;
+}
+
+.table-row-cell:selected .text{
+    -fx-fill: black;
+    -fx-font-weight: bold;
 }
 
 .table-view .column-header {
