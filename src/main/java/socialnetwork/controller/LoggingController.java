@@ -4,7 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -12,15 +11,16 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
+import socialnetwork.service.MasterServiceWithLogging;
 
 import java.io.IOException;
 
 public class LoggingController {
 
-    private MasterService service;
+    private MasterServiceWithLogging service;
     private User loggedUser = null;
 
-    public void setService(MasterService service){
+    public void setService(MasterServiceWithLogging service){
         this.service=service;
     }
 
@@ -44,11 +44,11 @@ public class LoggingController {
             closeWindow();
             showFriendshipsWindow();
         }catch (NumberFormatException e){
-            LoggingAlert.showErrorMessage(null,"Invalid Id");
+            MyAllert.showErrorMessage(null,"Invalid Id");
             System.out.println("Wrong");
         }
         catch (Exception e){
-            LoggingAlert.showErrorMessage(null,"Wrong credentials");
+            MyAllert.showErrorMessage(null,"Wrong credentials");
             System.out.println("Wrong credentials");
         }
     }

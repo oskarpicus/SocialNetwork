@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class MasterService {
 
     private final FriendshipService friendshipService;
-    private final UserService userService;
+    protected final UserService userService;
     private boolean updatedFriends = false;
     protected final FriendRequestService friendRequestService;
     private final FriendRequestVerifier friendRequestVerifier;
@@ -29,6 +29,9 @@ public class MasterService {
         friendRequestVerifier = new FriendRequestVerifier(friendshipService,userService,friendRequestService);
         this.messageService=messageService;
         this.messageVerifier=new MessageVerifier(userService,messageService);
+
+        updateAllUsersFriends();
+        updatedFriends=true;
     }
 
 
@@ -101,17 +104,6 @@ public class MasterService {
         });
     }
 
-    /**
-     * Method for filtering a list of users that contain a certain string in their names
-     * @param string : String
-     * @return list of all the users that contain string in their names
-     */
-    public List<UserDTO> filterUsers(String string,List<UserDTO> all){
-        return all.stream()
-                .filter(userDTO -> userDTO.getFirstName().contains(string) ||
-                        userDTO.getLastName().contains(string))
-                .collect(Collectors.toList());
-    }
 
     /**
      *  removes the friendship with the specified id
@@ -195,29 +187,7 @@ public class MasterService {
         return friendshipService.getMostSociable();
     }
 
-    /**
-     * Method for obtaining all the users, specifying if they are friends with another user
-     * @param idToBeFriendsWith : Long, id of the user to check if they are friends with
-     * @return list of all the users
-     */
-    public List<UserDTO> getAllUserDTO(Long idToBeFriendsWith){
-        if(!updatedFriends){
-            updateAllUsersFriends();
-            updatedFriends=true;
-        }
-        return this.userService.findAll().stream()
-                .filter(user -> !user.getId().equals(idToBeFriendsWith))
-                .map(user -> {
-                    boolean friendsWith = false;
 
-                    if(user.getFriends().stream().anyMatch(user1 -> user1.getId().equals(idToBeFriendsWith)))
-                        friendsWith=true;
-
-                    return new UserDTO(user.getId(),user.getFirstName(), user.getLastName(),
-                            friendsWith);
-                })
-                .collect(Collectors.toList());
-    }
 
     /**
      * Method for updating one user's friend list, based on a friendship

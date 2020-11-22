@@ -1,6 +1,5 @@
 package socialnetwork.controller;
 
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,15 +10,15 @@ import javafx.scene.input.KeyEvent;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.UserDTO;
-import socialnetwork.service.MasterService;
+import socialnetwork.service.MasterServiceWithLogging;
+import socialnetwork.utils.observer.Observer;
 
 import java.util.List;
 
-public class FriendshipsController {
+public class FriendshipsController implements Observer {
 
-    private MasterService service;
+    private MasterServiceWithLogging service;
     private User loggedUser;
-    private List<UserDTO> allUsers;
     private final ObservableList<UserDTO> model = FXCollections.observableArrayList();
 
     @FXML
@@ -41,20 +40,29 @@ public class FriendshipsController {
     @FXML
     TableView<UserDTO> tableViewFriendships;
 
-    public void initialize(MasterService service,User loggedUser){
+    public void initialize(MasterServiceWithLogging service,User loggedUser){
         this.service=service;
         this.loggedUser=loggedUser;
         labelGreeting.setText("Hello "+loggedUser.getFirstName()+" "+loggedUser.getLastName()+" !");
+        service.addObserver(this);
         initTable();
     }
 
-    private void initTable(){
-        tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<UserDTO,String>("firstName"));
-        tableColumnLastName.setCellValueFactory(new PropertyValueFactory<UserDTO,String>("lastName"));
-        tableColumnFriends.setCellValueFactory(new PropertyValueFactory<UserDTO,String>("friendsWithLoggedUser"));
-        allUsers = service.getAllUserDTO(loggedUser.getId());
-        model.setAll(allUsers);
+    @Override
+    public void update(){
+        setTableViewData();
+    }
+
+    private void setTableViewData(){
+        model.setAll(this.service.getAllUserDTO(loggedUser.getId()));
         tableViewFriendships.setItems(model);
+    }
+
+    private void initTable(){
+        tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+        tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        tableColumnFriends.setCellValueFactory(new PropertyValueFactory<>("friendsWithLoggedUser"));
+        setTableViewData();
     }
 
     public void handleRemoveFriend(ActionEvent actionEvent) {
@@ -63,23 +71,20 @@ public class FriendshipsController {
                 new Tuple<>(selected.getId(),loggedUser.getId()) :
                 new Tuple<>(loggedUser.getId(),selected.getId());
         if(this.service.removeFriendship(ids).isEmpty())
-            LoggingAlert.showErrorMessage(null,"You are not friends with "+selected.getFirstName()+" "+selected.getLastName());
+            MyAllert.showErrorMessage(null,"You are not friends with "+selected.getFirstName()+" "+selected.getLastName());
         else
-        {
-            LoggingAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success","You are no longer friends");
-            update();
-        }
+            MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success","You are no longer friends");
     }
 
     public void handleSendFriendRequest(ActionEvent actionEvent) {
         UserDTO selected = getSelectedUser();
         try {
             if (this.service.sendFriendRequest(loggedUser.getId(), selected.getId()).isPresent())
-                LoggingAlert.showErrorMessage(null,"The friend request could not be sent");
+                MyAllert.showErrorMessage(null,"The friend request could not be sent");
             else
-                LoggingAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success","The friend request was sent successfully");
+                MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success","The friend request was sent successfully");
         }catch (Exception e){
-            LoggingAlert.showErrorMessage(null,e.getMessage());
+            MyAllert.showErrorMessage(null,e.getMessage());
         }
     }
 
@@ -88,20 +93,16 @@ public class FriendshipsController {
 
     public void handleTextFieldNameKeyTyped(KeyEvent keyEvent) {
         if(textFieldName.getText().equals(""))
-            model.setAll(allUsers);
-        model.setAll(this.service.filterUsers(textFieldName.getText(),allUsers));
+            setTableViewData();
+        model.setAll(this.service.filterUsers(textFieldName.getText()));
     }
 
     private UserDTO getSelectedUser(){
         UserDTO userDTO = tableViewFriendships.getSelectionModel().getSelectedItem();
         if(userDTO==null)
-            LoggingAlert.showMessage(null, Alert.AlertType.WARNING,"Attention","You did not select a user");
+            MyAllert.showMessage(null, Alert.AlertType.WARNING,"Attention","You did not select a user");
         return userDTO;
     }
 
-    private void update(){
-        allUsers = this.service.getAllUserDTO(loggedUser.getId());
-        model.setAll(allUsers);
-    }
 
 }

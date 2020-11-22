@@ -11,13 +11,13 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
 import socialnetwork.domain.validators.ValidationException;
-import socialnetwork.service.MasterService;
+import socialnetwork.service.MasterServiceWithLogging;
 
 import java.io.IOException;
 
 public class CreateAccountController {
 
-    private MasterService service;
+    private MasterServiceWithLogging service;
 
     @FXML
     TextField textFieldFirstNameCreateAccount;
@@ -26,7 +26,7 @@ public class CreateAccountController {
     @FXML
     Button buttonSignUp;
 
-    public void setService(MasterService service){
+    public void setService(MasterServiceWithLogging service){
         this.service=service;
     }
 
@@ -35,11 +35,11 @@ public class CreateAccountController {
                 textFieldLastNameCreateAccount.getText());
         try{
             this.service.addUser(user);
-            LoggingAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Welcome to the network","Your ID is "+user.getId());
+            MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Welcome to the network","Your ID is "+user.getId());
             this.closeWindow();
             showFriendshipsWindow(user);
         }catch (ValidationException e) {
-            LoggingAlert.showErrorMessage(null, e.getMessage());
+            MyAllert.showErrorMessage(null, e.getMessage());
         }
     }
 

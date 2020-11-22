@@ -3,7 +3,7 @@ package socialnetwork.controller;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-public class LoggingAlert {
+public class MyAllert {
     static void showMessage(Stage owner, Alert.AlertType type, String header, String text){
         Alert message=new Alert(type);
         message.setHeaderText(header);

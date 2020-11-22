@@ -25,7 +25,7 @@ import java.io.IOException;
 
 public class MainFX extends Application {
 
-    private MasterService service;
+    private MasterServiceWithLogging service;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -58,7 +58,7 @@ public class MainFX extends Application {
         loggingController.setService(service);
     }
 
-    private MasterService getMasterService(){
+    private MasterServiceWithLogging getMasterService(){
         Repository<Long, User> userDBRepository = new UserDBRepository(new UserValidator(),"social_network");
         Repository<Tuple<Long,Long>, Friendship> friendshipDBRepository = new FriendshipDBRepository(new FriendshipValidator(),"social_network");
         UserService userService = new UserService(userDBRepository);
