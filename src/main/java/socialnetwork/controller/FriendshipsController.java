@@ -16,6 +16,8 @@ import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.UserDTO;
 import socialnetwork.service.MasterServiceWithLogging;
 import socialnetwork.utils.observer.Observer;
+import socialnetwork.utils.runners.RemoveFriendRunner;
+import socialnetwork.utils.runners.SendFriendRequestRunner;
 
 import java.io.IOException;
 
@@ -73,27 +75,16 @@ public class FriendshipsController implements Observer {
         UserDTO selected = getSelectedUser();
         if(selected==null)
             return;
-        Tuple<Long,Long> ids = selected.getId() < loggedUser.getId() ?
-                new Tuple<>(selected.getId(),loggedUser.getId()) :
-                new Tuple<>(loggedUser.getId(),selected.getId());
-        if(this.service.removeFriendship(ids).isEmpty())
-            MyAllert.showErrorMessage(null,"You are not friends with "+selected.getFirstName()+" "+selected.getLastName());
-        else
-            MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success","You are no longer friends");
+        RemoveFriendRunner runner = new RemoveFriendRunner(loggedUser.getId(),selected,service);
+        runner.execute();
     }
 
     public void handleSendFriendRequest(ActionEvent actionEvent) {
         UserDTO selected = getSelectedUser();
         if(selected==null)
             return;
-        try {
-            if (this.service.sendFriendRequest(loggedUser.getId(), selected.getId()).isPresent())
-                MyAllert.showErrorMessage(null,"The friend request could not be sent");
-            else
-                MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success","The friend request was sent successfully");
-        }catch (Exception e){
-            MyAllert.showErrorMessage(null,e.getMessage());
-        }
+        SendFriendRequestRunner runner = new SendFriendRequestRunner(loggedUser.getId(),selected.getId(),service);
+        runner.execute();
     }
 
     public void handleYourFriendRequests(ActionEvent actionEvent) {

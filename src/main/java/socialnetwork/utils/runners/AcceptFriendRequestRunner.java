@@ -23,11 +23,6 @@ public class AcceptFriendRequestRunner implements Runner {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
-                Thread.sleep(5000);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
                 if (this.service.acceptFriendRequest(requestID).isEmpty())
                     Platform.runLater(() ->
                             MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION, "Success", "You successfully accepted the request"));

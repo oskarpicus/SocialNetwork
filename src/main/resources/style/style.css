@@ -1,7 +1,7 @@
 
 .button:hover{
-    -fx-background-color: #ffc93c;
-    -fx-text-fill: blue;
+    -fx-background-color: #112d4e;
+    -fx-text-fill: white;
     -fx-font-weight: bold;
 }
 
@@ -16,29 +16,30 @@
 }
 
 .labelGreeting:hover{
-    -fx-text-fill: #ffc93c;
+    -fx-text-fill: #dbe2ef;
 }
 
 .anchorPaneGreeting, #anchorPaneFriendRequests{
-    -fx-background-color: #40a8c4;
+    -fx-background-color: #3f72af;
 }
 
 .anchorPaneButtons{
     /*-fx-background-color: #a2d5f2;*/
-    -fx-background-color: #40a8c4;
+    -fx-background-color: #3f72af;
 }
 
 .table-row-cell:selected {
-    -fx-background-color:#40a8c4 ;
+    -fx-background-color:#112d4e ;
 }
 
 .table-row-cell:selected .text{
-    -fx-fill: black;
+    -fx-fill: white;
     -fx-font-weight: bold;
 }
 
 .table-view .column-header {
-    -fx-background-color:#ffc93c;
+  /*  -fx-background-color:#dbe2ef;*/
+    -fx-background-color:darkorange;
 }
 
 .table-view .column-header .label {
