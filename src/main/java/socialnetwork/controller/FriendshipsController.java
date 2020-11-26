@@ -71,6 +71,8 @@ public class FriendshipsController implements Observer {
 
     public void handleRemoveFriend(ActionEvent actionEvent) {
         UserDTO selected = getSelectedUser();
+        if(selected==null)
+            return;
         Tuple<Long,Long> ids = selected.getId() < loggedUser.getId() ?
                 new Tuple<>(selected.getId(),loggedUser.getId()) :
                 new Tuple<>(loggedUser.getId(),selected.getId());
@@ -82,6 +84,8 @@ public class FriendshipsController implements Observer {
 
     public void handleSendFriendRequest(ActionEvent actionEvent) {
         UserDTO selected = getSelectedUser();
+        if(selected==null)
+            return;
         try {
             if (this.service.sendFriendRequest(loggedUser.getId(), selected.getId()).isPresent())
                 MyAllert.showErrorMessage(null,"The friend request could not be sent");

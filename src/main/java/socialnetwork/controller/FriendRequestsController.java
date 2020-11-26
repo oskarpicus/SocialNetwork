@@ -59,6 +59,8 @@ public class FriendRequestsController implements Observer {
 
     public void handleButtonAcceptClicked(ActionEvent actionEvent) {
         FriendRequestDTO request = getSelectedRequest();
+        if(request==null)
+            return;
         Long id = request.getId();
         try {
             if (this.service.acceptFriendRequest(id).isEmpty())
@@ -72,6 +74,8 @@ public class FriendRequestsController implements Observer {
 
     public void handleButtonRejectClicked(ActionEvent actionEvent) {
         FriendRequestDTO request = getSelectedRequest();
+        if(request==null)
+            return;
         Long id = request.getId();
         try {
             if (this.service.rejectFriendRequest(id).isEmpty())
