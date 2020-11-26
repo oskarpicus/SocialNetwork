@@ -23,12 +23,17 @@ public class RejectFriendRequestRunner implements Runner {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
-                if (this.service.acceptFriendRequest(requestID).isEmpty())
+                Thread.sleep(5000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                if (this.service.rejectFriendRequest(requestID).isEmpty())
                     Platform.runLater(() ->
-                            MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION, "Success", "You successfully accepted the request"));
+                            MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION, "Success", "You successfully rejected the request"));
                 else
                     Platform.runLater(() ->
-                            MyAllert.showErrorMessage(null, "The request could not be accepted"));
+                            MyAllert.showErrorMessage(null, "The request could not be rejected"));
             } catch (Exception e) {
                 Platform.runLater(() ->
                         MyAllert.showErrorMessage(null, e.getMessage()));
