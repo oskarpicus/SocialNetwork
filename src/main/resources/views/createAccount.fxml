@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="/style/logging.css"
+            xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="socialnetwork.controller.CreateAccountController">
+    <Label alignment="CENTER" layoutX="14.0" layoutY="47.0" styleClass="labelTitle" text="Create a new account"
+           AnchorPane.bottomAnchor="336.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="47.0"/>
+    <GridPane layoutX="163.0" layoutY="117.0" prefHeight="90.0" prefWidth="237.0" AnchorPane.leftAnchor="10.0"
+              AnchorPane.rightAnchor="10.0">
+        <padding>
+            <Insets left="10" right="10"/>
+        </padding>
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+        </rowConstraints>
+        <Label text="First Name" GridPane.rowIndex="1"/>
+        <TextField fx:id="textFieldFirstNameCreateAccount" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="Last Name" GridPane.rowIndex="2"/>
+        <TextField fx:id="textFieldLastNameCreateAccount" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    </GridPane>
+    <Button fx:id="buttonSignUp" layoutX="272.0" layoutY="260.0" mnemonicParsing="false"
+            onAction="#handleButtonSignUpClicked" text="Sign up" AnchorPane.bottomAnchor="115.0"/>
+</AnchorPane>

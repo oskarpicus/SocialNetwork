@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="520.0" prefWidth="667.0" stylesheets="/style/style.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.FriendshipsController">
+    <SplitPane dividerPositions="0.07528957528957529" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="100.0" styleClass="anchorPaneGreeting">
+            <Label fx:id="labelGreeting" layoutX="43.0" layoutY="24.0" prefHeight="17.0" prefWidth="238.0" styleClass="labelGreeting" text="Hello" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+            <HBox id="hBoxSearchUser" prefHeight="50.0" prefWidth="638.0" spacing="5" AnchorPane.bottomAnchor="412.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="14.0">
+                <TextField fx:id="textFieldName" onKeyTyped="#handleTextFieldNameKeyTyped" />
+                <ImageView fitHeight="25.0" fitWidth="93.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/glass.png" />
+                </ImageView>
+            </HBox>
+            <AnchorPane layoutY="64.0" prefHeight="406.0" prefWidth="665.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="62.0">
+                <SplitPane dividerPositions="0.8613861386138614" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="688.0">
+                        <TableView fx:id="tableViewFriendships" minHeight="-Infinity" minWidth="-Infinity" prefHeight="381.0" prefWidth="663.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <columns>
+                                <TableColumn fx:id="tableColumnFirstName" prefWidth="150.0" text="First Name" />
+                                <TableColumn fx:id="tableColumnLastName" prefWidth="100.0" text="Last Name" />
+                                <TableColumn fx:id="tableColumnFriends" prefWidth="50.0" text="Friends" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                    </AnchorPane>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" styleClass="anchorPaneButtons">
+                        <HBox layoutY="9.0" prefHeight="66.0" prefWidth="643.0" spacing="40" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <Button fx:id="buttonRemoveFriend" mnemonicParsing="false" onAction="#handleRemoveFriend" text="Remove Friend" />
+                            <Button fx:id="buttonSendFriendRequest" mnemonicParsing="false" onAction="#handleSendFriendRequest" text="Send Friend Request" />
+                            <Button fx:id="buttonYourFriendRequests" mnemonicParsing="false" onAction="#handleYourFriendRequests" text="Your Friend Requests" />
+                        </HBox>
+                        <padding>
+                            <Insets bottom="5.0" left="5.0" right="5.0" top="7.0" />
+                        </padding>
+                    </AnchorPane>
+                </SplitPane>
+            </AnchorPane>
+        </AnchorPane>
+    </SplitPane>
+</AnchorPane>

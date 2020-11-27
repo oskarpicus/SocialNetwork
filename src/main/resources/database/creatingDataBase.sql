@@ -32,6 +32,9 @@ create table FriendRequests
   constraint pk_FriendRequests primary key(id)
 );
 
+alter table FriendRequests
+add date date;
+
 -- many to many relationship between Users and Messages
 
 create table Messages

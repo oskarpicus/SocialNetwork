@@ -1,0 +1,33 @@
+
+.label{
+    -fx-font-weight: bold;
+}
+
+.button{
+    -fx-font-weight: bold;
+    -fx-border-color: #3f72af;
+}
+
+.button:hover{
+    -fx-background-color: #3f72af;
+    -fx-text-fill: white;
+}
+
+.root{
+    -fx-background-color: #dbe2ef;
+}
+
+.labelTitle{
+    -fx-font-size: 30px;
+}
+
+.labelTitle:hover{
+    -fx-text-fill: #3f72af;
+}
+
+/*
+f9f7f7
+dbe2ef
+3f72af
+112d4e
+ */

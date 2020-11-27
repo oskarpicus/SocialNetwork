@@ -1,5 +1,6 @@
 package socialnetwork.domain;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class FriendRequest extends Entity<Long> {
@@ -9,7 +10,7 @@ public class FriendRequest extends Entity<Long> {
     private final Long toUser;
     private String status;
     private static Long NUMBER_OF_FRIEND_REQUESTS = 1L;
-    //TODO add date field (in the database table as well)
+    private LocalDateTime date = LocalDateTime.now();
 
     public FriendRequest(Long fromUser, Long toUser) {
         this.fromUser = fromUser;
@@ -43,4 +44,11 @@ public class FriendRequest extends Entity<Long> {
         NUMBER_OF_FRIEND_REQUESTS=number;
     }
 
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
 }

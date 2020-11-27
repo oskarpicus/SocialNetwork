@@ -3,6 +3,7 @@ package socialnetwork.service;
 import socialnetwork.domain.*;
 import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
+import socialnetwork.domain.dtos.UserDTO;
 import socialnetwork.domain.validators.FriendRequestVerifier;
 import socialnetwork.domain.validators.MessageVerifier;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 public class MasterService {
 
     private final FriendshipService friendshipService;
-    private final UserService userService;
+    protected final UserService userService;
     private boolean updatedFriends = false;
     protected final FriendRequestService friendRequestService;
     private final FriendRequestVerifier friendRequestVerifier;
@@ -28,6 +29,9 @@ public class MasterService {
         friendRequestVerifier = new FriendRequestVerifier(friendshipService,userService,friendRequestService);
         this.messageService=messageService;
         this.messageVerifier=new MessageVerifier(userService,messageService);
+
+        updateAllUsersFriends();
+        updatedFriends=true;
     }
 
 
@@ -99,6 +103,7 @@ public class MasterService {
                 this.messageService.remove(message.getId());
         });
     }
+
 
     /**
      *  removes the friendship with the specified id
@@ -181,6 +186,8 @@ public class MasterService {
         }
         return friendshipService.getMostSociable();
     }
+
+
 
     /**
      * Method for updating one user's friend list, based on a friendship
@@ -398,7 +405,7 @@ public class MasterService {
         return this.userService.findOne(id);
     }
 
-    public User logging(Long id){
+    public User logging(String firstName, String lastName, Long id){
         return null;
     }
 
