@@ -12,6 +12,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import socialnetwork.domain.dtos.FriendRequestDTO;
 import socialnetwork.service.MasterServiceWithLogging;
 import socialnetwork.utils.observer.Observer;
+import socialnetwork.utils.runners.AcceptFriendRequestRunner;
+import socialnetwork.utils.runners.RejectFriendRequestRunner;
 
 public class FriendRequestsController implements Observer {
 
@@ -62,14 +64,8 @@ public class FriendRequestsController implements Observer {
         if(request==null)
             return;
         Long id = request.getId();
-        try {
-            if (this.service.acceptFriendRequest(id).isEmpty())
-                MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION, "Success", "You successfully accepted the request");
-            else
-                MyAllert.showErrorMessage(null,"The request could not be accepted");
-        }catch (Exception e){
-            MyAllert.showErrorMessage(null,e.getMessage());
-        }
+        AcceptFriendRequestRunner runner = new AcceptFriendRequestRunner(id,service);
+        runner.execute();
     }
 
     public void handleButtonRejectClicked(ActionEvent actionEvent) {
@@ -77,14 +73,8 @@ public class FriendRequestsController implements Observer {
         if(request==null)
             return;
         Long id = request.getId();
-        try {
-            if (this.service.rejectFriendRequest(id).isEmpty())
-                MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION, "Success", "You successfully rejected the request");
-            else
-                MyAllert.showErrorMessage(null,"The request could not be rejected");
-        }catch (Exception e){
-            MyAllert.showErrorMessage(null,e.getMessage());
-        }
+        RejectFriendRequestRunner runner = new RejectFriendRequestRunner(id,service);
+        runner.execute();
     }
 
     private FriendRequestDTO getSelectedRequest(){

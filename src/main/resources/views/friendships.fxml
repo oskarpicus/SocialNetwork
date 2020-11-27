@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="520.0" prefWidth="667.0" stylesheets="/style/friendships.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.FriendshipsController">
+<AnchorPane prefHeight="520.0" prefWidth="667.0" stylesheets="/style/style.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.FriendshipsController">
     <SplitPane dividerPositions="0.07528957528957529" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="100.0" styleClass="anchorPaneGreeting">
             <Label fx:id="labelGreeting" layoutX="43.0" layoutY="24.0" prefHeight="17.0" prefWidth="238.0" styleClass="labelGreeting" text="Hello" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
