@@ -51,11 +51,12 @@ public class MainFX extends Application {
 
 
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/views/logging.fxml"));
+        //loader.setLocation(getClass().getResource("/views/logging.fxml"));
+        loader.setLocation(getClass().getResource("/views/home.fxml"));
         Pane pane = loader.load();
         primaryStage.setScene(new Scene(pane));
-        LoggingController loggingController = loader.getController();
-        loggingController.setService(service);
+       /* LoggingController loggingController = loader.getController();
+        loggingController.setService(service);*/
     }
 
     private MasterServiceWithLogging getMasterService(){

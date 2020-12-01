@@ -1,6 +1,7 @@
 
 .label{
     -fx-font-weight: bold;
+    -fx-font-family: Tahoma;
 }
 
 .button{

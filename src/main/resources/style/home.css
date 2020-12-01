@@ -1,0 +1,26 @@
+
+.textAreaTrilogy{
+    -fx-background-color: #f9f7f7;
+    -fx-control-inner-background: #dbe2ef;
+    -fx-font-weight: bold;
+}
+
+.textAreaTrilogy *.text{
+    -fx-text-alignment: center;
+}
+
+.labelTop:hover{
+    -fx-text-fill: #3f72af;
+}
+
+.anchorPaneTop{
+    -fx-background-color: #dbe2ef;
+}
+
+.anchorPaneMiddle{
+    -fx-background-color: #f9f7f7;
+}
+
+#hBoxInformation{
+    -fx-background-color: #3f72af;
+}

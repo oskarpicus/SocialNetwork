@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="428.0" prefWidth="633.0" stylesheets="/style/home.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.HomeController">
+   <AnchorPane layoutY="1.0" prefHeight="45.0" prefWidth="637.0" styleClass="anchorPaneTop" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Label styleClass="labelTop" text="Social Network" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="14.0">
+         <font>
+            <Font name="Tahoma Bold" size="15.0" />
+         </font>
+      </Label>
+      <HBox prefHeight="19.0" prefWidth="170.0" spacing="20.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
+         <Label styleClass="labelTop" text="Home">
+            <font>
+               <Font name="Tahoma Bold" size="12.0" />
+            </font>
+         </Label>
+         <Label styleClass="labelTop" text="Search">
+            <font>
+               <Font name="Tahoma Bold" size="12.0" />
+            </font>
+         </Label>
+         <Label styleClass="labelTop" text="Friends">
+            <font>
+               <Font name="Tahoma Bold" size="12.0" />
+            </font>
+         </Label>
+      </HBox>
+   </AnchorPane>
+   <HBox id="hBoxInformation" layoutY="228.0" prefHeight="200.0" prefWidth="636.0" spacing="80.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <padding>
+         <Insets left="25.0" right="25.0" />
+      </padding>
+      <VBox alignment="CENTER" spacing="14.0" HBox.hgrow="ALWAYS">
+         <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="38.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" styleClass="imageTrilogy" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="14.0">
+            <Image url="@../images/iconGlass.png" />
+         </ImageView>
+      <TextArea editable="false" layoutX="25.0" layoutY="66.0" prefHeight="113.0" prefWidth="137.0" styleClass="textAreaTrilogy" text="Search for users from&#10;anywhere around&#10;the world &#10;" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="66.0">
+         <padding>
+            <Insets top="14.0" />
+         </padding>
+         <font>
+            <Font name="Tahoma" size="11.0" />
+         </font>
+      </TextArea>
+      </VBox>
+      <VBox alignment="CENTER" spacing="14.0" HBox.hgrow="ALWAYS">
+      <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="298.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" styleClass="imageTrilogy" AnchorPane.leftAnchor="298.0" AnchorPane.rightAnchor="298.0" AnchorPane.topAnchor="14.0">
+         <Image url="@../images/iconFriend.png" />
+      </ImageView>
+      <TextArea editable="false" layoutX="240.0" layoutY="55.0" prefHeight="113.0" prefWidth="147.0" styleClass="textAreaTrilogy" text="Befriend other people &#10;from our network. &#10;You might strike gold" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="240.0" AnchorPane.topAnchor="66.0">
+         <padding>
+            <Insets top="14.0" />
+         </padding>
+         <font>
+            <Font name="Tahoma" size="11.0" />
+         </font>
+      </TextArea>
+      </VBox>
+      <VBox alignment="CENTER" spacing="14.0" HBox.hgrow="ALWAYS">
+         <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="534.0" pickOnBounds="true" preserveRatio="true" styleClass="imageTrilogy" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
+            <Image url="@../images/iconMessage.png" />
+         </ImageView>
+      <TextArea editable="false" layoutX="475.0" layoutY="62.0" prefHeight="113.0" prefWidth="137.0" styleClass="textAreaTrilogy" text="Send messages and,&#10;at such, connect to&#10;other people&#10;" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="66.0">
+         <padding>
+            <Insets top="14.0" />
+         </padding>
+         <font>
+            <Font name="Tahoma" size="11.0" />
+         </font>
+      </TextArea>
+      </VBox>
+   </HBox>
+   <VBox alignment="CENTER" layoutX="45.0" layoutY="45.0" prefHeight="189.0" prefWidth="637.0" styleClass="anchorPaneMiddle" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="45.0">
+      <ImageView fitHeight="97.0" fitWidth="106.0" layoutX="264.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="14.0">
+         <Image url="@../images/iconUser.png" />
+      </ImageView>
+      <Label layoutX="264.0" layoutY="111.0" text="Hello !" AnchorPane.leftAnchor="270.0" AnchorPane.rightAnchor="270.0">
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+      </Label>
+      <Label layoutX="243.0" layoutY="146.0" text="What are you up to ?" AnchorPane.leftAnchor="245.0" AnchorPane.rightAnchor="245.0">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+   </VBox>
+</AnchorPane>

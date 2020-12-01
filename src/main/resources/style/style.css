@@ -12,7 +12,6 @@
 
 .labelGreeting{
     -fx-font-weight: bold;
-    -fx-font-style: italic;
 }
 
 .labelGreeting:hover{
