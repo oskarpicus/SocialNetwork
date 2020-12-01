@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.domain.Tuple;
@@ -26,11 +27,7 @@ public class SearchController extends AbstractController implements Observer {
     private final ObservableList<UserDTO> model = FXCollections.observableArrayList();
 
     @FXML
-    Button buttonRemoveFriend;
-    @FXML
     Button buttonSendFriendRequest;
-    @FXML
-    Button buttonYourFriendRequests;
     @FXML
     TextField textFieldName;
     @FXML
@@ -38,9 +35,11 @@ public class SearchController extends AbstractController implements Observer {
     @FXML
     TableColumn<UserDTO,String> tableColumnLastName;
     @FXML
-    TableColumn<UserDTO,String> tableColumnFriends;
-    @FXML
     TableView<UserDTO> tableViewFriendships;
+    @FXML
+    Label labelHome;
+    @FXML
+    Label labelFriends;
 
     @Override
     public void initialize(MasterServiceWithLogging service,User loggedUser){
@@ -68,16 +67,7 @@ public class SearchController extends AbstractController implements Observer {
     private void initTable(){
         tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        tableColumnFriends.setCellValueFactory(new PropertyValueFactory<>("friendsWithLoggedUser"));
         setTableViewData();
-    }
-
-    public void handleRemoveFriend(ActionEvent actionEvent) {
-        UserDTO selected = getSelectedUser();
-        if(selected==null)
-            return;
-        RemoveFriendRunner runner = new RemoveFriendRunner(loggedUser.getId(),selected,service);
-        runner.execute();
     }
 
     public void handleSendFriendRequest(ActionEvent actionEvent) {
@@ -119,4 +109,11 @@ public class SearchController extends AbstractController implements Observer {
         return userDTO;
     }
 
+    public void handleLabelHome(MouseEvent mouseEvent) {
+        openWindow("home");
+    }
+
+    public void handleLabelFriends(MouseEvent mouseEvent) {
+        openWindow("friendRequests");
+    }
 }
