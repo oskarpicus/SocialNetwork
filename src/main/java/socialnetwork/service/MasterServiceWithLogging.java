@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public class MasterServiceWithLogging extends MasterService implements Observable {
 
     private User loggedUser;
-    private Long loggedUserId;
     private List<UserDTO> allUsers = null;
     private final List<Observer> observers = new ArrayList<>();
     private  List<FriendRequestDTO> allFriendRequests;
@@ -99,7 +98,6 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
     public List<UserDTO> getAllUserDTO(Long idToBeFriendsWith){
         if(allUsers==null)
         {
-            loggedUserId = idToBeFriendsWith;
             allUsers = this.userService.findAll().stream()
                     .filter(user -> !user.getId().equals(idToBeFriendsWith))
                     .map(user -> {
@@ -121,7 +119,7 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
         Optional<Friendship> result = super.removeFriendship(id);
         if(result.isPresent()){
             //we update the DTOs list
-            Long otherId = result.get().getId().getLeft().equals(loggedUserId) ?
+            Long otherId = result.get().getId().getLeft().equals(loggedUser.getId()) ?
                     result.get().getId().getRight() :
                     result.get().getId().getLeft();
             setFriendship(otherId,false);
@@ -142,7 +140,7 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
     public List<FriendRequestDTO> getAllFriendRequestsDTO(){
         return (allFriendRequests=super.friendRequestService.findAll()
                 .stream()
-                .filter(request -> request.getToUser().equals(loggedUserId))
+                .filter(request -> request.getToUser().equals(loggedUser.getId()))
                 .map(request -> {
                     Optional<User> fromUser=super.userService.findOne(request.getFromUser());
                     return fromUser.map(user -> new FriendRequestDTO(request.getId(), user.getFirstName(),

@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="428.0" prefWidth="633.0" stylesheets="/style/home.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.HomeController">
    <AnchorPane layoutY="1.0" prefHeight="45.0" prefWidth="637.0" styleClass="anchorPaneTop" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <Label styleClass="labelTop" text="Social Network" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="14.0">
+      <Label styleClass="labelLogo" text="Social Network" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="14.0">
          <font>
             <Font name="Tahoma Bold" size="15.0" />
          </font>
@@ -19,12 +19,12 @@
                <Font name="Tahoma Bold" size="12.0" />
             </font>
          </Label>
-         <Label styleClass="labelTop" text="Search">
+         <Label fx:id="labelSearch" onMouseClicked="#handleLabelSearch" styleClass="labelTop" text="Search">
             <font>
                <Font name="Tahoma Bold" size="12.0" />
             </font>
          </Label>
-         <Label styleClass="labelTop" text="Friends">
+         <Label fx:id="labelFriends" onMouseClicked="#handleLabelFriends" styleClass="labelTop" text="Friends">
             <font>
                <Font name="Tahoma Bold" size="12.0" />
             </font>
@@ -36,7 +36,7 @@
          <Insets left="25.0" right="25.0" />
       </padding>
       <VBox alignment="CENTER" spacing="14.0" HBox.hgrow="ALWAYS">
-         <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="38.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" styleClass="imageTrilogy" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="14.0">
+         <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="38.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="14.0">
             <Image url="@../images/iconGlass.png" />
          </ImageView>
       <TextArea editable="false" layoutX="25.0" layoutY="66.0" prefHeight="113.0" prefWidth="137.0" styleClass="textAreaTrilogy" text="Search for users from&#10;anywhere around&#10;the world &#10;" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="66.0">
@@ -49,7 +49,7 @@
       </TextArea>
       </VBox>
       <VBox alignment="CENTER" spacing="14.0" HBox.hgrow="ALWAYS">
-      <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="298.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" styleClass="imageTrilogy" AnchorPane.leftAnchor="298.0" AnchorPane.rightAnchor="298.0" AnchorPane.topAnchor="14.0">
+      <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="298.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="298.0" AnchorPane.rightAnchor="298.0" AnchorPane.topAnchor="14.0">
          <Image url="@../images/iconFriend.png" />
       </ImageView>
       <TextArea editable="false" layoutX="240.0" layoutY="55.0" prefHeight="113.0" prefWidth="147.0" styleClass="textAreaTrilogy" text="Befriend other people &#10;from our network. &#10;You might strike gold" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="240.0" AnchorPane.topAnchor="66.0">
@@ -62,7 +62,7 @@
       </TextArea>
       </VBox>
       <VBox alignment="CENTER" spacing="14.0" HBox.hgrow="ALWAYS">
-         <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="534.0" pickOnBounds="true" preserveRatio="true" styleClass="imageTrilogy" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
+         <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="534.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
             <Image url="@../images/iconMessage.png" />
          </ImageView>
       <TextArea editable="false" layoutX="475.0" layoutY="62.0" prefHeight="113.0" prefWidth="137.0" styleClass="textAreaTrilogy" text="Send messages and,&#10;at such, connect to&#10;other people&#10;" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="66.0">
@@ -79,7 +79,7 @@
       <ImageView fitHeight="97.0" fitWidth="106.0" layoutX="264.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="14.0">
          <Image url="@../images/iconUser.png" />
       </ImageView>
-      <Label layoutX="264.0" layoutY="111.0" text="Hello !" AnchorPane.leftAnchor="270.0" AnchorPane.rightAnchor="270.0">
+      <Label fx:id="labelGreeting" layoutX="264.0" layoutY="111.0" text="Hello !" AnchorPane.leftAnchor="270.0" AnchorPane.rightAnchor="270.0">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>

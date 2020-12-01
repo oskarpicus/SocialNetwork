@@ -21,7 +21,7 @@ public class AcceptFriendRequestRunner implements Runner {
     @Override
     public void execute() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
+       // executor.execute(() -> {
             try {
                 if (this.service.acceptFriendRequest(requestID).isEmpty())
                     Platform.runLater(() ->
@@ -30,10 +30,11 @@ public class AcceptFriendRequestRunner implements Runner {
                     Platform.runLater(() ->
                             MyAllert.showErrorMessage(null, "The request could not be accepted"));
             } catch (Exception e) {
+                e.printStackTrace();
                 Platform.runLater(() ->
                         MyAllert.showErrorMessage(null, e.getMessage()));
             }
-        });
+     //   });
         executor.shutdown();
     }
 

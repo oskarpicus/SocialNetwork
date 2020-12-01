@@ -42,7 +42,7 @@ public class LoggingController {
             loggedUser = this.service.logging(textFieldFirstName.getText(),
                     textFieldLastName.getText(), Long.parseLong(passwordFieldId.getText()));
             closeWindow();
-            showFriendshipsWindow();
+            showHomeWindow();
         }catch (NumberFormatException e){
             MyAllert.showErrorMessage(null,"Invalid Id");
             System.out.println("Wrong");
@@ -54,7 +54,6 @@ public class LoggingController {
     }
 
     public void handleButtonAddUserClicked(ActionEvent actionEvent) {
-        System.out.println("S-a apasat acest buton");
         closeWindow();
         showCreateAccountWindow();
     }
@@ -77,19 +76,19 @@ public class LoggingController {
         }
     }
 
-    private void showFriendshipsWindow(){
+    private void showHomeWindow(){
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/views/friendships.fxml"));
+            loader.setLocation(getClass().getResource("/views/home.fxml"));
             Pane root = loader.load();
 
-            Stage friendshipsStage = new Stage();
-            friendshipsStage.setTitle("Friendships");
-            friendshipsStage.setScene(new Scene(root));
+            Stage homeStage = new Stage();
+            homeStage.setTitle("Home");
+            homeStage.setScene(new Scene(root));
 
-            FriendshipsController friendshipsController = loader.getController();
-            friendshipsController.initialize(service,loggedUser);
-            friendshipsStage.show();
+            HomeController homeController = loader.getController();
+            homeController.initialize(service,loggedUser);
+            homeStage.show();
         }catch (IOException e){
             e.printStackTrace();
         }

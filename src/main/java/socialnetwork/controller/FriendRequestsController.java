@@ -9,16 +9,19 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.FriendRequestDTO;
 import socialnetwork.service.MasterServiceWithLogging;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.AcceptFriendRequestRunner;
 import socialnetwork.utils.runners.RejectFriendRequestRunner;
 
-public class FriendRequestsController implements Observer {
+import java.util.List;
+
+public class FriendRequestsController extends AbstractController implements Observer {
 
     private final ObservableList<FriendRequestDTO> model = FXCollections.observableArrayList();
-    private MasterServiceWithLogging service;
 
     @FXML
     TableView<FriendRequestDTO> tableViewFriendRequests;
@@ -40,18 +43,21 @@ public class FriendRequestsController implements Observer {
         setTableViewData();
     }
 
-    public void setService(MasterServiceWithLogging service){
-        this.service=service;
-        service.addObserver(this);
-        setTableViewData();
+    @Override
+    public void closeWindow() {
+        Stage stage = (Stage)tableViewFriendRequests.getScene().getWindow();
+        stage.close();
     }
 
-    @FXML
-    public void initialize(){
+    @Override
+    public void initialize(MasterServiceWithLogging service, User loggedUser) {
+        super.initialize(service, loggedUser);
+        service.addObserver(this);
         tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("fromFirstName"));
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("fromLastName"));
         tableColumnStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         tableColumnDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
+        setTableViewData();
     }
 
     private void setTableViewData(){

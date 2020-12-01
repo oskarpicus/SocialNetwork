@@ -21,14 +21,10 @@ import socialnetwork.utils.runners.SendFriendRequestRunner;
 
 import java.io.IOException;
 
-public class FriendshipsController implements Observer {
+public class SearchController extends AbstractController implements Observer {
 
-    private MasterServiceWithLogging service;
-    private User loggedUser;
     private final ObservableList<UserDTO> model = FXCollections.observableArrayList();
 
-    @FXML
-    Label labelGreeting;
     @FXML
     Button buttonRemoveFriend;
     @FXML
@@ -46,12 +42,17 @@ public class FriendshipsController implements Observer {
     @FXML
     TableView<UserDTO> tableViewFriendships;
 
+    @Override
     public void initialize(MasterServiceWithLogging service,User loggedUser){
-        this.service=service;
-        this.loggedUser=loggedUser;
-        labelGreeting.setText("Hello "+loggedUser.getFirstName()+" "+loggedUser.getLastName()+" !");
+        super.initialize(service,loggedUser);
         service.addObserver(this);
         initTable();
+    }
+
+    @Override
+    public void closeWindow() {
+        Stage stage = (Stage) textFieldName.getScene().getWindow();
+        stage.close();
     }
 
     @Override
@@ -88,20 +89,21 @@ public class FriendshipsController implements Observer {
     }
 
     public void handleYourFriendRequests(ActionEvent actionEvent) {
-        try{
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/views/friendRequests.fxml"));
-            Pane pane = loader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(pane));
-
-            FriendRequestsController controller = loader.getController();
-            controller.setService(service);
-
-            stage.show();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
+//        try{
+//            FXMLLoader loader = new FXMLLoader();
+//            loader.setLocation(getClass().getResource("/views/friendRequests.fxml"));
+//            Pane pane = loader.load();
+//            Stage stage = new Stage();
+//            stage.setScene(new Scene(pane));
+//
+//            FriendRequestsController controller = loader.getController();
+//            controller.setService(service);
+//
+//            stage.show();
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
+        openWindow("friendRequests");
     }
 
     public void handleTextFieldNameKeyTyped(KeyEvent keyEvent) {
@@ -116,6 +118,5 @@ public class FriendshipsController implements Observer {
             MyAllert.showMessage(null, Alert.AlertType.WARNING,"Attention","You did not select a user");
         return userDTO;
     }
-
 
 }

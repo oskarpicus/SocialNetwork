@@ -1,13 +1,10 @@
 package socialnetwork;
 
 import javafx.application.Application;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import socialnetwork.controller.FriendshipsController;
 import socialnetwork.controller.LoggingController;
 import socialnetwork.domain.*;
 import socialnetwork.domain.validators.FriendRequestValidator;
@@ -51,12 +48,12 @@ public class MainFX extends Application {
 
 
         FXMLLoader loader = new FXMLLoader();
-        //loader.setLocation(getClass().getResource("/views/logging.fxml"));
-        loader.setLocation(getClass().getResource("/views/home.fxml"));
+        loader.setLocation(getClass().getResource("/views/logging.fxml"));
+       // loader.setLocation(getClass().getResource("/views/home.fxml"));
         Pane pane = loader.load();
         primaryStage.setScene(new Scene(pane));
-       /* LoggingController loggingController = loader.getController();
-        loggingController.setService(service);*/
+        LoggingController loggingController = loader.getController();
+        loggingController.setService(service);
     }
 
     private MasterServiceWithLogging getMasterService(){

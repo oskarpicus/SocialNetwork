@@ -9,8 +9,20 @@
     -fx-text-alignment: center;
 }
 
-.labelTop:hover{
+.labelTop:hover, .labelLogo:hover{
     -fx-text-fill: #3f72af;
+}
+
+.labelTop{
+    -fx-font-family: Tahoma;
+    -fx-font-weight: bold;
+    -fx-font-size: 12;
+}
+
+.labelLogo{
+    -fx-font-size: 15;
+    -fx-font-family: Tahoma;
+    -fx-font-weight: bold;
 }
 
 .anchorPaneTop{

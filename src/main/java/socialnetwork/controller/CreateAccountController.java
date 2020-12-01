@@ -37,7 +37,8 @@ public class CreateAccountController {
             this.service.addUser(user);
             MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Welcome to the network","Your ID is "+user.getId());
             this.closeWindow();
-            showFriendshipsWindow(user);
+            //showFriendshipsWindow(user);
+            showHomeWindow(user);
         }catch (ValidationException e) {
             MyAllert.showErrorMessage(null, e.getMessage());
         }
@@ -46,16 +47,34 @@ public class CreateAccountController {
     private void showFriendshipsWindow(User loggedUser){
         try{
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/views/friendships.fxml"));
+            loader.setLocation(getClass().getResource("/views/search.fxml"));
             Pane root = loader.load();
 
             Stage stage = new Stage();
             stage.setTitle("Friendships");
             stage.setScene(new Scene(root));
 
-            FriendshipsController friendshipsController = loader.getController();
-            friendshipsController.initialize(service,loggedUser);
+            SearchController searchController = loader.getController();
+           // searchController.initialize(service,loggedUser);
             stage.show();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void showHomeWindow(User loggedUser){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/views/home.fxml"));
+            Pane root = loader.load();
+
+            Stage homeStage = new Stage();
+            homeStage.setTitle("Home");
+            homeStage.setScene(new Scene(root));
+
+            HomeController homeController = loader.getController();
+            homeController.initialize(service,loggedUser);
+            homeStage.show();
         }catch (IOException e){
             e.printStackTrace();
         }
