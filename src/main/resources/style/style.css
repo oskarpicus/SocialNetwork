@@ -80,16 +80,14 @@
     -fx-font-family: Tahoma;
 }
 
+.table-view{
+    -fx-table-cell-border-color: #112d4e;
+}
+
 .table-view .column-header .label {
     -fx-text-fill: blue;
     -fx-font-weight: bold;
 }
-
-/*.table-view{
-    -fx-border-width: 2px;
-    -fx-border-radius: 10px;
-    -fx-border-color: black;
-}*/
 
 .anchorPaneButtons{
     -fx-background-color: #3f72af;
