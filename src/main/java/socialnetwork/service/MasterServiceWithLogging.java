@@ -5,7 +5,6 @@ import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.FriendRequestDTO;
-import socialnetwork.domain.dtos.UserDTO;
 import socialnetwork.utils.observer.Observable;
 import socialnetwork.utils.observer.Observer;
 
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 public class MasterServiceWithLogging extends MasterService implements Observable {
 
     private User loggedUser;
-    private List<UserDTO> allUsers = null;
     private final List<Observer> observers = new ArrayList<>();
     private  List<FriendRequestDTO> allFriendRequests;
 
@@ -58,7 +56,8 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
             Optional<FriendRequest> request = super.friendRequestService.findOne(id);
             if(request.isPresent()){
                 Long other = request.get().getFromUser();
-                setFriendship(other,true);
+                //setFriendship(other,true);
+                //TODO update the friends list
             }
             updateFriendRequestList(id,"accepted");
             notifyObservers();
@@ -83,35 +82,11 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
      * @param string : String
      * @return list of all the users that contain string in their names
      */
-    public List<UserDTO> filterUsers(String string){
-        return allUsers.stream()
-                .filter(userDTO -> userDTO.getFirstName().contains(string) ||
-                        userDTO.getLastName().contains(string))
+    public List<User> filterUsers(String string){
+        return this.getAllUsers().stream()
+                .filter(user -> user.getFirstName().contains(string) ||
+                        user.getLastName().contains(string))
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Method for obtaining all the users, specifying if they are friends with another user
-     * @param idToBeFriendsWith : Long, id of the user to check if they are friends with
-     * @return list of all the users
-     */
-    public List<UserDTO> getAllUserDTO(Long idToBeFriendsWith){
-        if(allUsers==null)
-        {
-            allUsers = this.userService.findAll().stream()
-                    .filter(user -> !user.getId().equals(idToBeFriendsWith))
-                    .map(user -> {
-                        boolean friendsWith = false;
-
-                        if(user.getFriends().stream().anyMatch(user1 -> user1.getId().equals(idToBeFriendsWith)))
-                            friendsWith=true;
-
-                        return new UserDTO(user.getId(),user.getFirstName(), user.getLastName(),
-                                friendsWith);
-                    })
-                    .collect(Collectors.toList());
-        }
-        return allUsers;
     }
 
     @Override
@@ -122,19 +97,11 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
             Long otherId = result.get().getId().getLeft().equals(loggedUser.getId()) ?
                     result.get().getId().getRight() :
                     result.get().getId().getLeft();
-            setFriendship(otherId,false);
+            //setFriendship(otherId,false);
+            //TODO when the user removes a friendships, update the tables
         }
         notifyObservers();
         return result;
-    }
-
-    private void setFriendship(Long user,boolean friendships){
-        allUsers.stream()
-                .filter(userDTO -> userDTO.getId().equals(user))
-                .findAny()
-                .ifPresent(userDTO -> {
-                    userDTO.setFriendsWithLoggedUser(friendships);
-                });
     }
 
     public List<FriendRequestDTO> getAllFriendRequestsDTO(){
@@ -170,5 +137,13 @@ public class MasterServiceWithLogging extends MasterService implements Observabl
     @Override
     public void notifyObservers() {
         observers.forEach(Observer::update);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        List<User> all = super.getAllUsers();
+        return all.stream()
+                .filter(user -> (!user.equals(loggedUser)))
+                .collect(Collectors.toList());
     }
 }

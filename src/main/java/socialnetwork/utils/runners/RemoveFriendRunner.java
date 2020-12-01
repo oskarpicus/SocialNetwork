@@ -4,7 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import socialnetwork.controller.MyAllert;
 import socialnetwork.domain.Tuple;
-import socialnetwork.domain.dtos.UserDTO;
+import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
 
 import java.util.concurrent.ExecutorService;
@@ -13,10 +13,10 @@ import java.util.concurrent.Executors;
 public class RemoveFriendRunner implements Runner {
 
     private final Long loggedUserId;
-    private final UserDTO selected;
+    private final User selected;
     private final MasterService service;
 
-    public RemoveFriendRunner(Long loggedUserId, UserDTO selected, MasterService service) {
+    public RemoveFriendRunner(Long loggedUserId, User selected, MasterService service) {
         this.loggedUserId = loggedUserId;
         this.selected = selected;
         this.service = service;

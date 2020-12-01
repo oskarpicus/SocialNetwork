@@ -3,7 +3,6 @@ package socialnetwork.service;
 import socialnetwork.domain.*;
 import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
-import socialnetwork.domain.dtos.UserDTO;
 import socialnetwork.domain.validators.FriendRequestVerifier;
 import socialnetwork.domain.validators.MessageVerifier;
 
@@ -16,7 +15,7 @@ public class MasterService {
 
     private final FriendshipService friendshipService;
     protected final UserService userService;
-    private boolean updatedFriends = false;
+    private boolean updatedFriends;
     protected final FriendRequestService friendRequestService;
     private final FriendRequestVerifier friendRequestVerifier;
     private final MessageService messageService;
