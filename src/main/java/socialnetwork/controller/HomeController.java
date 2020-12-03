@@ -1,16 +1,11 @@
 package socialnetwork.controller;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
-import socialnetwork.service.MasterServiceWithLogging;
-
-import java.io.IOException;
+import socialnetwork.service.MasterService;
 
 public class HomeController extends AbstractController{
 
@@ -22,7 +17,7 @@ public class HomeController extends AbstractController{
     Label labelFriends;
 
     @Override
-    public void initialize(MasterServiceWithLogging service, User loggedUser) {
+    public void initialize(MasterService service, User loggedUser) {
         super.initialize(service, loggedUser);
         labelGreeting.setText("Hello "+loggedUser.getFirstName()+" "+loggedUser.getLastName()+"!");
     }

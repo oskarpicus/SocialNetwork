@@ -1,17 +1,20 @@
 package socialnetwork.service;
 
 import socialnetwork.domain.*;
+import socialnetwork.domain.dtos.FriendRequestDTO;
 import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
 import socialnetwork.domain.validators.FriendRequestVerifier;
 import socialnetwork.domain.validators.MessageVerifier;
+import socialnetwork.utils.observer.Observable;
+import socialnetwork.utils.observer.Observer;
 
 import java.time.Month;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class MasterService {
+public class MasterService implements Observable {
 
     private final FriendshipService friendshipService;
     protected final UserService userService;
@@ -20,6 +23,7 @@ public class MasterService {
     private final FriendRequestVerifier friendRequestVerifier;
     private final MessageService messageService;
     private final MessageVerifier messageVerifier;
+    private final List<Observer> observers = new ArrayList<>();
 
     public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService,MessageService messageService) {
         this.friendshipService = friendshipService;
@@ -404,8 +408,35 @@ public class MasterService {
         return this.userService.findOne(id);
     }
 
-    public User logging(String firstName, String lastName, Long id){
-        return null;
+
+    @Override
+    public void addObserver(Observer e) {
+        observers.add(e);
     }
 
+    @Override
+    public void removeObserver(Observer e) {
+        observers.remove(e);
+    }
+
+    @Override
+    public void notifyObservers() {
+        observers.forEach(Observer::update);
+    }
+
+    /**
+     * Method for filtering a list of users that contain a certain string in their names
+     * @param string : String
+     * @return list of all the users that contain string in their names
+     */
+    public List<User> filterUsers(String string){
+        return this.getAllUsers().stream()
+                .filter(user -> user.getFirstName().contains(string) ||
+                        user.getLastName().contains(string))
+                .collect(Collectors.toList());
+    }
+
+    public List<FriendRequestDTO> getAllFriendRequestsDTO() {
+        return new ArrayList<>(); //TODO implement
+    }
 }

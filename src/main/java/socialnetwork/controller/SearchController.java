@@ -10,9 +10,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
-import socialnetwork.service.MasterServiceWithLogging;
+import socialnetwork.service.MasterService;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.SendFriendRequestRunner;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SearchController extends AbstractController implements Observer {
 
@@ -34,7 +37,7 @@ public class SearchController extends AbstractController implements Observer {
     Label labelFriends;
 
     @Override
-    public void initialize(MasterServiceWithLogging service,User loggedUser){
+    public void initialize(MasterService service, User loggedUser){
         super.initialize(service,loggedUser);
         service.addObserver(this);
         initTable();
@@ -52,8 +55,15 @@ public class SearchController extends AbstractController implements Observer {
     }
 
     private void setTableViewData(){
-        model.setAll(this.service.getAllUsers());
+        model.setAll(getAllUsers());
         tableViewUsers.setItems(model);
+    }
+
+    private List<User> getAllUsers(){
+        return this.service.getAllUsers()
+                .stream()
+                .filter(user -> (!user.equals(loggedUser)))
+                .collect(Collectors.toList());
     }
 
     private void initTable(){

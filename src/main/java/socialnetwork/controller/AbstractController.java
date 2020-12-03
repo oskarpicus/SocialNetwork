@@ -5,17 +5,17 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
-import socialnetwork.service.MasterServiceWithLogging;
+import socialnetwork.service.MasterService;
 
 import java.io.IOException;
 
 public abstract class AbstractController implements Controller{
 
-    protected MasterServiceWithLogging service;
+    protected MasterService service;
     protected User loggedUser;
 
     @Override
-    public void setService(MasterServiceWithLogging service){
+    public void setService(MasterService service){
         this.service=service;
     }
 
@@ -44,7 +44,7 @@ public abstract class AbstractController implements Controller{
     }
 
     @Override
-    public void initialize(MasterServiceWithLogging service, User loggedUser) {
+    public void initialize(MasterService service, User loggedUser) {
         setLoggedUser(loggedUser);
         setService(service);
     }

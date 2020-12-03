@@ -11,13 +11,13 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
 import socialnetwork.domain.validators.ValidationException;
-import socialnetwork.service.MasterServiceWithLogging;
+import socialnetwork.service.MasterService;
 
 import java.io.IOException;
 
 public class CreateAccountController {
 
-    private MasterServiceWithLogging service;
+    private MasterService service;
 
     @FXML
     TextField textFieldFirstNameCreateAccount;
@@ -26,7 +26,7 @@ public class CreateAccountController {
     @FXML
     Button buttonSignUp;
 
-    public void setService(MasterServiceWithLogging service){
+    public void setService(MasterService service){
         this.service=service;
     }
 
@@ -41,24 +41,6 @@ public class CreateAccountController {
             showHomeWindow(user);
         }catch (ValidationException e) {
             MyAllert.showErrorMessage(null, e.getMessage());
-        }
-    }
-
-    private void showFriendshipsWindow(User loggedUser){
-        try{
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/views/search.fxml"));
-            Pane root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle("Friendships");
-            stage.setScene(new Scene(root));
-
-            SearchController searchController = loader.getController();
-           // searchController.initialize(service,loggedUser);
-            stage.show();
-        }catch (IOException e){
-            e.printStackTrace();
         }
     }
 

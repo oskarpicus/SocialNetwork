@@ -12,12 +12,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.FriendRequestDTO;
-import socialnetwork.service.MasterServiceWithLogging;
+import socialnetwork.service.MasterService;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.AcceptFriendRequestRunner;
 import socialnetwork.utils.runners.RejectFriendRequestRunner;
-
-import java.util.List;
 
 public class FriendRequestsController extends AbstractController implements Observer {
 
@@ -50,7 +48,7 @@ public class FriendRequestsController extends AbstractController implements Obse
     }
 
     @Override
-    public void initialize(MasterServiceWithLogging service, User loggedUser) {
+    public void initialize(MasterService service, User loggedUser) {
         super.initialize(service, loggedUser);
         service.addObserver(this);
         tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("fromFirstName"));
@@ -60,7 +58,7 @@ public class FriendRequestsController extends AbstractController implements Obse
         setTableViewData();
     }
 
-    private void setTableViewData(){
+    private void setTableViewData(){ //TODO set the friend requests of the user
         model.setAll(this.service.getAllFriendRequestsDTO());
         tableViewFriendRequests.setItems(model);
     }
