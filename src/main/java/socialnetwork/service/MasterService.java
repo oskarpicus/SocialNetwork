@@ -285,7 +285,7 @@ public class MasterService implements Observable {
                     Optional<User> user = this.userService.findOne(id);
                     if(user.isEmpty())
                         return null;
-                    return new FriendshipDTO(user.get().getFirstName(), user.get().getLastName(), friendship.getDate());
+                    return new FriendshipDTO(user.get().getFirstName(), user.get().getLastName(), friendship.getDate(), friendship.getId());
                 })
                 .collect(Collectors.toList());
     }

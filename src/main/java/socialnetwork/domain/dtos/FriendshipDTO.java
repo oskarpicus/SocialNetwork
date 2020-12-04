@@ -1,5 +1,8 @@
 package socialnetwork.domain.dtos;
 
+import socialnetwork.domain.Tuple;
+import socialnetwork.utils.Constants;
+
 import java.time.LocalDateTime;
 
 public class FriendshipDTO {
@@ -7,12 +10,15 @@ public class FriendshipDTO {
     private final String firstName;
     private final String lastName;
     private final LocalDateTime date;
+    private final Tuple<Long,Long> ids;
+    private final String dateAsString;
 
-
-    public FriendshipDTO(String firstName, String lastName, LocalDateTime date) {
+    public FriendshipDTO(String firstName, String lastName, LocalDateTime date, Tuple<Long, Long> ids) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.date = date;
+        this.ids = ids;
+        this.dateAsString= Constants.DATE_TIME_FORMATTER.format(date);
     }
 
     public String getFirstName() {
@@ -25,5 +31,13 @@ public class FriendshipDTO {
 
     public LocalDateTime getDate() {
         return date;
+    }
+
+    public Tuple<Long, Long> getIds() {
+        return ids;
+    }
+
+    public String getDateAsString() {
+        return dateAsString;
     }
 }

@@ -37,7 +37,6 @@ public class CreateAccountController {
             this.service.addUser(user);
             MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Welcome to the network","Your ID is "+user.getId());
             this.closeWindow();
-            //showFriendshipsWindow(user);
             showHomeWindow(user);
         }catch (ValidationException e) {
             MyAllert.showErrorMessage(null, e.getMessage());
