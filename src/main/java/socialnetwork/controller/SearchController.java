@@ -35,6 +35,8 @@ public class SearchController extends AbstractController implements Observer {
     Label labelHome;
     @FXML
     Label labelFriends;
+    @FXML
+    Label labelFriendRequests;
 
     @Override
     public void initialize(MasterService service, User loggedUser){
@@ -98,6 +100,10 @@ public class SearchController extends AbstractController implements Observer {
     }
 
     public void handleLabelFriends(MouseEvent mouseEvent) {
+        openWindow("friends");
+    }
+
+    public void handleLabelFriendRequests(MouseEvent mouseEvent) {
         openWindow("friendRequests");
     }
 }

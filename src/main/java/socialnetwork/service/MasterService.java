@@ -45,7 +45,11 @@ public class MasterService implements Observable {
      *                             - the user (id already exists)
      */
     public Optional<User> addUser(User user){
-        return this.userService.add(user);
+        var result =  this.userService.add(user);
+        if(result.isEmpty()){
+            notifyObservers();
+        }
+        return result;
     }
 
     /**
@@ -122,6 +126,7 @@ public class MasterService implements Observable {
         Optional<Friendship> result1 = this.friendshipService.remove(id);
         if(result1.isPresent()){
             deleteOneUsersFriends(id);
+            notifyObservers();
         }
         return result1;
     }
@@ -298,7 +303,9 @@ public class MasterService implements Observable {
      */
     public Optional<FriendRequest> sendFriendRequest(Long fromId,Long toId){
         this.friendRequestVerifier.validate(fromId,toId);
-        return this.friendRequestService.add(new FriendRequest(fromId,toId));
+        var result = this.friendRequestService.add(new FriendRequest(fromId,toId));
+        this.notifyObservers();
+        return result;
     }
 
     /**
@@ -323,6 +330,7 @@ public class MasterService implements Observable {
                        this.friendshipService.add(friendship);
                    }
            );
+           notifyObservers();
        }
        return result;
     }
@@ -335,7 +343,11 @@ public class MasterService implements Observable {
      *              - otherwise, the entity
      */
     public Optional<FriendRequest> rejectFriendRequest(Long id){
-        return this.friendRequestService.rejectFriendRequest(id);
+        var result =  this.friendRequestService.rejectFriendRequest(id);
+        if(result.isEmpty()){
+            notifyObservers();
+        }
+        return result;
     }
 
 
@@ -436,7 +448,19 @@ public class MasterService implements Observable {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Method for obtaining all the friend requests in a printable format
+     * @return list: List<FriendRequestDTO>, containing all the friend requests that were sent
+     **/
     public List<FriendRequestDTO> getAllFriendRequestsDTO() {
-        return new ArrayList<>(); //TODO implement
+        return friendRequestService.findAll().stream()
+                .map(request -> {
+                    Optional<User> fromUser = userService.findOne(request.getFromUser());
+                    Optional<User> toUser = userService.findOne(request.getToUser());
+                    if(fromUser.isPresent() && toUser.isPresent())
+                        return new FriendRequestDTO(request.getId(),fromUser.get(),toUser.get(),request.getStatus(),request.getDate());
+                    return null;
+                })
+                .collect(Collectors.toList());
     }
 }

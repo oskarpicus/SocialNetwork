@@ -25,7 +25,17 @@
     -fx-font-weight: bold;
 }
 
+.labelFriendRequests{
+    -fx-font-size: 12;
+    -fx-font-family: Tahoma;
+    -fx-font-weight: lighter;
+}
+
 #myLabelHome{
+    -fx-text-fill: #3f72af;
+}
+
+#myLabelFriendRequests{
     -fx-text-fill: #3f72af;
 }
 

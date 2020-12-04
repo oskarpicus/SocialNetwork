@@ -15,6 +15,8 @@ public class HomeController extends AbstractController{
     Label labelSearch;
     @FXML
     Label labelFriends;
+    @FXML
+    Label labelFriendRequests;
 
     @Override
     public void initialize(MasterService service, User loggedUser) {
@@ -34,6 +36,10 @@ public class HomeController extends AbstractController{
     }
 
     public void handleLabelFriends(MouseEvent mouseEvent) {
+        openWindow("friends");
+    }
+
+    public void handleLabelFriendRequests(MouseEvent mouseEvent) {
         openWindow("friendRequests");
     }
 }
