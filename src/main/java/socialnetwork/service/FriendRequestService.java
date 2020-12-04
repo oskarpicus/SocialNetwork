@@ -37,6 +37,20 @@ public class FriendRequestService implements Service<Long, FriendRequest> {
     }
 
     /**
+     * Method for removing a friend request which is pending
+     * @param id : id of the friend request to be removed
+     * @return an {@code Optional}
+     *              -null if there is no friend request with that id or it is not pending
+     *              -the entity, otherwise
+     */
+    public Optional<FriendRequest> removePendingFriendRequest(Long id){
+        Optional<FriendRequest> request = this.repository.findOne(id);
+        if(request.isPresent() && request.get().getStatus().equals("pending"))
+            return this.repository.delete(id);
+        return Optional.empty();
+    }
+
+    /**
      * Method for accepting a friend request
      * @param id : Long, id of the friend request to be accepted
      * @return an {@code Optional}

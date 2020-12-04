@@ -14,6 +14,7 @@ import socialnetwork.service.MasterService;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.AcceptFriendRequestRunner;
 import socialnetwork.utils.runners.RejectFriendRequestRunner;
+import socialnetwork.utils.runners.RemovePendingFriendRequestRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -159,6 +160,10 @@ public class FriendRequestsController extends AbstractController implements Obse
     }
 
     public void handleButtonRemoveFriendRequest(ActionEvent actionEvent) {
-        //TODO implement it - also in service
+        FriendRequestDTO request = getSelectedSentRequest();
+        if(request==null)
+            return;
+        RemovePendingFriendRequestRunner runner = new RemovePendingFriendRequestRunner(this.service,request.getId());
+        runner.execute();
     }
 }
