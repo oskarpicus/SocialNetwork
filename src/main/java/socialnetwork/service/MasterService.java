@@ -463,4 +463,18 @@ public class MasterService implements Observable {
                 })
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Method for removing a friend request which is pending
+     * @param id : id of the friend request to be removed
+     * @return an {@code Optional}
+     *              -null if there is no friend request with that id or it is not pending
+     *              -the entity, otherwise
+     */
+    public Optional<FriendRequest> removePendingFriendRequest(Long id){
+        var result = this.friendRequestService.removePendingFriendRequest(id);
+        if(result.isPresent())
+            this.notifyObservers();
+        return result;
+    }
 }
