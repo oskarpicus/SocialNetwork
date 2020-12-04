@@ -1,4 +1,52 @@
 
+.textAreaTrilogy{
+    -fx-background-color: #f9f7f7;
+    -fx-control-inner-background: #dbe2ef;
+    -fx-font-weight: bold;
+}
+
+.textAreaTrilogy *.text{
+    -fx-text-alignment: center;
+}
+
+.labelTop:hover, .labelLogo:hover{
+    -fx-text-fill: #3f72af;
+}
+
+.labelTop{
+    -fx-font-family: Tahoma;
+    -fx-font-weight: bold;
+    -fx-font-size: 12;
+}
+
+.labelLogo{
+    -fx-font-size: 15;
+    -fx-font-family: Tahoma;
+    -fx-font-weight: bold;
+}
+
+.labelFriendRequests, #labelTextFriends{
+    -fx-font-size: 12;
+    -fx-font-family: Tahoma;
+    -fx-font-weight: lighter;
+}
+
+#myLabelHome, #myLabelFriendRequests, #myLabelFriends, #myLabelSearch{
+    -fx-text-fill: #3f72af;
+}
+
+.anchorPaneTop{
+    -fx-background-color: #dbe2ef;
+}
+
+#anchorPaneMiddle{
+    -fx-background-color: #f9f7f7;
+}
+
+#hBoxInformation{
+    -fx-background-color: #3f72af;
+}
+
 .button:hover{
     -fx-background-color: #112d4e;
     -fx-text-fill: white;
@@ -10,24 +58,6 @@
     -fx-font-weight: bold;
 }
 
-.labelGreeting{
-    -fx-font-weight: bold;
-    -fx-font-style: italic;
-}
-
-.labelGreeting:hover{
-    -fx-text-fill: #dbe2ef;
-}
-
-.anchorPaneGreeting, #anchorPaneFriendRequests{
-    -fx-background-color: #3f72af;
-}
-
-.anchorPaneButtons{
-    /*-fx-background-color: #a2d5f2;*/
-    -fx-background-color: #3f72af;
-}
-
 .table-row-cell:selected {
     -fx-background-color:#112d4e ;
 }
@@ -35,11 +65,21 @@
 .table-row-cell:selected .text{
     -fx-fill: white;
     -fx-font-weight: bold;
+    -fx-font-family: Tahoma;
+}
+
+.table-row-cell .text{
+    -fx-font-family: Arial;
 }
 
 .table-view .column-header {
-  /*  -fx-background-color:#dbe2ef;*/
     -fx-background-color:darkorange;
+    -fx-font-weight: bold;
+    -fx-font-family: Tahoma;
+}
+
+.table-view{
+    -fx-table-cell-border-color: #112d4e;
 }
 
 .table-view .column-header .label {
@@ -47,9 +87,10 @@
     -fx-font-weight: bold;
 }
 
-.table-view{
-    -fx-border-width: 2px;
-    -fx-border-radius: 10px;
-    -fx-border-color: black;
+.anchorPaneButtons{
+    -fx-background-color: #3f72af;
 }
 
+.hBoxSearchUser{
+    -fx-background-color: #f9f7f7;
+}

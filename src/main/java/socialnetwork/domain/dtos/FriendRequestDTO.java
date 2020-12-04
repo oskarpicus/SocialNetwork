@@ -1,25 +1,31 @@
 package socialnetwork.domain.dtos;
 
+import socialnetwork.domain.User;
 import socialnetwork.utils.Constants;
 
 import java.time.LocalDateTime;
 
 public class FriendRequestDTO {
 
-    private final Long id;
+    private final Long id; //id of the friend request
+    private final Long userFromId;
+    private final Long userToId;
     private final String fromFirstName;
     private final String fromLastName;
-    private String status;
-    private final LocalDateTime date;
+    private final String toFirstName;
+    private final String toLastName;
+    private final String status;
     private final String dateAsString;
 
-
-    public FriendRequestDTO(Long id,String fromFirstName, String fromLastName, String status, LocalDateTime date) {
+    public FriendRequestDTO(Long id, User fromUser, User toUser, String status, LocalDateTime date) {
         this.id=id;
-        this.fromFirstName = fromFirstName;
-        this.fromLastName = fromLastName;
+        this.userFromId=fromUser.getId();
+        this.fromFirstName=fromUser.getFirstName();
+        this.fromLastName=fromUser.getLastName();
+        this.userToId=toUser.getId();
+        this.toFirstName=toUser.getFirstName();
+        this.toLastName=toUser.getLastName();
         this.status = status;
-        this.date = date;
         dateAsString= Constants.DATE_TIME_FORMATTER.format(date);
     }
 
@@ -39,11 +45,23 @@ public class FriendRequestDTO {
         return dateAsString;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public Long getId() {
         return id;
+    }
+
+    public Long getUserFromId() {
+        return userFromId;
+    }
+
+    public Long getUserToId() {
+        return userToId;
+    }
+
+    public String getToFirstName() {
+        return toFirstName;
+    }
+
+    public String getToLastName() {
+        return toLastName;
     }
 }

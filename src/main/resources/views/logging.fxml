@@ -19,7 +19,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
-    <Label styleClass="labelTitle" text="Sign up">
+    <Label styleClass="labelTitle" text="Sign in">
     </Label>
     <Label text="Last Name" GridPane.rowIndex="2">
       <GridPane.margin>

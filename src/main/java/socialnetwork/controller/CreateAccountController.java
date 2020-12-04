@@ -11,13 +11,13 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
 import socialnetwork.domain.validators.ValidationException;
-import socialnetwork.service.MasterServiceWithLogging;
+import socialnetwork.service.MasterService;
 
 import java.io.IOException;
 
 public class CreateAccountController {
 
-    private MasterServiceWithLogging service;
+    private MasterService service;
 
     @FXML
     TextField textFieldFirstNameCreateAccount;
@@ -26,7 +26,7 @@ public class CreateAccountController {
     @FXML
     Button buttonSignUp;
 
-    public void setService(MasterServiceWithLogging service){
+    public void setService(MasterService service){
         this.service=service;
     }
 
@@ -37,25 +37,25 @@ public class CreateAccountController {
             this.service.addUser(user);
             MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Welcome to the network","Your ID is "+user.getId());
             this.closeWindow();
-            showFriendshipsWindow(user);
+            showHomeWindow(user);
         }catch (ValidationException e) {
             MyAllert.showErrorMessage(null, e.getMessage());
         }
     }
 
-    private void showFriendshipsWindow(User loggedUser){
-        try{
+    private void showHomeWindow(User loggedUser){
+        try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/views/friendships.fxml"));
+            loader.setLocation(getClass().getResource("/views/home.fxml"));
             Pane root = loader.load();
 
-            Stage stage = new Stage();
-            stage.setTitle("Friendships");
-            stage.setScene(new Scene(root));
+            Stage homeStage = new Stage();
+            homeStage.setTitle("Home");
+            homeStage.setScene(new Scene(root));
 
-            FriendshipsController friendshipsController = loader.getController();
-            friendshipsController.initialize(service,loggedUser);
-            stage.show();
+            HomeController homeController = loader.getController();
+            homeController.initialize(service,loggedUser);
+            homeStage.show();
         }catch (IOException e){
             e.printStackTrace();
         }
