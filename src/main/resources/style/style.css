@@ -31,7 +31,7 @@
     -fx-font-weight: lighter;
 }
 
-#myLabelHome, #myLabelFriendRequests, #myLabelFriends, #myLabelSearch{
+#myLabelHome, #myLabelFriendRequests, #myLabelFriends, #myLabelSearch, #myLabelMessages{
     -fx-text-fill: #3f72af;
 }
 

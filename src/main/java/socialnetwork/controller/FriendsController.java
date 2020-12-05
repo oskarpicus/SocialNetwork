@@ -85,4 +85,8 @@ public class FriendsController extends AbstractController implements Observer {
             MyAllert.showErrorMessage(null,"You did not select a friendship");
         return friendshipDTO;
     }
+
+    public void handleLabelMessages(MouseEvent mouseEvent) {
+        openWindow("messages");
+    }
 }

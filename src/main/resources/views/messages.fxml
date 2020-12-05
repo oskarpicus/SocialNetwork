@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.MessagesController">
+    <SplitPane dividerPositions="0.11306532663316583" layoutX="84.0" layoutY="14.0" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" styleClass="anchorPaneTop">
+            <Label layoutX="41.0" layoutY="13.0" onMouseClicked="#handleLabelHome" styleClass="labelLogo" text="Social Network" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="14.0" />
+            <HBox prefHeight="19.0" prefWidth="311.0" spacing="20.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
+                <Label onMouseClicked="#handleLabelSearch" styleClass="labelTop" text="Search" />
+                <Label onMouseClicked="#handleLabelFriends" styleClass="labelTop" text="Friends" />
+                <Label onMouseClicked="#handleLabelFriendRequests" styleClass="labelTop" text="Friend Requests" />
+                <Label id="myLabelMessages" styleClass="labelTop" text="Messages" />
+            </HBox>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+            <HBox layoutX="14.0" layoutY="14.0" prefHeight="41.0" prefWidth="645.0" spacing="10.0" styleClass="hBoxSearchUser" AnchorPane.bottomAnchor="310.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="14.0">
+                <TextField fx:id="textFieldSearchUser" onKeyTyped="#handleTextField" promptText="Search for a user...">
+                    <HBox.margin>
+                        <Insets top="5.0" />
+                    </HBox.margin>
+                </TextField>
+                <ImageView fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../images/iconMessage2.png" />
+                </ImageView>
+            </HBox>
+            <AnchorPane layoutX="117.0" layoutY="80.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="62.0">
+                <SplitPane dividerPositions="0.8613861386138614" orientation="VERTICAL" prefHeight="289.0" prefWidth="578.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <HBox minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" spacing="10.0" styleClass="hBoxSearchUser">
+                        <TableView fx:id="tableViewUsers" layoutX="165.0" layoutY="14.0" prefHeight="244.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" HBox.hgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="tableColumnFirstName" prefWidth="75.0" text="First Name" />
+                                <TableColumn fx:id="tableColumnLastName" prefWidth="75.0" text="Last Name" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                        <TextArea fx:id="textAreaMessage" prefHeight="200.0" prefWidth="200.0" promptText="Write your message here" HBox.hgrow="ALWAYS" />
+                    </HBox>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" styleClass="anchorPaneButtons">
+                        <BorderPane prefHeight="37.0" prefWidth="576.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <center>
+                                <Button mnemonicParsing="false" text="Send Message" BorderPane.alignment="CENTER" />
+                            </center>
+                        </BorderPane>
+                    </AnchorPane>
+                </SplitPane>
+            </AnchorPane>
+        </AnchorPane>
+
+    </SplitPane>
+</AnchorPane>

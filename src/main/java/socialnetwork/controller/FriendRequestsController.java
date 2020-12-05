@@ -143,6 +143,10 @@ public class FriendRequestsController extends AbstractController implements Obse
         openWindow("home");
     }
 
+    public void handleLabelMessages(MouseEvent mouseEvent) {
+        openWindow("messages");
+    }
+
     public void handleButtonAcceptFriendRequest(ActionEvent actionEvent) {
         FriendRequestDTO request = getSelectedReceivedRequest();
         if(request==null)
