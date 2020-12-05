@@ -2,18 +2,19 @@ package socialnetwork.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import socialnetwork.domain.Entity;
+import socialnetwork.domain.Message;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
 import socialnetwork.utils.observer.Observer;
+import socialnetwork.utils.runners.SendMessageRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +46,7 @@ public class MessagesController extends AbstractController implements Observer {
         service.addObserver(this);
         tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+        tableViewUsers.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); // it allows for selecting multiple rows at once with CTRL+Click
         setTableViewData();
     }
 
@@ -89,5 +91,34 @@ public class MessagesController extends AbstractController implements Observer {
                 .collect(Collectors.toList());
     }
 
+    private List<Long> getSelectedUsersIds(){
+        List<User> all= tableViewUsers.getSelectionModel().getSelectedItems();
+        if(all==null || all.isEmpty()) {
+            MyAllert.showMessage(null, Alert.AlertType.WARNING, "Warning", "You did not select any user");
+            return null;
+        }
+        return all.stream()
+                .map(Entity::getId)
+                .collect(Collectors.toList());
+    }
 
+
+    public void handleButtonSendMessage(ActionEvent actionEvent) {
+        if(textAreaMessage.getText().equals("")){
+            MyAllert.showMessage(null, Alert.AlertType.WARNING,"Warning","Your message caný be empty");
+            return;
+        }
+        List<Long> selected = getSelectedUsersIds();
+        if(selected==null || selected.isEmpty())
+            return;
+        Message message = new Message(loggedUser.getId(),selected,textAreaMessage.getText());
+        SendMessageRunner runner = new SendMessageRunner(message,service);
+        runner.execute();
+    }
+
+    public void handleTableViewClicked(MouseEvent mouseEvent) {
+        if(mouseEvent.getClickCount()==2){
+            System.out.println(getSelectedUsersIds());
+        }
+    }
 }

@@ -30,7 +30,7 @@
             <AnchorPane layoutX="117.0" layoutY="80.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="62.0">
                 <SplitPane dividerPositions="0.8613861386138614" orientation="VERTICAL" prefHeight="289.0" prefWidth="578.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <HBox minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" spacing="10.0" styleClass="hBoxSearchUser">
-                        <TableView fx:id="tableViewUsers" layoutX="165.0" layoutY="14.0" prefHeight="244.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" HBox.hgrow="ALWAYS">
+                        <TableView fx:id="tableViewUsers" layoutX="165.0" layoutY="14.0" onMouseClicked="#handleTableViewClicked" prefHeight="244.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" HBox.hgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="tableColumnFirstName" prefWidth="75.0" text="First Name" />
                                 <TableColumn fx:id="tableColumnLastName" prefWidth="75.0" text="Last Name" />
@@ -39,12 +39,12 @@
                                 <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                             </columnResizePolicy>
                         </TableView>
-                        <TextArea fx:id="textAreaMessage" prefHeight="200.0" prefWidth="200.0" promptText="Write your message here" HBox.hgrow="ALWAYS" />
+                        <TextArea fx:id="textAreaMessage" prefHeight="200.0" prefWidth="200.0" promptText="Write your message here. You can also select multiple users at once !" HBox.hgrow="ALWAYS" />
                     </HBox>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" styleClass="anchorPaneButtons">
                         <BorderPane prefHeight="37.0" prefWidth="576.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <center>
-                                <Button mnemonicParsing="false" text="Send Message" BorderPane.alignment="CENTER" />
+                                <Button mnemonicParsing="false" onAction="#handleButtonSendMessage" text="Send Message" BorderPane.alignment="CENTER" />
                             </center>
                         </BorderPane>
                     </AnchorPane>
