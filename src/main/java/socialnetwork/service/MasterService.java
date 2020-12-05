@@ -352,7 +352,10 @@ public class MasterService implements Observable {
 
 
     public Optional<Message> sendMessage(Message message){
-        return this.messageService.add(message);
+        Optional<Message> result = this.messageService.add(message);
+        if(result.isEmpty())
+            this.notifyObservers();
+        return result;
     }
 
     /**
@@ -381,6 +384,7 @@ public class MasterService implements Observable {
         message.get().setLastReplied(userToId);
         this.messageService.update(message.get());
 
+        this.notifyObservers();
         return result;
     }
 
@@ -404,7 +408,7 @@ public class MasterService implements Observable {
                 .sorted(Comparator.comparing(Message::getDate))
                 .map(message -> {
                     User user = message.getFrom().equals(id1) ? user1 : user2;
-                    return new MessageDTO(user, message.getMessage(), message.getDate());
+                    return new MessageDTO(message.getId(), user, message.getMessage(), message.getDate());
                 })
                 .collect(Collectors.toList());
     }

@@ -4,10 +4,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.domain.Entity;
 import socialnetwork.domain.Message;
@@ -102,10 +105,14 @@ public class MessagesController extends AbstractController implements Observer {
                 .collect(Collectors.toList());
     }
 
+    private List<User> getSelectedUsers(){
+        return tableViewUsers.getSelectionModel().getSelectedItems();
+    }
+
 
     public void handleButtonSendMessage(ActionEvent actionEvent) {
         if(textAreaMessage.getText().equals("")){
-            MyAllert.showMessage(null, Alert.AlertType.WARNING,"Warning","Your message caný be empty");
+            MyAllert.showMessage(null, Alert.AlertType.WARNING,"Warning","Your message can't be empty");
             return;
         }
         List<Long> selected = getSelectedUsersIds();
@@ -118,7 +125,27 @@ public class MessagesController extends AbstractController implements Observer {
 
     public void handleTableViewClicked(MouseEvent mouseEvent) {
         if(mouseEvent.getClickCount()==2){
-            System.out.println(getSelectedUsersIds());
+            List<User> selected = getSelectedUsers();
+            if(selected!=null && !selected.isEmpty()){
+                openConversationWindow(selected.get(0));
+            }
+        }
+    }
+
+    private void openConversationWindow(User userSelected){
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/views/conversation.fxml"));
+            Pane pane = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(pane));
+            stage.setTitle("Your conversation with "+userSelected.getFirstName()+" "+userSelected.getLastName());
+
+            ConversationController controller = loader.getController();
+            controller.initialize(service,loggedUser,userSelected);
+            stage.show();
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }
