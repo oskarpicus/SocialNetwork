@@ -1,7 +1,6 @@
 package socialnetwork.utils.runners;
 
 import javafx.application.Platform;
-import javafx.scene.control.Alert;
 import socialnetwork.controller.MyAllert;
 import socialnetwork.service.MasterService;
 
@@ -27,9 +26,7 @@ public class ReplyMessageRunner implements Runner {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(()->{
             try{
-                if(this.service.replyMessage(idMessage,idUser,text).isEmpty())
-                    Platform.runLater(()->MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success","Message replied successfully"));
-                else
+                if(this.service.replyMessage(idMessage,idUser,text).isPresent())
                     Platform.runLater(()->MyAllert.showErrorMessage(null,"Failed to reply message"));
             }catch (Exception e){
                 Platform.runLater(()-> MyAllert.showErrorMessage(null,"Message could not be replied to"));

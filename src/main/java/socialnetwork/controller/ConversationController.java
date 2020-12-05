@@ -1,5 +1,6 @@
 package socialnetwork.controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,8 +20,6 @@ import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.ReplyMessageRunner;
 import socialnetwork.utils.runners.Runner;
 import socialnetwork.utils.runners.SendMessageRunner;
-
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,13 +45,15 @@ public class ConversationController extends AbstractController implements Observ
     }
 
     private void setData(){
-        model.setAll(this.service.getConversation(loggedUser.getId(),userToMessage.getId()));
-        listViewConversation.setItems(model);
+        Platform.runLater(()->{
+            model.setAll(this.service.getConversation(loggedUser.getId(),userToMessage.getId()));
+            listViewConversation.setItems(model);
+        });
     }
 
     @Override
     public void update() {
-        setData(); //todo problem - exception
+        setData();
     }
 
     @Override
@@ -67,14 +68,12 @@ public class ConversationController extends AbstractController implements Observ
 
     public void handleTextFieldKeyPressed(KeyEvent keyEvent) {
         if(keyEvent.getCode().equals(KeyCode.ENTER)) {
-            System.out.println("a apasat enter"); //todo
+            System.out.println("a apasat enter");
             handleButtonSendMessage(null);
-
         }
     }
 
     public void handleButtonSendMessage(ActionEvent actionEvent) {
-        //todo
         if(textFieldMessage.getText().equals("")){
             MyAllert.showMessage(null, Alert.AlertType.WARNING,"Warning","Empty message");
             return;

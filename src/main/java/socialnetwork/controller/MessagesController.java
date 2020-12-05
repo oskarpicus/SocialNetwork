@@ -121,6 +121,7 @@ public class MessagesController extends AbstractController implements Observer {
         Message message = new Message(loggedUser.getId(),selected,textAreaMessage.getText());
         SendMessageRunner runner = new SendMessageRunner(message,service);
         runner.execute();
+        textAreaMessage.setText("");
     }
 
     public void handleTableViewClicked(MouseEvent mouseEvent) {
