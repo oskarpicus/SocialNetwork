@@ -57,12 +57,12 @@ public class SearchController extends AbstractController implements Observer {
     }
 
     private void setTableViewData(){
-        model.setAll(getAllUsers());
+        model.setAll(getAllUsers(this.service.getAllUsers()));
         tableViewUsers.setItems(model);
     }
 
-    private List<User> getAllUsers(){
-        return this.service.getAllUsers()
+    private List<User> getAllUsers(List<User> listOfUsers){
+        return listOfUsers
                 .stream()
                 .filter(user -> (!user.equals(loggedUser)))
                 .collect(Collectors.toList());
@@ -85,7 +85,9 @@ public class SearchController extends AbstractController implements Observer {
     public void handleTextFieldNameKeyTyped(KeyEvent keyEvent) {
         if(textFieldName.getText().equals(""))
             setTableViewData();
-        model.setAll(this.service.filterUsers(textFieldName.getText()));
+        else {
+            model.setAll(this.getAllUsers(this.service.filterUsers(textFieldName.getText())));
+        }
     }
 
     private User getSelectedUser(){
@@ -105,5 +107,9 @@ public class SearchController extends AbstractController implements Observer {
 
     public void handleLabelFriendRequests(MouseEvent mouseEvent) {
         openWindow("friendRequests");
+    }
+
+    public void handleLabelMessages(MouseEvent mouseEvent) {
+        openWindow("messages");
     }
 }

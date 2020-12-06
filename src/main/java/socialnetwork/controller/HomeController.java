@@ -42,4 +42,8 @@ public class HomeController extends AbstractController{
     public void handleLabelFriendRequests(MouseEvent mouseEvent) {
         openWindow("friendRequests");
     }
+
+    public void handleLabelMessages(MouseEvent mouseEvent) {
+        openWindow("messages");
+    }
 }
