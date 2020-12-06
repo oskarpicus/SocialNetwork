@@ -16,13 +16,14 @@ import socialnetwork.domain.Entity;
 import socialnetwork.domain.Message;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
+import socialnetwork.utils.events.message.MessageEvent;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.SendMessageRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MessagesController extends AbstractController implements Observer {
+public class MessagesController extends AbstractController implements Observer<MessageEvent> {
 
     private final ObservableList<User> model = FXCollections.observableArrayList();
 
@@ -46,7 +47,7 @@ public class MessagesController extends AbstractController implements Observer {
     @Override
     public void initialize(MasterService service, User loggedUser) {
         super.initialize(service, loggedUser);
-        service.addObserver(this);
+        service.addMessageObserver(this);
         tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         tableViewUsers.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); // it allows for selecting multiple rows at once with CTRL+Click
@@ -83,7 +84,7 @@ public class MessagesController extends AbstractController implements Observer {
     }
 
     @Override
-    public void update() {
+    public void update(MessageEvent event) {
         setTableViewData();
     }
 

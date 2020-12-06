@@ -11,13 +11,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
+import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.SendFriendRequestRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SearchController extends AbstractController implements Observer {
+public class SearchController extends AbstractController implements Observer<UserEvent> {
 
     private final ObservableList<User> model = FXCollections.observableArrayList();
 
@@ -41,7 +42,7 @@ public class SearchController extends AbstractController implements Observer {
     @Override
     public void initialize(MasterService service, User loggedUser){
         super.initialize(service,loggedUser);
-        service.addObserver(this);
+        service.addUserObserver(this);
         initTable();
     }
 
@@ -52,7 +53,7 @@ public class SearchController extends AbstractController implements Observer {
     }
 
     @Override
-    public void update(){
+    public void update(UserEvent e){
         setTableViewData();
     }
 

@@ -14,12 +14,12 @@ import javafx.stage.Stage;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.service.MasterService;
+import socialnetwork.utils.events.friendship.FriendshipEvent;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.RemoveFriendRunner;
 
-import java.time.LocalDateTime;
 
-public class FriendsController extends AbstractController implements Observer {
+public class FriendsController extends AbstractController implements Observer<FriendshipEvent> {
 
     private final ObservableList<FriendshipDTO> model = FXCollections.observableArrayList();
 
@@ -35,7 +35,7 @@ public class FriendsController extends AbstractController implements Observer {
     @Override
     public void initialize(MasterService service, User loggedUser) {
         super.initialize(service, loggedUser);
-        this.service.addObserver(this);
+        this.service.addFriendshipObserver(this);
         tableColumnFriendsFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         tableColumnFriendsLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         tableColumnFriendsDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
@@ -54,7 +54,7 @@ public class FriendsController extends AbstractController implements Observer {
     }
 
     @Override
-    public void update() {
+    public void update(FriendshipEvent event) {
         setTableViewData();
     }
 

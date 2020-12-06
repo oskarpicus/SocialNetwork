@@ -1,7 +1,9 @@
 package socialnetwork.utils.observer;
 
-public interface Observable {
-    void addObserver(Observer e);
-    void removeObserver(Observer e);
-    void notifyObservers();
+import socialnetwork.utils.events.Event;
+
+public interface Observable<E extends Event> {
+    void addObserver(Observer<E> e);
+    void removeObserver(Observer<E> e);
+    void notifyObservers(E event);
 }

@@ -6,6 +6,13 @@ import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
 import socialnetwork.domain.validators.FriendRequestVerifier;
 import socialnetwork.domain.validators.MessageVerifier;
+import socialnetwork.utils.events.friendRequest.FriendRequestEvent;
+import socialnetwork.utils.events.friendRequest.FriendRequestEventType;
+import socialnetwork.utils.events.friendship.FriendshipEvent;
+import socialnetwork.utils.events.friendship.FriendshipEventType;
+import socialnetwork.utils.events.message.MessageEvent;
+import socialnetwork.utils.events.message.MessageEventType;
+import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observable;
 import socialnetwork.utils.observer.Observer;
 
@@ -14,7 +21,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class MasterService implements Observable {
+public class MasterService{
 
     private final FriendshipService friendshipService;
     protected final UserService userService;
@@ -23,7 +30,10 @@ public class MasterService implements Observable {
     private final FriendRequestVerifier friendRequestVerifier;
     private final MessageService messageService;
     private final MessageVerifier messageVerifier;
-    private final List<Observer> observers = new ArrayList<>();
+    private final UserObservable userObservable = new UserObservable();
+    private final FriendshipObservable friendshipObservable = new FriendshipObservable();
+    private final FriendRequestObservable friendRequestObservable = new FriendRequestObservable();
+    private final MessageObservable messageObservable = new MessageObservable();
 
     public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService,MessageService messageService) {
         this.friendshipService = friendshipService;
@@ -47,7 +57,7 @@ public class MasterService implements Observable {
     public Optional<User> addUser(User user){
         var result =  this.userService.add(user);
         if(result.isEmpty()){
-            notifyObservers();
+//            notifyObservers();
         }
         return result;
     }
@@ -126,7 +136,8 @@ public class MasterService implements Observable {
         Optional<Friendship> result1 = this.friendshipService.remove(id);
         if(result1.isPresent()){
             deleteOneUsersFriends(id);
-            notifyObservers();
+            //notifyObservers();
+            this.friendshipObservable.notifyObservers(new FriendshipEvent(FriendshipEventType.REMOVE,result1.get()));
         }
         return result1;
     }
@@ -304,7 +315,9 @@ public class MasterService implements Observable {
     public Optional<FriendRequest> sendFriendRequest(Long fromId,Long toId){
         this.friendRequestVerifier.validate(fromId,toId);
         var result = this.friendRequestService.add(new FriendRequest(fromId,toId));
-        this.notifyObservers();
+        //this.notifyObservers();
+        if(result.isEmpty())
+            this.friendRequestObservable.notifyObservers(new FriendRequestEvent(FriendRequestEventType.SEND,null));
         return result;
     }
 
@@ -327,10 +340,12 @@ public class MasterService implements Observable {
                        Tuple<Long,Long> ids = (fromId < toId) ? new Tuple<>(fromId,toId) : new Tuple<>(toId,fromId);
                        Friendship friendship = new Friendship();
                        friendship.setId(ids);
-                       this.friendshipService.add(friendship);
+                       if(this.friendshipService.add(friendship).isEmpty())
+                           this.friendshipObservable.notifyObservers(new FriendshipEvent(FriendshipEventType.ADD,null));
                    }
            );
-           notifyObservers();
+           //notifyObservers();
+           request.ifPresent(friendRequest -> this.friendRequestObservable.notifyObservers(new FriendRequestEvent(FriendRequestEventType.ACCEPT, friendRequest)));
        }
        return result;
     }
@@ -345,7 +360,8 @@ public class MasterService implements Observable {
     public Optional<FriendRequest> rejectFriendRequest(Long id){
         var result =  this.friendRequestService.rejectFriendRequest(id);
         if(result.isEmpty()){
-            notifyObservers();
+            //notifyObservers();
+            this.friendRequestObservable.notifyObservers(new FriendRequestEvent(FriendRequestEventType.REJECT,null));
         }
         return result;
     }
@@ -354,7 +370,8 @@ public class MasterService implements Observable {
     public Optional<Message> sendMessage(Message message){
         Optional<Message> result = this.messageService.add(message);
         if(result.isEmpty())
-            this.notifyObservers();
+           // this.notifyObservers();
+            this.messageObservable.notifyObservers(new MessageEvent(MessageEventType.SEND,message));
         return result;
     }
 
@@ -384,7 +401,8 @@ public class MasterService implements Observable {
         message.get().setLastReplied(userToId);
         this.messageService.update(message.get());
 
-        this.notifyObservers();
+       // this.notifyObservers();
+        this.messageObservable.notifyObservers(new MessageEvent(MessageEventType.REPLY,replyMessage));
         return result;
     }
 
@@ -424,22 +442,6 @@ public class MasterService implements Observable {
         return this.userService.findOne(id);
     }
 
-
-    @Override
-    public void addObserver(Observer e) {
-        observers.add(e);
-    }
-
-    @Override
-    public void removeObserver(Observer e) {
-        observers.remove(e);
-    }
-
-    @Override
-    public void notifyObservers() {
-        observers.forEach(Observer::update);
-    }
-
     /**
      * Method for filtering a list of users that contain a certain string in their names
      * @param string : String
@@ -477,8 +479,113 @@ public class MasterService implements Observable {
      */
     public Optional<FriendRequest> removePendingFriendRequest(Long id){
         var result = this.friendRequestService.removePendingFriendRequest(id);
-        if(result.isPresent())
-            this.notifyObservers();
+        //this.notifyObservers();
+        result.ifPresent(request -> this.friendRequestObservable.notifyObservers(new FriendRequestEvent(FriendRequestEventType.REMOVE, request)));
         return result;
     }
+
+    /**
+     * Observable class for friend requests events
+     */
+    private static final class FriendRequestObservable implements Observable<FriendRequestEvent>{
+        private final List<Observer<FriendRequestEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<FriendRequestEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<FriendRequestEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(FriendRequestEvent event) {
+            observers.forEach((x)->x.update(event));
+        }
+    }
+
+    /**
+     * Observable class for friendships events
+     */
+    private static final class FriendshipObservable implements Observable<FriendshipEvent>{
+        private final List<Observer<FriendshipEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<FriendshipEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<FriendshipEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(FriendshipEvent event) {
+            observers.forEach((x)->x.update(event));
+        }
+    }
+
+    /**
+     * Observable class for messages events
+     */
+    private static class MessageObservable implements Observable<MessageEvent>{
+        private final List<Observer<MessageEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<MessageEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<MessageEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(MessageEvent event) {
+            observers.forEach((x)->x.update(event));
+        }
+    }
+
+    /**
+     * Observable class for user events
+     */
+    private static class UserObservable implements Observable<UserEvent>{
+        private final List<Observer<UserEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<UserEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<UserEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(UserEvent event) {
+            observers.forEach((x)->x.update(event));
+        }
+    }
+
+    public void addUserObserver(Observer<UserEvent> e){
+        this.userObservable.addObserver(e);
+    }
+
+    public void addFriendRequestObserver(Observer<FriendRequestEvent> e){
+        this.friendRequestObservable.addObserver(e);
+    }
+
+    public void addMessageObserver(Observer<MessageEvent> e){
+        this.messageObservable.addObserver(e);
+    }
+
+    public void addFriendshipObserver(Observer<FriendshipEvent> e){
+        this.friendshipObservable.addObserver(e);
+    }
+
 }

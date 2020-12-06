@@ -16,6 +16,7 @@ import socialnetwork.domain.Message;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.MessageDTO;
 import socialnetwork.service.MasterService;
+import socialnetwork.utils.events.message.MessageEvent;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.ReplyMessageRunner;
 import socialnetwork.utils.runners.Runner;
@@ -23,7 +24,7 @@ import socialnetwork.utils.runners.SendMessageRunner;
 import java.util.Collections;
 import java.util.List;
 
-public class ConversationController extends AbstractController implements Observer {
+public class ConversationController extends AbstractController implements Observer<MessageEvent> {
 
     private final ObservableList<MessageDTO> model = FXCollections.observableArrayList();
     private User userToMessage;
@@ -39,7 +40,7 @@ public class ConversationController extends AbstractController implements Observ
     public void initialize(MasterService service, User loggedUser,User userToMessage) {
         super.initialize(service, loggedUser);
         this.userToMessage=userToMessage;
-        service.addObserver(this);
+        service.addMessageObserver(this);
         labelInformation.setText("Below is a list of all your the messages with "+userToMessage.getFirstName()+" "+userToMessage.getLastName());
         setData();
     }
@@ -52,7 +53,7 @@ public class ConversationController extends AbstractController implements Observ
     }
 
     @Override
-    public void update() {
+    public void update(MessageEvent event) {
         setData();
     }
 

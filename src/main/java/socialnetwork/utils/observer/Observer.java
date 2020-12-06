@@ -1,5 +1,7 @@
 package socialnetwork.utils.observer;
 
-public interface Observer {
-    void update();
+import socialnetwork.utils.events.Event;
+
+public interface Observer<E extends Event> {
+    void update(E event);
 }
