@@ -16,7 +16,10 @@ import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observable;
 import socialnetwork.utils.observer.Observer;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -420,13 +423,48 @@ public class MasterService{
         User user1 = this.messageVerifier.userExists(id1);
         User user2 = this.messageVerifier.userExists(id2);
 
-        return this.messageService.findAll()
-                .stream()
+//        return this.messageService.findAll()
+//                .stream()
+//                .filter(predicate)
+//                .sorted(Comparator.comparing(Message::getDate))
+//                .map(message -> {
+//                    User user = message.getFrom().equals(id1) ? user1 : user2;
+//                    return new MessageDTO(message.getId(), user, message.getMessage(), message.getDate());
+//                })
+//                .collect(Collectors.toList());
+        List<MessageDTO> result = filterMessages(user1,user2,predicate);
+        result.sort(Comparator.comparing(MessageDTO::getDate));
+        return result;
+    }
+
+    /**
+     * Method for obtaining the received messages from a time period
+     * @param user1 : User, user that received the messages
+     * @param user2 : User, user that sent the messages
+     * @param dateFrom : LocalDateTime, defines, along with dateTo, the time period
+     * @param dateTo : LocalDateTime, defines, along with dateFrom, the time period
+     * @return list : List<MessageDTO>, every message is sent by user2 to user1 between dateFrom and datTo
+     */
+    public List<MessageDTO> getConversation(User user1, User user2, LocalDate dateFrom,LocalDate dateTo){
+        Long id1 = user1.getId(), id2 = user2.getId();
+        LocalDateTime dateFrom1 = dateFrom.atStartOfDay();
+        LocalDateTime dateTo1 = dateTo.atStartOfDay();
+        Predicate<Message> predicateFrom = message -> message.getFrom().equals(id2) && message.getTo().contains(id1);
+        Predicate<Message> predicateDates = predicateFrom.and(message ->
+                message.getDate().isAfter(dateFrom1) && message.getDate().isBefore(dateTo1));
+        List<MessageDTO> result = filterMessages(user1,user2,predicateDates);
+        result.sort(Comparator.comparing(MessageDTO::getDate));
+        return result;
+    }
+
+
+    public List<MessageDTO> filterMessages(User user1,User user2,Predicate<Message> predicate){
+        Long id1 = user1.getId();
+        return this.messageService.findAll().stream()
                 .filter(predicate)
-                .sorted(Comparator.comparing(Message::getDate))
                 .map(message -> {
                     User user = message.getFrom().equals(id1) ? user1 : user2;
-                    return new MessageDTO(message.getId(), user, message.getMessage(), message.getDate());
+                    return new MessageDTO(message.getId(),user,message.getMessage(),message.getDate());
                 })
                 .collect(Collectors.toList());
     }
