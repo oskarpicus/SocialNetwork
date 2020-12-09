@@ -284,6 +284,21 @@ public class MasterService{
     }
 
     /**
+     * Method for filtering friendships, based on a user ID and a time interval
+     * @param userID : Long, ID of the user
+     * @param dateFrom : LocalDate, the date of start
+     * @param dateTo : LocalDate, the date of finish
+     * @return List<FriendshipDTO>, contains all of the friendships of userID between dateFrom and dateTo
+     */
+    public List<FriendshipDTO> filterFriendshipsIDDate(Long userID,LocalDate dateFrom,LocalDate dateTo){
+        Predicate<Friendship> predicateUser = friendship ->
+                friendship.getId().getLeft().equals(userID) || friendship.getId().getRight().equals(userID);
+        Predicate<Friendship> predicateDate = predicateUser.and(friendship ->
+                friendship.getDate().isAfter(dateFrom.atStartOfDay()) && friendship.getDate().isBefore(dateTo.atStartOfDay()));
+        return filterFriendships(userID,predicateDate);
+    }
+
+    /**
      * Generic method for filtering Friendships of one User and based on further conditions
      * @param userID : Long, ID of a User
      * @param predicate : Predicat<Friendships>, the further conditions to be met
@@ -457,8 +472,32 @@ public class MasterService{
         return result;
     }
 
+    public List<MessageDTO> getOnesMessages(User user,LocalDate dateFrom,LocalDate dateTo){
+        Predicate<Message> predicateTo = message -> message.getTo().contains(user.getId());
+        Predicate<Message> predicateDates = predicateTo.and(message ->
+                message.getDate().isAfter(dateFrom.atStartOfDay()) && message.getDate().isBefore(dateTo.atStartOfDay()));
+        List<MessageDTO> result = filterMessages(predicateDates);
+        result.sort(Comparator.comparing(MessageDTO::getDate));
+        return result;
+    }
 
-    public List<MessageDTO> filterMessages(User user1,User user2,Predicate<Message> predicate){
+    private List<MessageDTO> filterMessages(Predicate<Message> predicate){
+        return this.messageService.findAll().stream().filter(predicate)
+                .map(message -> {
+                    Optional<User> userFrom = this.userService.findOne(message.getFrom());
+                    return userFrom.map(value -> new MessageDTO(message.getId(), value, message.getMessage(), message.getDate())).orElse(null);
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Method for filtering the messages, collecting only those that respect a certain condition
+     * @param user1 : User, one of the possible senders
+     * @param user2 : User, one of the possible senders
+     * @param predicate : Predicate<Message>, the condition to be met
+     * @return list of {@code FriendshipDTO} that respect the predicate
+     */
+    private List<MessageDTO> filterMessages(User user1,User user2,Predicate<Message> predicate){
         Long id1 = user1.getId();
         return this.messageService.findAll().stream()
                 .filter(predicate)
