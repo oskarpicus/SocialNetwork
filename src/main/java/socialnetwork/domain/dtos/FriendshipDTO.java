@@ -40,4 +40,9 @@ public class FriendshipDTO {
     public String getDateAsString() {
         return dateAsString;
     }
+
+    @Override
+    public String toString() {
+        return firstName+" "+lastName+" added on\n"+dateAsString;
+    }
 }

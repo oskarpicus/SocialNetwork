@@ -6,15 +6,25 @@ import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
 import socialnetwork.domain.validators.FriendRequestVerifier;
 import socialnetwork.domain.validators.MessageVerifier;
+import socialnetwork.utils.events.friendRequest.FriendRequestEvent;
+import socialnetwork.utils.events.friendRequest.FriendRequestEventType;
+import socialnetwork.utils.events.friendship.FriendshipEvent;
+import socialnetwork.utils.events.friendship.FriendshipEventType;
+import socialnetwork.utils.events.message.MessageEvent;
+import socialnetwork.utils.events.message.MessageEventType;
+import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observable;
 import socialnetwork.utils.observer.Observer;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class MasterService implements Observable {
+public class MasterService{
 
     private final FriendshipService friendshipService;
     protected final UserService userService;
@@ -23,7 +33,10 @@ public class MasterService implements Observable {
     private final FriendRequestVerifier friendRequestVerifier;
     private final MessageService messageService;
     private final MessageVerifier messageVerifier;
-    private final List<Observer> observers = new ArrayList<>();
+    private final UserObservable userObservable = new UserObservable();
+    private final FriendshipObservable friendshipObservable = new FriendshipObservable();
+    private final FriendRequestObservable friendRequestObservable = new FriendRequestObservable();
+    private final MessageObservable messageObservable = new MessageObservable();
 
     public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService,MessageService messageService) {
         this.friendshipService = friendshipService;
@@ -47,7 +60,7 @@ public class MasterService implements Observable {
     public Optional<User> addUser(User user){
         var result =  this.userService.add(user);
         if(result.isEmpty()){
-            notifyObservers();
+//            notifyObservers();
         }
         return result;
     }
@@ -126,7 +139,8 @@ public class MasterService implements Observable {
         Optional<Friendship> result1 = this.friendshipService.remove(id);
         if(result1.isPresent()){
             deleteOneUsersFriends(id);
-            notifyObservers();
+            //notifyObservers();
+            this.friendshipObservable.notifyObservers(new FriendshipEvent(FriendshipEventType.REMOVE,result1.get()));
         }
         return result1;
     }
@@ -270,6 +284,21 @@ public class MasterService implements Observable {
     }
 
     /**
+     * Method for filtering friendships, based on a user ID and a time interval
+     * @param userID : Long, ID of the user
+     * @param dateFrom : LocalDate, the date of start
+     * @param dateTo : LocalDate, the date of finish
+     * @return List<FriendshipDTO>, contains all of the friendships of userID between dateFrom and dateTo
+     */
+    public List<FriendshipDTO> filterFriendshipsIDDate(Long userID,LocalDate dateFrom,LocalDate dateTo){
+        Predicate<Friendship> predicateUser = friendship ->
+                friendship.getId().getLeft().equals(userID) || friendship.getId().getRight().equals(userID);
+        Predicate<Friendship> predicateDate = predicateUser.and(friendship ->
+                friendship.getDate().isAfter(dateFrom.atStartOfDay()) && friendship.getDate().isBefore(dateTo.plusDays(1).atStartOfDay()));
+        return filterFriendships(userID,predicateDate);
+    }
+
+    /**
      * Generic method for filtering Friendships of one User and based on further conditions
      * @param userID : Long, ID of a User
      * @param predicate : Predicat<Friendships>, the further conditions to be met
@@ -304,7 +333,9 @@ public class MasterService implements Observable {
     public Optional<FriendRequest> sendFriendRequest(Long fromId,Long toId){
         this.friendRequestVerifier.validate(fromId,toId);
         var result = this.friendRequestService.add(new FriendRequest(fromId,toId));
-        this.notifyObservers();
+        //this.notifyObservers();
+        if(result.isEmpty())
+            this.friendRequestObservable.notifyObservers(new FriendRequestEvent(FriendRequestEventType.SEND,null));
         return result;
     }
 
@@ -327,10 +358,12 @@ public class MasterService implements Observable {
                        Tuple<Long,Long> ids = (fromId < toId) ? new Tuple<>(fromId,toId) : new Tuple<>(toId,fromId);
                        Friendship friendship = new Friendship();
                        friendship.setId(ids);
-                       this.friendshipService.add(friendship);
+                       if(this.friendshipService.add(friendship).isEmpty())
+                           this.friendshipObservable.notifyObservers(new FriendshipEvent(FriendshipEventType.ADD,null));
                    }
            );
-           notifyObservers();
+           //notifyObservers();
+           request.ifPresent(friendRequest -> this.friendRequestObservable.notifyObservers(new FriendRequestEvent(FriendRequestEventType.ACCEPT, friendRequest)));
        }
        return result;
     }
@@ -345,14 +378,19 @@ public class MasterService implements Observable {
     public Optional<FriendRequest> rejectFriendRequest(Long id){
         var result =  this.friendRequestService.rejectFriendRequest(id);
         if(result.isEmpty()){
-            notifyObservers();
+            //notifyObservers();
+            this.friendRequestObservable.notifyObservers(new FriendRequestEvent(FriendRequestEventType.REJECT,null));
         }
         return result;
     }
 
 
     public Optional<Message> sendMessage(Message message){
-        return this.messageService.add(message);
+        Optional<Message> result = this.messageService.add(message);
+        if(result.isEmpty())
+           // this.notifyObservers();
+            this.messageObservable.notifyObservers(new MessageEvent(MessageEventType.SEND,message));
+        return result;
     }
 
     /**
@@ -381,6 +419,8 @@ public class MasterService implements Observable {
         message.get().setLastReplied(userToId);
         this.messageService.update(message.get());
 
+       // this.notifyObservers();
+        this.messageObservable.notifyObservers(new MessageEvent(MessageEventType.REPLY,replyMessage));
         return result;
     }
 
@@ -398,13 +438,72 @@ public class MasterService implements Observable {
         User user1 = this.messageVerifier.userExists(id1);
         User user2 = this.messageVerifier.userExists(id2);
 
-        return this.messageService.findAll()
-                .stream()
+//        return this.messageService.findAll()
+//                .stream()
+//                .filter(predicate)
+//                .sorted(Comparator.comparing(Message::getDate))
+//                .map(message -> {
+//                    User user = message.getFrom().equals(id1) ? user1 : user2;
+//                    return new MessageDTO(message.getId(), user, message.getMessage(), message.getDate());
+//                })
+//                .collect(Collectors.toList());
+        List<MessageDTO> result = filterMessages(user1,user2,predicate);
+        result.sort(Comparator.comparing(MessageDTO::getDate));
+        return result;
+    }
+
+    /**
+     * Method for obtaining the received messages from a time period
+     * @param user1 : User, user that received the messages
+     * @param user2 : User, user that sent the messages
+     * @param dateFrom : LocalDateTime, defines, along with dateTo, the time period
+     * @param dateTo : LocalDateTime, defines, along with dateFrom, the time period
+     * @return list : List<MessageDTO>, every message is sent by user2 to user1 between dateFrom and datTo
+     */
+    public List<MessageDTO> getConversation(User user1, User user2, LocalDate dateFrom,LocalDate dateTo){
+        Long id1 = user1.getId(), id2 = user2.getId();
+        LocalDateTime dateFrom1 = dateFrom.atStartOfDay().plusDays(1);
+        LocalDateTime dateTo1 = dateTo.atStartOfDay();
+        Predicate<Message> predicateFrom = message -> message.getFrom().equals(id2) && message.getTo().contains(id1);
+        Predicate<Message> predicateDates = predicateFrom.and(message ->
+                message.getDate().isAfter(dateFrom1) && message.getDate().isBefore(dateTo1));
+        List<MessageDTO> result = filterMessages(user1,user2,predicateDates);
+        result.sort(Comparator.comparing(MessageDTO::getDate));
+        return result;
+    }
+
+    public List<MessageDTO> getOnesMessages(User user,LocalDate dateFrom,LocalDate dateTo){
+        Predicate<Message> predicateTo = message -> message.getTo().contains(user.getId());
+        Predicate<Message> predicateDates = predicateTo.and(message ->
+                message.getDate().isAfter(dateFrom.atStartOfDay()) && message.getDate().isBefore(dateTo.plusDays(1).atStartOfDay()));
+        List<MessageDTO> result = filterMessages(predicateDates);
+        result.sort(Comparator.comparing(MessageDTO::getDate));
+        return result;
+    }
+
+    private List<MessageDTO> filterMessages(Predicate<Message> predicate){
+        return this.messageService.findAll().stream().filter(predicate)
+                .map(message -> {
+                    Optional<User> userFrom = this.userService.findOne(message.getFrom());
+                    return userFrom.map(value -> new MessageDTO(message.getId(), value, message.getMessage(), message.getDate())).orElse(null);
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Method for filtering the messages, collecting only those that respect a certain condition
+     * @param user1 : User, one of the possible senders
+     * @param user2 : User, one of the possible senders
+     * @param predicate : Predicate<Message>, the condition to be met
+     * @return list of {@code FriendshipDTO} that respect the predicate
+     */
+    private List<MessageDTO> filterMessages(User user1,User user2,Predicate<Message> predicate){
+        Long id1 = user1.getId();
+        return this.messageService.findAll().stream()
                 .filter(predicate)
-                .sorted(Comparator.comparing(Message::getDate))
                 .map(message -> {
                     User user = message.getFrom().equals(id1) ? user1 : user2;
-                    return new MessageDTO(user, message.getMessage(), message.getDate());
+                    return new MessageDTO(message.getId(),user,message.getMessage(),message.getDate());
                 })
                 .collect(Collectors.toList());
     }
@@ -418,22 +517,6 @@ public class MasterService implements Observable {
      */
     public Optional<User> findOneUser(Long id){
         return this.userService.findOne(id);
-    }
-
-
-    @Override
-    public void addObserver(Observer e) {
-        observers.add(e);
-    }
-
-    @Override
-    public void removeObserver(Observer e) {
-        observers.remove(e);
-    }
-
-    @Override
-    public void notifyObservers() {
-        observers.forEach(Observer::update);
     }
 
     /**
@@ -463,4 +546,123 @@ public class MasterService implements Observable {
                 })
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Method for removing a friend request which is pending
+     * @param id : id of the friend request to be removed
+     * @return an {@code Optional}
+     *              -null if there is no friend request with that id or it is not pending
+     *              -the entity, otherwise
+     */
+    public Optional<FriendRequest> removePendingFriendRequest(Long id){
+        var result = this.friendRequestService.removePendingFriendRequest(id);
+        //this.notifyObservers();
+        result.ifPresent(request -> this.friendRequestObservable.notifyObservers(new FriendRequestEvent(FriendRequestEventType.REMOVE, request)));
+        return result;
+    }
+
+    /**
+     * Observable class for friend requests events
+     */
+    private static final class FriendRequestObservable implements Observable<FriendRequestEvent>{
+        private final List<Observer<FriendRequestEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<FriendRequestEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<FriendRequestEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(FriendRequestEvent event) {
+            observers.forEach((x)->x.update(event));
+        }
+    }
+
+    /**
+     * Observable class for friendships events
+     */
+    private static final class FriendshipObservable implements Observable<FriendshipEvent>{
+        private final List<Observer<FriendshipEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<FriendshipEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<FriendshipEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(FriendshipEvent event) {
+            observers.forEach((x)->x.update(event));
+        }
+    }
+
+    /**
+     * Observable class for messages events
+     */
+    private static class MessageObservable implements Observable<MessageEvent>{
+        private final List<Observer<MessageEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<MessageEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<MessageEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(MessageEvent event) {
+            observers.forEach((x)->x.update(event));
+        }
+    }
+
+    /**
+     * Observable class for user events
+     */
+    private static class UserObservable implements Observable<UserEvent>{
+        private final List<Observer<UserEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<UserEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<UserEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(UserEvent event) {
+            observers.forEach((x)->x.update(event));
+        }
+    }
+
+    public void addUserObserver(Observer<UserEvent> e){
+        this.userObservable.addObserver(e);
+    }
+
+    public void addFriendRequestObserver(Observer<FriendRequestEvent> e){
+        this.friendRequestObservable.addObserver(e);
+    }
+
+    public void addMessageObserver(Observer<MessageEvent> e){
+        this.messageObservable.addObserver(e);
+    }
+
+    public void addFriendshipObserver(Observer<FriendshipEvent> e){
+        this.friendshipObservable.addObserver(e);
+    }
+
 }

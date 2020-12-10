@@ -4,20 +4,24 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
+import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.SendFriendRequestRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SearchController extends AbstractController implements Observer {
+public class SearchController extends AbstractController implements Observer<UserEvent> {
 
     private final ObservableList<User> model = FXCollections.observableArrayList();
 
@@ -41,7 +45,7 @@ public class SearchController extends AbstractController implements Observer {
     @Override
     public void initialize(MasterService service, User loggedUser){
         super.initialize(service,loggedUser);
-        service.addObserver(this);
+        service.addUserObserver(this);
         initTable();
     }
 
@@ -52,17 +56,17 @@ public class SearchController extends AbstractController implements Observer {
     }
 
     @Override
-    public void update(){
+    public void update(UserEvent e){
         setTableViewData();
     }
 
     private void setTableViewData(){
-        model.setAll(getAllUsers());
+        model.setAll(getAllUsers(this.service.getAllUsers()));
         tableViewUsers.setItems(model);
     }
 
-    private List<User> getAllUsers(){
-        return this.service.getAllUsers()
+    private List<User> getAllUsers(List<User> listOfUsers){
+        return listOfUsers
                 .stream()
                 .filter(user -> (!user.equals(loggedUser)))
                 .collect(Collectors.toList());
@@ -85,7 +89,9 @@ public class SearchController extends AbstractController implements Observer {
     public void handleTextFieldNameKeyTyped(KeyEvent keyEvent) {
         if(textFieldName.getText().equals(""))
             setTableViewData();
-        model.setAll(this.service.filterUsers(textFieldName.getText()));
+        else {
+            model.setAll(this.getAllUsers(this.service.filterUsers(textFieldName.getText())));
+        }
     }
 
     private User getSelectedUser(){
@@ -105,5 +111,26 @@ public class SearchController extends AbstractController implements Observer {
 
     public void handleLabelFriendRequests(MouseEvent mouseEvent) {
         openWindow("friendRequests");
+    }
+
+    public void handleLabelMessages(MouseEvent mouseEvent) {
+        openWindow("messages");
+    }
+
+    public void handleActivityReport(ActionEvent actionEvent) {
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/views/reportActivity.fxml"));
+            Pane pane = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(pane));
+            stage.setTitle("Activity Report");
+
+            ReportActivityController controller = loader.getController();
+            controller.initialize(this.service,this.loggedUser);
+            stage.show();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

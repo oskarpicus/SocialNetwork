@@ -1,0 +1,20 @@
+.gripPaneEven{
+    -fx-background-color: #3f72af;
+}
+
+.gripPaneOdd{
+    -fx-background-color: #f9f7f7;
+}
+
+.label{
+    -fx-font-family: Tahoma;
+    -fx-font-weight: bold;
+}
+
+.labelEven{
+    -fx-text-fill: #f9f7f7;
+}
+
+.labelOdd{
+    -fx-text-fill: #3f72af;
+}

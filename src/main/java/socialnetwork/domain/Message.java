@@ -22,8 +22,6 @@ public class Message extends Entity<Long> {
         this.date = LocalDateTime.now();
     }
 
-
-
     public static void setNUMBER_OF_MESSAGES(Long nr) {
         NUMBER_OF_MESSAGES = nr;
     }

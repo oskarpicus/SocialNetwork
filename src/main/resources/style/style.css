@@ -13,10 +13,14 @@
     -fx-text-fill: #3f72af;
 }
 
-.labelTop{
+.labelTop, #labelConversation{
     -fx-font-family: Tahoma;
     -fx-font-weight: bold;
     -fx-font-size: 12;
+}
+
+#labelConversation{
+    -fx-text-fill: #f9f7f7;
 }
 
 .labelLogo{
@@ -31,7 +35,7 @@
     -fx-font-weight: lighter;
 }
 
-#myLabelHome, #myLabelFriendRequests, #myLabelFriends, #myLabelSearch{
+#myLabelHome, #myLabelFriendRequests, #myLabelFriends, #myLabelSearch, #myLabelMessages{
     -fx-text-fill: #3f72af;
 }
 
@@ -58,7 +62,7 @@
     -fx-font-weight: bold;
 }
 
-.table-row-cell:selected {
+.table-row-cell:selected{
     -fx-background-color:#112d4e ;
 }
 
@@ -68,8 +72,9 @@
     -fx-font-family: Tahoma;
 }
 
-.table-row-cell .text{
+.table-row-cell .text, .list-view .text{
     -fx-font-family: Arial;
+    -fx-text-fill: black;
 }
 
 .table-view .column-header {
@@ -78,7 +83,7 @@
     -fx-font-family: Tahoma;
 }
 
-.table-view{
+.table-view, .list-view{
     -fx-table-cell-border-color: #112d4e;
 }
 
@@ -93,4 +98,14 @@
 
 .hBoxSearchUser{
     -fx-background-color: #f9f7f7;
+}
+
+.list-cell:selected .text{
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+    -fx-font-family: Tahoma;
+}
+
+.list-cell:selected{
+    -fx-background-color: darkorange;
 }

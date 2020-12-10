@@ -11,14 +11,16 @@ import javafx.stage.Stage;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.FriendRequestDTO;
 import socialnetwork.service.MasterService;
+import socialnetwork.utils.events.friendRequest.FriendRequestEvent;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.AcceptFriendRequestRunner;
 import socialnetwork.utils.runners.RejectFriendRequestRunner;
+import socialnetwork.utils.runners.RemovePendingFriendRequestRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FriendRequestsController extends AbstractController implements Observer {
+public class FriendRequestsController extends AbstractController implements Observer<FriendRequestEvent> {
 
     private final ObservableList<FriendRequestDTO> modelSentFriendRequests = FXCollections.observableArrayList();
     private final ObservableList<FriendRequestDTO> modelReceivedFriendRequests = FXCollections.observableArrayList();
@@ -56,7 +58,7 @@ public class FriendRequestsController extends AbstractController implements Obse
 
 
     @Override
-    public void update() {
+    public void update(FriendRequestEvent event) {
         setTableViewData();
     }
 
@@ -69,7 +71,7 @@ public class FriendRequestsController extends AbstractController implements Obse
     @Override
     public void initialize(MasterService service, User loggedUser) {
         super.initialize(service, loggedUser);
-        service.addObserver(this);
+        service.addFriendRequestObserver(this);
         initializeTableViewReceivedFriendRequests();
         initializeTableViewSentFriendRequests();
         setTableViewData();
@@ -77,14 +79,14 @@ public class FriendRequestsController extends AbstractController implements Obse
 
     private void initializeTableViewSentFriendRequests(){
         tableColumnSentFirstName.setCellValueFactory(new PropertyValueFactory<>("toFirstName"));
-        tableColumnSentLastName.setCellValueFactory(new PropertyValueFactory<>("toFirstName"));
+        tableColumnSentLastName.setCellValueFactory(new PropertyValueFactory<>("toLastName"));
         tableColumnSentStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         tableColumnSentDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
     }
 
     private void initializeTableViewReceivedFriendRequests(){
         tableColumnReceivedFirstName.setCellValueFactory(new PropertyValueFactory<>("fromFirstName"));
-        tableColumnReceivedLastName.setCellValueFactory(new PropertyValueFactory<>("fromFirstName"));
+        tableColumnReceivedLastName.setCellValueFactory(new PropertyValueFactory<>("fromLastName"));
         tableColumnReceivedStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         tableColumnReceivedDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
     }
@@ -142,6 +144,10 @@ public class FriendRequestsController extends AbstractController implements Obse
         openWindow("home");
     }
 
+    public void handleLabelMessages(MouseEvent mouseEvent) {
+        openWindow("messages");
+    }
+
     public void handleButtonAcceptFriendRequest(ActionEvent actionEvent) {
         FriendRequestDTO request = getSelectedReceivedRequest();
         if(request==null)
@@ -159,6 +165,10 @@ public class FriendRequestsController extends AbstractController implements Obse
     }
 
     public void handleButtonRemoveFriendRequest(ActionEvent actionEvent) {
-        //TODO implement it - also in service
+        FriendRequestDTO request = getSelectedSentRequest();
+        if(request==null)
+            return;
+        RemovePendingFriendRequestRunner runner = new RemovePendingFriendRequestRunner(this.service,request.getId());
+        runner.execute();
     }
 }
