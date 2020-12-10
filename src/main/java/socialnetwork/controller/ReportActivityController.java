@@ -11,6 +11,7 @@ import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
 import socialnetwork.service.MasterService;
+import socialnetwork.utils.pdf.PdfGenerator;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -56,7 +57,23 @@ public class ReportActivityController extends ReportMessagesController{
         }
         List<FriendshipDTO> friendships = service.filterFriendshipsIDDate(loggedUser.getId(),dateFrom,dateTo);
         setFriendshipData(friendships);
+        if(friendships.isEmpty()){
+            listViewFriendships.setPlaceholder(new Label("There are no friendships"));
+        }
         List<MessageDTO> messages = service.getOnesMessages(loggedUser,dateFrom,dateTo);
         setMessageData(messages);
+        if(messages.isEmpty()){
+            listViewMessages.setPlaceholder(new Label("There are no messages"));
+        }
+        if(super.group.getSelectedToggle().equals(super.radioButtonYes)){
+            String path = getPathToSave();
+            if(path==null){
+                MyAllert.showErrorMessage(null, "You did not select a location");
+            }
+            else{
+                PdfGenerator.generateActivityReport(messages,friendships,path,loggedUser,dateFrom,dateTo);
+                MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success","PDF saved successfully in "+path);
+            }
+        }
     }
 }

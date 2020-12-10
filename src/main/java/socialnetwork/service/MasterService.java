@@ -294,7 +294,7 @@ public class MasterService{
         Predicate<Friendship> predicateUser = friendship ->
                 friendship.getId().getLeft().equals(userID) || friendship.getId().getRight().equals(userID);
         Predicate<Friendship> predicateDate = predicateUser.and(friendship ->
-                friendship.getDate().isAfter(dateFrom.atStartOfDay()) && friendship.getDate().isBefore(dateTo.atStartOfDay()));
+                friendship.getDate().isAfter(dateFrom.atStartOfDay()) && friendship.getDate().isBefore(dateTo.plusDays(1).atStartOfDay()));
         return filterFriendships(userID,predicateDate);
     }
 
@@ -462,7 +462,7 @@ public class MasterService{
      */
     public List<MessageDTO> getConversation(User user1, User user2, LocalDate dateFrom,LocalDate dateTo){
         Long id1 = user1.getId(), id2 = user2.getId();
-        LocalDateTime dateFrom1 = dateFrom.atStartOfDay();
+        LocalDateTime dateFrom1 = dateFrom.atStartOfDay().plusDays(1);
         LocalDateTime dateTo1 = dateTo.atStartOfDay();
         Predicate<Message> predicateFrom = message -> message.getFrom().equals(id2) && message.getTo().contains(id1);
         Predicate<Message> predicateDates = predicateFrom.and(message ->
@@ -475,7 +475,7 @@ public class MasterService{
     public List<MessageDTO> getOnesMessages(User user,LocalDate dateFrom,LocalDate dateTo){
         Predicate<Message> predicateTo = message -> message.getTo().contains(user.getId());
         Predicate<Message> predicateDates = predicateTo.and(message ->
-                message.getDate().isAfter(dateFrom.atStartOfDay()) && message.getDate().isBefore(dateTo.atStartOfDay()));
+                message.getDate().isAfter(dateFrom.atStartOfDay()) && message.getDate().isBefore(dateTo.plusDays(1).atStartOfDay()));
         List<MessageDTO> result = filterMessages(predicateDates);
         result.sort(Comparator.comparing(MessageDTO::getDate));
         return result;

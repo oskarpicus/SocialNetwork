@@ -51,7 +51,7 @@ public class ReportMessagesController extends AbstractReportController{
             }
         }
         if (result.isEmpty()) {
-            MyAllert.showMessage(null, Alert.AlertType.INFORMATION, "Information", "There are no messages");
+            listViewMessages.setPlaceholder(new Label("There are no messages"));
         }
         setMessageData(result);
     }
