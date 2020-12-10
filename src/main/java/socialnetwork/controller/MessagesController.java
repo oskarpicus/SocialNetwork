@@ -150,4 +150,27 @@ public class MessagesController extends AbstractController implements Observer<M
             e.printStackTrace();
         }
     }
+
+    public void handleReportMessages(ActionEvent actionEvent) {
+        //open the Report Messages Window
+        try{
+            if(this.getSelectedUsers().isEmpty()){
+                MyAllert.showMessage(null, Alert.AlertType.WARNING,"Warning","You did not select a user");
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/views/reportMessages.fxml"));
+            Pane pane = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(pane));
+            stage.setTitle("Conversation Report");
+
+            stage.show();
+            ReportMessagesController controller = loader.getController();
+            controller.initialize(service,loggedUser,getSelectedUsers().get(0));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

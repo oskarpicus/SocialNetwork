@@ -16,7 +16,10 @@ import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observable;
 import socialnetwork.utils.observer.Observer;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -281,6 +284,21 @@ public class MasterService{
     }
 
     /**
+     * Method for filtering friendships, based on a user ID and a time interval
+     * @param userID : Long, ID of the user
+     * @param dateFrom : LocalDate, the date of start
+     * @param dateTo : LocalDate, the date of finish
+     * @return List<FriendshipDTO>, contains all of the friendships of userID between dateFrom and dateTo
+     */
+    public List<FriendshipDTO> filterFriendshipsIDDate(Long userID,LocalDate dateFrom,LocalDate dateTo){
+        Predicate<Friendship> predicateUser = friendship ->
+                friendship.getId().getLeft().equals(userID) || friendship.getId().getRight().equals(userID);
+        Predicate<Friendship> predicateDate = predicateUser.and(friendship ->
+                friendship.getDate().isAfter(dateFrom.atStartOfDay()) && friendship.getDate().isBefore(dateTo.plusDays(1).atStartOfDay()));
+        return filterFriendships(userID,predicateDate);
+    }
+
+    /**
      * Generic method for filtering Friendships of one User and based on further conditions
      * @param userID : Long, ID of a User
      * @param predicate : Predicat<Friendships>, the further conditions to be met
@@ -420,13 +438,72 @@ public class MasterService{
         User user1 = this.messageVerifier.userExists(id1);
         User user2 = this.messageVerifier.userExists(id2);
 
-        return this.messageService.findAll()
-                .stream()
+//        return this.messageService.findAll()
+//                .stream()
+//                .filter(predicate)
+//                .sorted(Comparator.comparing(Message::getDate))
+//                .map(message -> {
+//                    User user = message.getFrom().equals(id1) ? user1 : user2;
+//                    return new MessageDTO(message.getId(), user, message.getMessage(), message.getDate());
+//                })
+//                .collect(Collectors.toList());
+        List<MessageDTO> result = filterMessages(user1,user2,predicate);
+        result.sort(Comparator.comparing(MessageDTO::getDate));
+        return result;
+    }
+
+    /**
+     * Method for obtaining the received messages from a time period
+     * @param user1 : User, user that received the messages
+     * @param user2 : User, user that sent the messages
+     * @param dateFrom : LocalDateTime, defines, along with dateTo, the time period
+     * @param dateTo : LocalDateTime, defines, along with dateFrom, the time period
+     * @return list : List<MessageDTO>, every message is sent by user2 to user1 between dateFrom and datTo
+     */
+    public List<MessageDTO> getConversation(User user1, User user2, LocalDate dateFrom,LocalDate dateTo){
+        Long id1 = user1.getId(), id2 = user2.getId();
+        LocalDateTime dateFrom1 = dateFrom.atStartOfDay().plusDays(1);
+        LocalDateTime dateTo1 = dateTo.atStartOfDay();
+        Predicate<Message> predicateFrom = message -> message.getFrom().equals(id2) && message.getTo().contains(id1);
+        Predicate<Message> predicateDates = predicateFrom.and(message ->
+                message.getDate().isAfter(dateFrom1) && message.getDate().isBefore(dateTo1));
+        List<MessageDTO> result = filterMessages(user1,user2,predicateDates);
+        result.sort(Comparator.comparing(MessageDTO::getDate));
+        return result;
+    }
+
+    public List<MessageDTO> getOnesMessages(User user,LocalDate dateFrom,LocalDate dateTo){
+        Predicate<Message> predicateTo = message -> message.getTo().contains(user.getId());
+        Predicate<Message> predicateDates = predicateTo.and(message ->
+                message.getDate().isAfter(dateFrom.atStartOfDay()) && message.getDate().isBefore(dateTo.plusDays(1).atStartOfDay()));
+        List<MessageDTO> result = filterMessages(predicateDates);
+        result.sort(Comparator.comparing(MessageDTO::getDate));
+        return result;
+    }
+
+    private List<MessageDTO> filterMessages(Predicate<Message> predicate){
+        return this.messageService.findAll().stream().filter(predicate)
+                .map(message -> {
+                    Optional<User> userFrom = this.userService.findOne(message.getFrom());
+                    return userFrom.map(value -> new MessageDTO(message.getId(), value, message.getMessage(), message.getDate())).orElse(null);
+                })
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Method for filtering the messages, collecting only those that respect a certain condition
+     * @param user1 : User, one of the possible senders
+     * @param user2 : User, one of the possible senders
+     * @param predicate : Predicate<Message>, the condition to be met
+     * @return list of {@code FriendshipDTO} that respect the predicate
+     */
+    private List<MessageDTO> filterMessages(User user1,User user2,Predicate<Message> predicate){
+        Long id1 = user1.getId();
+        return this.messageService.findAll().stream()
                 .filter(predicate)
-                .sorted(Comparator.comparing(Message::getDate))
                 .map(message -> {
                     User user = message.getFrom().equals(id1) ? user1 : user2;
-                    return new MessageDTO(message.getId(), user, message.getMessage(), message.getDate());
+                    return new MessageDTO(message.getId(),user,message.getMessage(),message.getDate());
                 })
                 .collect(Collectors.toList());
     }
