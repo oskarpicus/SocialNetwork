@@ -7,6 +7,15 @@ create table Users
     secondName varchar(30)
 );
 
+alter table Users
+add column password varchar(30);
+
+alter table Users
+add column userName varchar(30);
+
+alter table Users
+add constraint unique_UserName unique (userName);
+
 create table Friendships
 (
     id1 int,

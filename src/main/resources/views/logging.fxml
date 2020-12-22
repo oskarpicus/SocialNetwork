@@ -17,29 +17,24 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints />
     </rowConstraints>
     <Label styleClass="labelTitle" text="Sign in">
     </Label>
-    <Label text="Last Name" GridPane.rowIndex="2">
-      <GridPane.margin>
-         <Insets />
-      </GridPane.margin></Label>
-    <Label text="ID" GridPane.rowIndex="3">
+    <Label text="Password" GridPane.rowIndex="2">
         <GridPane.margin>
           <Insets />
         </GridPane.margin>
     </Label>
-    <PasswordField fx:id="passwordFieldId" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-    <TextField fx:id="textFieldLastName" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-    <Button fx:id="buttonLogIn" mnemonicParsing="false" onAction="#handleButtonLogInClicked" text="Log in" GridPane.rowIndex="4">
+    <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Button fx:id="buttonLogIn" mnemonicParsing="false" onAction="#handleButtonLogInClicked" text="Log in" GridPane.rowIndex="3">
       <GridPane.margin>
          <Insets />
       </GridPane.margin></Button>
-    <Button fx:id="buttonAddUser" mnemonicParsing="false" onAction="#handleButtonAddUserClicked" text="Create New Account" GridPane.columnIndex="1" GridPane.rowIndex="4">
+    <Button fx:id="buttonAddUser" mnemonicParsing="false" onAction="#handleButtonAddUserClicked" text="Create New Account" GridPane.columnIndex="1" GridPane.rowIndex="3">
       <GridPane.margin>
          <Insets />
       </GridPane.margin></Button>
-   <Label text="First Name" GridPane.rowIndex="1" />
-   <TextField fx:id="textFieldFirstName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+   <Label text="Username" GridPane.rowIndex="1" />
+   <TextField fx:id="textFieldUsername" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 </GridPane>

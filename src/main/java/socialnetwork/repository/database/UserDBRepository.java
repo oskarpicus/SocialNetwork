@@ -15,9 +15,9 @@ public class UserDBRepository extends AbstractDBRepository<Long,User> {
 
     @Override
     protected String getSaveCommand(User entity) {
-        return "INSERT INTO Users(id,firstName,secondName) "
+        return "INSERT INTO Users(id,firstName,secondName,password,userName) "
                 + "VALUES ("+entity.getId()+",'"+entity.getFirstName()+"', '"
-                + entity.getLastName()+"');";
+                + entity.getLastName()+"','"+entity.getPassword()+"','"+entity.getUserName()+"');";
     }
 
     @Override
@@ -41,7 +41,9 @@ public class UserDBRepository extends AbstractDBRepository<Long,User> {
             int id = resultSet.getInt("id");
             String firstName = resultSet.getString("firstName");
             String secondName = resultSet.getString("secondName");
-            User user = new User(firstName,secondName);
+            String userName = resultSet.getString("userName");
+            String password = resultSet.getString("password");
+            User user = new User(firstName,secondName,userName,password);
             user.setId((long)id);
             id++;
             User.setNUMBEROFUSERS((long)id);

@@ -665,4 +665,8 @@ public class MasterService{
         this.friendshipObservable.addObserver(e);
     }
 
+    public Optional<User> findUserByUserName(String userName){
+        return userService.findUserByUserName(userName);
+    }
+
 }

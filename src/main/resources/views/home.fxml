@@ -62,7 +62,7 @@
          <ImageView fitHeight="52.0" fitWidth="41.0" layoutX="534.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
             <Image url="@../images/iconMessage.png" />
          </ImageView>
-      <TextArea editable="false" layoutX="475.0" layoutY="62.0" prefHeight="113.0" prefWidth="137.0" styleClass="textAreaTrilogy" text="Send messages and,&#10;at such, connect with&#10;other people&#10;" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="66.0">
+      <TextArea editable="false" layoutX="475.0" layoutY="62.0" prefHeight="113.0" prefWidth="137.0" styleClass="textAreaTrilogy" text="Send messages and&#10;connect with other &#10;people &#10;" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="66.0">
          <padding>
             <Insets top="14.0" />
          </padding>
