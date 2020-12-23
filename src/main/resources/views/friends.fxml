@@ -24,8 +24,8 @@
          </BorderPane>
          <AnchorPane layoutY="64.0" prefHeight="406.0" prefWidth="665.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="62.0">
             <SplitPane dividerPositions="0.8613861386138614" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="688.0">
-                  <TableView fx:id="tableViewFriends" minHeight="-Infinity" minWidth="-Infinity" prefHeight="381.0" prefWidth="663.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <VBox minHeight="0.0" minWidth="0.0" prefHeight="323.0" prefWidth="688.0">
+                  <TableView fx:id="tableViewFriends" minHeight="-Infinity" minWidth="-Infinity" prefHeight="295.0" prefWidth="663.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <columns>
                         <TableColumn fx:id="tableColumnFriendsFirstName" prefWidth="150.0" text="First Name" />
                         <TableColumn fx:id="tableColumnFriendsLastName" prefWidth="100.0" text="Last Name" />
@@ -35,7 +35,8 @@
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                      </columnResizePolicy>
                   </TableView>
-               </AnchorPane>
+                  <Pagination fx:id="pagination" prefHeight="200.0" prefWidth="643.0" VBox.vgrow="ALWAYS"/>
+               </VBox>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" styleClass="anchorPaneButtons">
                   <BorderPane layoutY="9.0" prefHeight="66.0" prefWidth="643.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <center>

@@ -265,7 +265,7 @@ public class MasterService{
         Predicate<Friendship> predicate = friendship ->
                 friendship.getId().getLeft().equals(userID) ||
                 friendship.getId().getRight().equals(userID);
-        return filterFriendships(userID,predicate);
+        return filterFriendships(this.friendshipService.findAll(),userID,predicate);
     }
 
     /**
@@ -279,7 +279,7 @@ public class MasterService{
                 friendship.getId().getLeft().equals(userID) || friendship.getId().getRight().equals(userID);
         Predicate<Friendship> predicateUserMonth = predicateUser.and(friendship ->
                 friendship.getDate().getMonth().equals(month));
-        return filterFriendships(userID,predicateUserMonth);
+        return filterFriendships(this.friendshipService.findAll(),userID,predicateUserMonth);
     }
 
     /**
@@ -294,7 +294,7 @@ public class MasterService{
                 friendship.getId().getLeft().equals(userID) || friendship.getId().getRight().equals(userID);
         Predicate<Friendship> predicateDate = predicateUser.and(friendship ->
                 friendship.getDate().isAfter(dateFrom.atStartOfDay()) && friendship.getDate().isBefore(dateTo.plusDays(1).atStartOfDay()));
-        return filterFriendships(userID,predicateDate);
+        return filterFriendships(this.friendshipService.findAll(),userID,predicateDate);
     }
 
     /**
@@ -303,8 +303,8 @@ public class MasterService{
      * @param predicate : Predicat<Friendships>, the further conditions to be met
      * @return List<FriendshipDTO>, contains all the entries that are correct
      */
-    private List<FriendshipDTO> filterFriendships(Long userID, Predicate<Friendship> predicate){
-        return this.friendshipService.findAll().stream()
+    private List<FriendshipDTO> filterFriendships(List<Friendship> list,Long userID, Predicate<Friendship> predicate){
+        return list.stream()
                 .filter(predicate)
                 .map(friendship -> {
                     Long id = friendship.getId().getLeft().equals(userID) ?
@@ -671,5 +671,23 @@ public class MasterService{
     //paging
     public List<User> getUsersPage(int pageNumber){
         return this.userService.getEntities(pageNumber);
+    }
+
+    public List<FriendshipDTO> getFriendshipsPage(int pageNumber,User loggedUser){
+        Long userID = loggedUser.getId();
+        Predicate<Friendship> predicate = friendship -> friendship.getId().getLeft().equals(userID) ||
+                friendship.getId().getRight().equals(userID);
+        int numberOfFriendships = this.friendshipService.findAll().size();
+        int currentFriendships = pageNumber*PagingService.pageSize;
+        List<FriendshipDTO> result = new ArrayList<>(); //is empty
+        int currentGoodPage = 0;
+        for(int i = 0; currentFriendships<numberOfFriendships && currentGoodPage<=pageNumber;i++){
+            List<Friendship> list = this.friendshipService.getEntities(i);
+            result = filterFriendships(list,userID,predicate);
+            if(!result.isEmpty())
+                currentGoodPage++;
+            currentFriendships=i*PagingService.pageSize;
+        }
+        return result;
     }
 }
