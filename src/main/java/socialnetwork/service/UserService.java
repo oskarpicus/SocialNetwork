@@ -62,4 +62,11 @@ public class UserService implements Service<Long,User>{
         return this.repo.findOne(id);
     }
 
+    public Optional<User> findUserByUserName(String userName){
+        Iterable<User> users = repo.findAll();
+        return StreamSupport.stream(users.spliterator(),false)
+                .filter(user -> user.getUserName().equals(userName))
+                .findFirst();
+    }
+
 }

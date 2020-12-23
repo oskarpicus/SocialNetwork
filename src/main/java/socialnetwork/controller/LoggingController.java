@@ -27,25 +27,21 @@ public class LoggingController {
     @FXML
     Button buttonLogIn;
     @FXML
-    PasswordField passwordFieldId;
+    PasswordField passwordField;
     @FXML
-    TextField textFieldFirstName;
-    @FXML
-    TextField textFieldLastName;
+    TextField textFieldUsername;
     @FXML
     Button buttonAddUser;
 
     public void handleButtonLogInClicked(ActionEvent actionEvent) {
         try {
-            Optional<User> result = this.service.findOneUser(Long.parseLong(passwordFieldId.getText()));
+            Optional<User> result = this.service.findUserByUserName(textFieldUsername.getText());
 
             if(result.isEmpty())
                 throw new Exception();
-            if(!result.get().getFirstName().equals(textFieldFirstName.getText())||
-                !result.get().getLastName().equals(textFieldLastName.getText()))
+            if(!result.get().getPassword().equals(passwordField.getText()))
                 throw new Exception();
             loggedUser=result.get();
-           // closeWindow();
             showHomeWindow();
         }catch (NumberFormatException e){
             MyAllert.showErrorMessage(null,"Invalid Id");
@@ -58,7 +54,6 @@ public class LoggingController {
     }
 
     public void handleButtonAddUserClicked(ActionEvent actionEvent) {
-        closeWindow();
         showCreateAccountWindow();
     }
 
@@ -98,8 +93,4 @@ public class LoggingController {
         }
     }
 
-    private void closeWindow(){
-        Stage stage = (Stage)buttonLogIn.getScene().getWindow();
-        stage.close();
-    }
 }
