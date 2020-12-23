@@ -3,16 +3,21 @@ package socialnetwork.service;
 import socialnetwork.domain.User;
 import socialnetwork.domain.validators.ValidationException;
 import socialnetwork.repository.Repository;
+import socialnetwork.repository.paging.Page;
+import socialnetwork.repository.paging.Pageable;
+import socialnetwork.repository.paging.PageableImplementation;
+import socialnetwork.repository.paging.PagingRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class UserService implements Service<Long,User>{
-    private final Repository<Long, User> repo;
+public class UserService implements PagingService<Long,User>{
+    private final PagingRepository<Long, User> repo;
 
-    public UserService(Repository<Long, User> repo) {
+    public UserService(PagingRepository<Long, User> repo) {
         this.repo = repo;
     }
 
@@ -69,4 +74,10 @@ public class UserService implements Service<Long,User>{
                 .findFirst();
     }
 
+    @Override
+    public List<User> getEntities(int page){
+        Pageable pageable = new PageableImplementation(page,pageSize);
+        Page<User> all = repo.findAll(pageable);
+        return all.getContent().collect(Collectors.toList());
+    }
 }

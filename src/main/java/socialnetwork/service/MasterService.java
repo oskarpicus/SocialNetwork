@@ -19,7 +19,6 @@ import socialnetwork.utils.observer.Observer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -669,4 +668,8 @@ public class MasterService{
         return userService.findUserByUserName(userName);
     }
 
+    //paging
+    public List<User> getUsersPage(int pageNumber){
+        return this.userService.getEntities(pageNumber);
+    }
 }

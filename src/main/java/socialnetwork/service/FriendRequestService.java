@@ -2,17 +2,21 @@ package socialnetwork.service;
 
 import socialnetwork.domain.FriendRequest;
 import socialnetwork.repository.Repository;
+import socialnetwork.repository.paging.Page;
+import socialnetwork.repository.paging.Pageable;
+import socialnetwork.repository.paging.PageableImplementation;
+import socialnetwork.repository.paging.PagingRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class FriendRequestService implements Service<Long, FriendRequest> {
+public class FriendRequestService implements PagingService<Long, FriendRequest> {
 
-    private final Repository<Long,FriendRequest> repository;
+    private final PagingRepository<Long,FriendRequest> repository;
 
-    public FriendRequestService(Repository<Long, FriendRequest> repository) {
+    public FriendRequestService(PagingRepository<Long, FriendRequest> repository) {
         this.repository = repository;
     }
 
@@ -88,5 +92,13 @@ public class FriendRequestService implements Service<Long, FriendRequest> {
         FriendRequest request = new FriendRequest();
         request.setId(id);
         return Optional.of(request);
+    }
+
+
+    @Override
+    public List<FriendRequest> getEntities(int page){
+        Pageable pageable = new PageableImplementation(page,pageSize);
+        Page<FriendRequest> all = repository.findAll(pageable);
+        return all.getContent().collect(Collectors.toList());
     }
 }

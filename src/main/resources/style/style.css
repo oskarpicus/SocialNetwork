@@ -58,7 +58,6 @@
 }
 
 .button{
-    -fx-border-color: #07689f;
     -fx-font-weight: bold;
 }
 
@@ -108,4 +107,23 @@
 
 .list-cell:selected{
     -fx-background-color: darkorange;
+}
+
+.pagination .pagination-control .left-arrow, .right-arrow{
+    -fx-background-color: #f9f7f7, #3f72af;
+}
+
+.pagination .pagination-control{
+    -fx-background-color: #f9f7f7;
+}
+
+.pagination .pagination-control .toggle-button:selected{
+    -fx-background-color: #112d4e;
+    -fx-text-fill: #f9f7f7;
+    -fx-font-weight: bold;
+}
+
+.pagination{
+    -fx-max-page-indicator-count: 5;
+    -fx-page-information-visible: false;
 }

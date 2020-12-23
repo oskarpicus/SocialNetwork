@@ -17,7 +17,7 @@ import socialnetwork.ui.ConsoleUI;
 public class MainCMDTextFile {
 
     public static void main(String[] args) {
-        String fileNameUsers= ApplicationContext.getPROPERTIES().getProperty("data.socialnetwork.users");
+       /* String fileNameUsers= ApplicationContext.getPROPERTIES().getProperty("data.socialnetwork.users");
         Repository<Long, User> userFileRepository = new UserFile(fileNameUsers
                 , new UserValidator());
         UserService userService = new UserService(userFileRepository);
@@ -39,6 +39,6 @@ public class MainCMDTextFile {
         MasterService masterService = new MasterService(friendshipService,userService, friendRequestService,messageService);
 
         ConsoleUI ui = new ConsoleUI(masterService);
-        ui.run();
+        ui.run();*/
     }
 }
