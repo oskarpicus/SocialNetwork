@@ -78,6 +78,7 @@ public class SearchController extends AbstractController implements Observer<Use
 
     @Override
     public void update(UserEvent e){
+        pagination.setPageCount((int)Math.ceil((double)service.getAllUsers().size()/ PagingService.pageSize));
         setTableViewData(service.getUsersPage(pagination.getCurrentPageIndex()));
     }
 
@@ -109,7 +110,7 @@ public class SearchController extends AbstractController implements Observer<Use
 
     public void handleTextFieldNameKeyTyped(KeyEvent keyEvent) {
         if(textFieldName.getText().equals(""))
-            setTableViewData(this.service.getAllUsers());
+            setTableViewData(service.getUsersPage(pagination.getCurrentPageIndex()));
         else {
             model.setAll(this.getAllUsers(this.service.filterUsers(textFieldName.getText())));
         }

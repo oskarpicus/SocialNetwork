@@ -446,7 +446,7 @@ public class MasterService{
 //                    return new MessageDTO(message.getId(), user, message.getMessage(), message.getDate());
 //                })
 //                .collect(Collectors.toList());
-        List<MessageDTO> result = filterMessages(user1,user2,predicate);
+        List<MessageDTO> result = filterMessages(this.messageService.findAll(),user1,user2,predicate);
         result.sort(Comparator.comparing(MessageDTO::getDate));
         return result;
     }
@@ -466,7 +466,7 @@ public class MasterService{
         Predicate<Message> predicateFrom = message -> message.getFrom().equals(id2) && message.getTo().contains(id1);
         Predicate<Message> predicateDates = predicateFrom.and(message ->
                 message.getDate().isAfter(dateFrom1) && message.getDate().isBefore(dateTo1));
-        List<MessageDTO> result = filterMessages(user1,user2,predicateDates);
+        List<MessageDTO> result = filterMessages(messageService.findAll(),user1,user2,predicateDates);
         result.sort(Comparator.comparing(MessageDTO::getDate));
         return result;
     }
@@ -496,9 +496,9 @@ public class MasterService{
      * @param predicate : Predicate<Message>, the condition to be met
      * @return list of {@code FriendshipDTO} that respect the predicate
      */
-    private List<MessageDTO> filterMessages(User user1,User user2,Predicate<Message> predicate){
+    private List<MessageDTO> filterMessages(List<Message> list,User user1,User user2,Predicate<Message> predicate){
         Long id1 = user1.getId();
-        return this.messageService.findAll().stream()
+        return list.stream()
                 .filter(predicate)
                 .map(message -> {
                     User user = message.getFrom().equals(id1) ? user1 : user2;
@@ -675,5 +675,10 @@ public class MasterService{
     public List<FriendRequestDTO> getReceivedFriendRequestsPage(int pageNumber, User loggedUser){
         List<FriendRequest> list = this.friendRequestService.getReceivedFriendRequestsPage(pageNumber,loggedUser);
         return getFriendRequestsDTO(list);
+    }
+
+    public List<MessageDTO> getMessagesPage(int leftLimit, int rightLimit, User user1, User user2){
+        List<Message> list = this.messageService.getMessagesPage(leftLimit,rightLimit,user1,user2);
+        return filterMessages(list,user1,user2,message -> true);
     }
 }
