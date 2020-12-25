@@ -1,16 +1,20 @@
 package socialnetwork.controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.FriendRequestDTO;
 import socialnetwork.service.MasterService;
+import socialnetwork.service.PagingService;
 import socialnetwork.utils.events.friendRequest.FriendRequestEvent;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.AcceptFriendRequestRunner;
@@ -25,6 +29,10 @@ public class FriendRequestsController extends AbstractController implements Obse
     private final ObservableList<FriendRequestDTO> modelSentFriendRequests = FXCollections.observableArrayList();
     private final ObservableList<FriendRequestDTO> modelReceivedFriendRequests = FXCollections.observableArrayList();
 
+    @FXML
+    Pagination paginationReceivedFriendRequests;
+    @FXML
+    Pagination paginationSentFriendRequests;
     @FXML
     Label labelFriends;
     @FXML
@@ -59,7 +67,11 @@ public class FriendRequestsController extends AbstractController implements Obse
 
     @Override
     public void update(FriendRequestEvent event) {
-        setTableViewData();
+        int pageNumberSent = paginationSentFriendRequests.getCurrentPageIndex();
+        int pageNumberReceived = paginationReceivedFriendRequests.getCurrentPageIndex();
+        modelSentFriendRequests.setAll(service.getSentFriendRequestsPage(pageNumberSent,loggedUser));
+        modelReceivedFriendRequests.setAll(service.getReceivedFriendRequestsPage(pageNumberReceived,loggedUser));
+        Platform.runLater(this::setPageCount);
     }
 
     @Override
@@ -74,7 +86,38 @@ public class FriendRequestsController extends AbstractController implements Obse
         service.addFriendRequestObserver(this);
         initializeTableViewReceivedFriendRequests();
         initializeTableViewSentFriendRequests();
-        setTableViewData();
+        Platform.runLater(this::setPageCount);
+        paginationSentFriendRequests.setPageFactory(new Callback<Integer, Node>() {
+            @Override
+            public Node call(Integer param) {
+                List<FriendRequestDTO> result = service.getSentFriendRequestsPage(param,loggedUser);
+                modelSentFriendRequests.setAll(result);
+                tableViewSentFriendRequests.setItems(modelSentFriendRequests);
+                if(result.isEmpty()){
+                   // if(service.getSentFriendRequestsPage(param-1,loggedUser).isEmpty())
+                        return null;
+                }
+                return tableViewSentFriendRequests;
+            }
+        });
+        paginationReceivedFriendRequests.setPageFactory(new Callback<Integer, Node>() {
+            @Override
+            public Node call(Integer param) {
+                List<FriendRequestDTO> result = service.getReceivedFriendRequestsPage(param,loggedUser);
+                modelReceivedFriendRequests.setAll(result);
+                tableViewReceivedFriendRequests.setItems(modelReceivedFriendRequests);
+                if(result.isEmpty()){
+                    //if(service.getSentFriendRequestsPage(param-1,loggedUser).isEmpty())
+                        return null;
+                }
+                return tableViewReceivedFriendRequests;
+            }
+        });
+    }
+
+    public void setPageCount(){
+        paginationSentFriendRequests.setPageCount((int) Math.ceil((double)getSentFriendRequests().size()/ PagingService.pageSize));
+        paginationReceivedFriendRequests.setPageCount((int)Math.ceil((double)getReceivedFriendRequests().size()/PagingService.pageSize));
     }
 
     private void initializeTableViewSentFriendRequests(){
@@ -82,6 +125,7 @@ public class FriendRequestsController extends AbstractController implements Obse
         tableColumnSentLastName.setCellValueFactory(new PropertyValueFactory<>("toLastName"));
         tableColumnSentStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         tableColumnSentDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
+        tableViewSentFriendRequests.setItems(modelSentFriendRequests);
     }
 
     private void initializeTableViewReceivedFriendRequests(){
@@ -89,31 +133,17 @@ public class FriendRequestsController extends AbstractController implements Obse
         tableColumnReceivedLastName.setCellValueFactory(new PropertyValueFactory<>("fromLastName"));
         tableColumnReceivedStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         tableColumnReceivedDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
-    }
-
-    private void setTableViewData(){
-        setSentTableViewData();
-        setReceivedTableViewData();
-    }
-
-    private void setSentTableViewData(){
-        modelSentFriendRequests.setAll(this.getSentFriendRequests());
-        tableViewSentFriendRequests.setItems(modelSentFriendRequests);
-    }
-
-    private void setReceivedTableViewData(){
-        modelReceivedFriendRequests.setAll(this.getReceivedFriendRequests());
         tableViewReceivedFriendRequests.setItems(modelReceivedFriendRequests);
     }
 
     private List<FriendRequestDTO> getSentFriendRequests(){
-        return this.service.getAllFriendRequestsDTO().stream()
+        return this.service.getFriendRequestsDTO(this.service.getAllFriendRequests()).stream()
                 .filter(friendRequestDTO -> friendRequestDTO.getUserFromId().equals(loggedUser.getId()))
                 .collect(Collectors.toList());
     }
 
     private List<FriendRequestDTO> getReceivedFriendRequests(){
-        return this.service.getAllFriendRequestsDTO().stream()
+        return this.service.getFriendRequestsDTO(this.service.getAllFriendRequests()).stream()
                 .filter(friendRequestDTO -> friendRequestDTO.getUserToId().equals(loggedUser.getId()))
                 .collect(Collectors.toList());
     }

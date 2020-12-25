@@ -1,6 +1,7 @@
 package socialnetwork.service;
 
 import socialnetwork.domain.FriendRequest;
+import socialnetwork.domain.User;
 import socialnetwork.repository.Repository;
 import socialnetwork.repository.paging.Page;
 import socialnetwork.repository.paging.Pageable;
@@ -9,6 +10,7 @@ import socialnetwork.repository.paging.PagingRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -101,4 +103,21 @@ public class FriendRequestService implements PagingService<Long, FriendRequest> 
         Page<FriendRequest> all = repository.findAll(pageable);
         return all.getContent().collect(Collectors.toList());
     }
+
+    public List<FriendRequest> getSentFriendRequestsPage(int pageNumber, User user){
+        return getFriendRequestsPage(pageNumber,request -> request.getFromUser().equals(user.getId()));
+    }
+
+    public List<FriendRequest> getReceivedFriendRequestsPage(int pageNumber, User user){
+        return getFriendRequestsPage(pageNumber,request -> request.getToUser().equals(user.getId()));
+    }
+
+    private List<FriendRequest> getFriendRequestsPage(int pageNumber, Predicate<FriendRequest> predicate){
+        return this.findAll().stream()
+                .filter(predicate)
+                .skip(pageNumber  * PagingService.pageSize)
+                .limit(PagingService.pageSize)
+                .collect(Collectors.toList());
+    }
+
 }

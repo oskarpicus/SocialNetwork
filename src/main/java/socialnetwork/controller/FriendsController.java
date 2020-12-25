@@ -1,5 +1,6 @@
 package socialnetwork.controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,9 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -47,8 +46,8 @@ public class FriendsController extends AbstractController implements Observer<Fr
         tableColumnFriendsFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         tableColumnFriendsLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         tableColumnFriendsDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
-       // setTableViewData(this.service.filterFriendshipsID(loggedUser.getId()));
 
+        Platform.runLater(this::setPageCount);
         pagination.setPageFactory(new Callback<Integer, Node>() {
             @Override
             public Node call(Integer param) {
@@ -56,7 +55,7 @@ public class FriendsController extends AbstractController implements Observer<Fr
                 model.setAll(result);
                 tableViewFriends.setItems(model);
                 if(result.isEmpty()){
-                    if(service.getFriendshipsPage(param-1,loggedUser).isEmpty()) //the previous
+                   // if(service.getFriendshipsPage(param-1,loggedUser).isEmpty()) //the previous
                         return null;
                 }
                 return tableViewFriends;
@@ -65,9 +64,8 @@ public class FriendsController extends AbstractController implements Observer<Fr
 
     }
 
-    private void setTableViewData(List<FriendshipDTO> list){
-        this.model.setAll(list);
-        tableViewFriends.setItems(model);
+    public void setPageCount(){
+        pagination.setPageCount((int)Math.ceil((double)service.filterFriendshipsID(loggedUser.getId()).size()/PagingService.pageSize));
     }
 
     @Override
@@ -78,7 +76,8 @@ public class FriendsController extends AbstractController implements Observer<Fr
 
     @Override
     public void update(FriendshipEvent event) {
-        setTableViewData(this.service.filterFriendshipsID(loggedUser.getId()));
+        this.model.setAll(service.getFriendshipsPage(pagination.getCurrentPageIndex(),loggedUser));
+        Platform.runLater(this::setPageCount);
     }
 
     public void handleLabelHome(MouseEvent mouseEvent) {

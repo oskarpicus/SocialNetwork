@@ -95,4 +95,14 @@ public class FriendshipService implements PagingService<Tuple<Long,Long>,Friends
         Page<Friendship> all = repo.findAll(pageable);
         return all.getContent().collect(Collectors.toList());
     }
+
+    public List<Friendship> getFriendshipsPage(int pageNumber, User user){
+        Long id = user.getId();
+        return this.findAll().stream()
+                .filter(friendship -> friendship.getId().getRight().equals(id) ||
+                        friendship.getId().getLeft().equals(id))
+                .skip(pageNumber  * PagingService.pageSize)
+                .limit(PagingService.pageSize)
+                .collect(Collectors.toList());
+    }
 }

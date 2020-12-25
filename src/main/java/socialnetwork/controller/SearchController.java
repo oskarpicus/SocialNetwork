@@ -1,5 +1,6 @@
 package socialnetwork.controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
+import socialnetwork.service.PagingService;
 import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.SendFriendRequestRunner;
@@ -52,7 +54,7 @@ public class SearchController extends AbstractController implements Observer<Use
         super.initialize(service,loggedUser);
         service.addUserObserver(this);
         initTable();
-        //setTableViewData(this.service.getAllUsers());
+        Platform.runLater(()->pagination.setPageCount((int)Math.ceil((double)service.getAllUsers().size()/ PagingService.pageSize)));
         pagination.setPageFactory(new Callback<Integer, Node>() {
             @Override
             public Node call(Integer param) {
@@ -60,7 +62,7 @@ public class SearchController extends AbstractController implements Observer<Use
                 model.setAll(all);
                 tableViewUsers.setItems(model);
                 if(all.isEmpty()){
-                    if(getAllUsers(service.getUsersPage(param-1)).isEmpty()) //the previous
+                   // if(getAllUsers(service.getUsersPage(param-1)).isEmpty()) //the previous
                         return null;
                 }
                 return tableViewUsers;
@@ -76,7 +78,7 @@ public class SearchController extends AbstractController implements Observer<Use
 
     @Override
     public void update(UserEvent e){
-        setTableViewData(this.service.getAllUsers());
+        setTableViewData(service.getUsersPage(pagination.getCurrentPageIndex()));
     }
 
     private void setTableViewData(List<User> list){

@@ -300,7 +300,7 @@ public class MasterService{
     /**
      * Generic method for filtering Friendships of one User and based on further conditions
      * @param userID : Long, ID of a User
-     * @param predicate : Predicat<Friendships>, the further conditions to be met
+     * @param predicate : Predicate<Friendships>, the further conditions to be met
      * @return List<FriendshipDTO>, contains all the entries that are correct
      */
     private List<FriendshipDTO> filterFriendships(List<Friendship> list,Long userID, Predicate<Friendship> predicate){
@@ -508,17 +508,6 @@ public class MasterService{
     }
 
     /**
-     * Method for finding a user by their id
-     * @param id : Long , id of the user
-     * @return an {@code Optional}
-     *              - the user, if id refers a user
-     *              - null , if there is no user with that id
-     */
-    public Optional<User> findOneUser(Long id){
-        return this.userService.findOne(id);
-    }
-
-    /**
      * Method for filtering a list of users that contain a certain string in their names
      * @param string : String
      * @return list of all the users that contain string in their names
@@ -534,8 +523,8 @@ public class MasterService{
      * Method for obtaining all the friend requests in a printable format
      * @return list: List<FriendRequestDTO>, containing all the friend requests that were sent
      **/
-    public List<FriendRequestDTO> getAllFriendRequestsDTO() {
-        return friendRequestService.findAll().stream()
+    public List<FriendRequestDTO> getFriendRequestsDTO(List<FriendRequest> list) {
+        return list.stream()
                 .map(request -> {
                     Optional<User> fromUser = userService.findOne(request.getFromUser());
                     Optional<User> toUser = userService.findOne(request.getToUser());
@@ -674,20 +663,17 @@ public class MasterService{
     }
 
     public List<FriendshipDTO> getFriendshipsPage(int pageNumber,User loggedUser){
-        Long userID = loggedUser.getId();
-        Predicate<Friendship> predicate = friendship -> friendship.getId().getLeft().equals(userID) ||
-                friendship.getId().getRight().equals(userID);
-        int numberOfFriendships = this.friendshipService.findAll().size();
-        int currentFriendships = pageNumber*PagingService.pageSize;
-        List<FriendshipDTO> result = new ArrayList<>(); //is empty
-        int currentGoodPage = 0;
-        for(int i = 0; currentFriendships<numberOfFriendships && currentGoodPage<=pageNumber;i++){
-            List<Friendship> list = this.friendshipService.getEntities(i);
-            result = filterFriendships(list,userID,predicate);
-            if(!result.isEmpty())
-                currentGoodPage++;
-            currentFriendships=i*PagingService.pageSize;
-        }
-        return result;
+        return filterFriendships(this.friendshipService.getFriendshipsPage(pageNumber,loggedUser),
+                loggedUser.getId(),friendship -> true);
+    }
+
+    public List<FriendRequestDTO> getSentFriendRequestsPage(int pageNumber, User loggedUser){
+        List<FriendRequest> list =  this.friendRequestService.getSentFriendRequestsPage(pageNumber, loggedUser);
+        return getFriendRequestsDTO(list);
+    }
+
+    public List<FriendRequestDTO> getReceivedFriendRequestsPage(int pageNumber, User loggedUser){
+        List<FriendRequest> list = this.friendRequestService.getReceivedFriendRequestsPage(pageNumber,loggedUser);
+        return getFriendRequestsDTO(list);
     }
 }
