@@ -461,8 +461,8 @@ public class MasterService{
      */
     public List<MessageDTO> getConversation(User user1, User user2, LocalDate dateFrom,LocalDate dateTo){
         Long id1 = user1.getId(), id2 = user2.getId();
-        LocalDateTime dateFrom1 = dateFrom.atStartOfDay().plusDays(1);
-        LocalDateTime dateTo1 = dateTo.atStartOfDay();
+        LocalDateTime dateFrom1 = dateFrom.atStartOfDay();
+        LocalDateTime dateTo1 = dateTo.atStartOfDay().plusDays(1);
         Predicate<Message> predicateFrom = message -> message.getFrom().equals(id2) && message.getTo().contains(id1);
         Predicate<Message> predicateDates = predicateFrom.and(message ->
                 message.getDate().isAfter(dateFrom1) && message.getDate().isBefore(dateTo1));

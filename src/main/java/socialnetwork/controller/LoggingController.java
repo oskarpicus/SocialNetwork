@@ -9,6 +9,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import socialnetwork.controller.pages.PageActions;
+import socialnetwork.controller.pages.PageObject;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
 
@@ -85,8 +87,11 @@ public class LoggingController {
             homeStage.setTitle("Home");
             homeStage.setScene(new Scene(root));
 
+            PageObject pageObject = new PageObject(service,loggedUser);
+            PageActions pageActions = new PageActions(pageObject);
+
             HomeController homeController = loader.getController();
-            homeController.initialize(service,loggedUser);
+            homeController.initialize(pageActions);
             homeStage.show();
         }catch (IOException e){
             e.printStackTrace();

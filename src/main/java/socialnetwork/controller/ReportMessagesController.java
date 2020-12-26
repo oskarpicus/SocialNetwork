@@ -4,9 +4,9 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.MessageDTO;
-import socialnetwork.service.MasterService;
 import socialnetwork.utils.pdf.PdfGenerator;
 
 import java.time.LocalDate;
@@ -19,8 +19,8 @@ public class ReportMessagesController extends AbstractReportController{
     @FXML
     ListView<MessageDTO> listViewMessages;
 
-    public void initialize(MasterService service, User loggedUser, User userMessage){
-        super.initialize(service,loggedUser);
+    public void initialize(PageActions pageActions, User userMessage){
+        super.initialize(pageActions);
         this.userMessage=userMessage;
         this.labelInformation.setText("Report containing your messages with \n"+userMessage.getFirstName()+" "+userMessage.getLastName());
         listViewMessages.setPlaceholder(new Label("This is where your \nmessages will show up"));
@@ -39,7 +39,7 @@ public class ReportMessagesController extends AbstractReportController{
             MyAllert.showMessage(null, Alert.AlertType.WARNING, "Warning", "You did not select both days");
             return;
         }
-        List<MessageDTO> result = this.service.getConversation(loggedUser, userMessage, dateFrom, dateTo);
+        List<MessageDTO> result = pageActions.getMessages(userMessage,dateFrom,dateTo);
         if (super.group.getSelectedToggle().equals(this.radioButtonYes)) {
             String path = getPathToSave();
             if (path == null) {

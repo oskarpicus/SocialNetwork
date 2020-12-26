@@ -4,20 +4,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import socialnetwork.domain.User;
-import socialnetwork.service.MasterService;
+import socialnetwork.controller.pages.PageActions;
 
 import java.io.IOException;
 
 public abstract class AbstractController implements Controller{
 
-    protected MasterService service;
-    protected User loggedUser;
-
-    @Override
-    public void setService(MasterService service){
-        this.service=service;
-    }
+    protected PageActions pageActions;
 
     @Override
     public void openWindow(String name){
@@ -30,7 +23,7 @@ public abstract class AbstractController implements Controller{
             stage.setTitle(name.substring(0,1).toUpperCase()+name.substring(1));
 
             Controller controller = loader.getController();
-            controller.initialize(service,loggedUser);
+            controller.initialize(pageActions);
             closeWindow();
             stage.show();
         }catch (IOException e){
@@ -39,13 +32,7 @@ public abstract class AbstractController implements Controller{
     }
 
     @Override
-    public void setLoggedUser(User loggedUser){
-        this.loggedUser=loggedUser;
-    }
-
-    @Override
-    public void initialize(MasterService service, User loggedUser) {
-        setLoggedUser(loggedUser);
-        setService(service);
+    public void initialize(PageActions pageActions) {
+        this.pageActions = pageActions;
     }
 }

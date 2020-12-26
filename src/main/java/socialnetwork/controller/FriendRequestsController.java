@@ -11,18 +11,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import socialnetwork.domain.User;
+import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.dtos.FriendRequestDTO;
-import socialnetwork.service.MasterService;
 import socialnetwork.service.PagingService;
 import socialnetwork.utils.events.friendRequest.FriendRequestEvent;
 import socialnetwork.utils.observer.Observer;
-import socialnetwork.utils.runners.AcceptFriendRequestRunner;
-import socialnetwork.utils.runners.RejectFriendRequestRunner;
-import socialnetwork.utils.runners.RemovePendingFriendRequestRunner;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FriendRequestsController extends AbstractController implements Observer<FriendRequestEvent> {
 
@@ -69,8 +64,8 @@ public class FriendRequestsController extends AbstractController implements Obse
     public void update(FriendRequestEvent event) {
         int pageNumberSent = paginationSentFriendRequests.getCurrentPageIndex();
         int pageNumberReceived = paginationReceivedFriendRequests.getCurrentPageIndex();
-        modelSentFriendRequests.setAll(service.getSentFriendRequestsPage(pageNumberSent,loggedUser));
-        modelReceivedFriendRequests.setAll(service.getReceivedFriendRequestsPage(pageNumberReceived,loggedUser));
+        modelSentFriendRequests.setAll(pageActions.getSentFriendRequests(pageNumberSent));
+        modelReceivedFriendRequests.setAll(pageActions.getReceivedFriendRequests(pageNumberReceived));
         Platform.runLater(this::setPageCount);
     }
 
@@ -81,21 +76,20 @@ public class FriendRequestsController extends AbstractController implements Obse
     }
 
     @Override
-    public void initialize(MasterService service, User loggedUser) {
-        super.initialize(service, loggedUser);
-        service.addFriendRequestObserver(this);
+    public void initialize(PageActions pageActions) {
+        super.initialize(pageActions);
+        pageActions.getService().addFriendRequestObserver(this);
         initializeTableViewReceivedFriendRequests();
         initializeTableViewSentFriendRequests();
         Platform.runLater(this::setPageCount);
         paginationSentFriendRequests.setPageFactory(new Callback<Integer, Node>() {
             @Override
             public Node call(Integer param) {
-                List<FriendRequestDTO> result = service.getSentFriendRequestsPage(param,loggedUser);
+                List<FriendRequestDTO> result = pageActions.getSentFriendRequests(param);
                 modelSentFriendRequests.setAll(result);
                 tableViewSentFriendRequests.setItems(modelSentFriendRequests);
                 if(result.isEmpty()){
-                   // if(service.getSentFriendRequestsPage(param-1,loggedUser).isEmpty())
-                        return null;
+                    return null;
                 }
                 return tableViewSentFriendRequests;
             }
@@ -103,12 +97,11 @@ public class FriendRequestsController extends AbstractController implements Obse
         paginationReceivedFriendRequests.setPageFactory(new Callback<Integer, Node>() {
             @Override
             public Node call(Integer param) {
-                List<FriendRequestDTO> result = service.getReceivedFriendRequestsPage(param,loggedUser);
+                List<FriendRequestDTO> result = pageActions.getReceivedFriendRequests(param);
                 modelReceivedFriendRequests.setAll(result);
                 tableViewReceivedFriendRequests.setItems(modelReceivedFriendRequests);
                 if(result.isEmpty()){
-                    //if(service.getSentFriendRequestsPage(param-1,loggedUser).isEmpty())
-                        return null;
+                    return null;
                 }
                 return tableViewReceivedFriendRequests;
             }
@@ -116,8 +109,8 @@ public class FriendRequestsController extends AbstractController implements Obse
     }
 
     public void setPageCount(){
-        paginationSentFriendRequests.setPageCount((int) Math.ceil((double)getSentFriendRequests().size()/ PagingService.pageSize));
-        paginationReceivedFriendRequests.setPageCount((int)Math.ceil((double)getReceivedFriendRequests().size()/PagingService.pageSize));
+        paginationSentFriendRequests.setPageCount((int) Math.ceil((double)pageActions.getSentFriendRequests().size()/ PagingService.pageSize));
+        paginationReceivedFriendRequests.setPageCount((int)Math.ceil((double)pageActions.getReceivedFriendRequests().size()/PagingService.pageSize));
     }
 
     private void initializeTableViewSentFriendRequests(){
@@ -134,18 +127,6 @@ public class FriendRequestsController extends AbstractController implements Obse
         tableColumnReceivedStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         tableColumnReceivedDate.setCellValueFactory(new PropertyValueFactory<>("dateAsString"));
         tableViewReceivedFriendRequests.setItems(modelReceivedFriendRequests);
-    }
-
-    private List<FriendRequestDTO> getSentFriendRequests(){
-        return this.service.getFriendRequestsDTO(this.service.getAllFriendRequests()).stream()
-                .filter(friendRequestDTO -> friendRequestDTO.getUserFromId().equals(loggedUser.getId()))
-                .collect(Collectors.toList());
-    }
-
-    private List<FriendRequestDTO> getReceivedFriendRequests(){
-        return this.service.getFriendRequestsDTO(this.service.getAllFriendRequests()).stream()
-                .filter(friendRequestDTO -> friendRequestDTO.getUserToId().equals(loggedUser.getId()))
-                .collect(Collectors.toList());
     }
 
     private FriendRequestDTO getSelectedSentRequest(){
@@ -182,23 +163,20 @@ public class FriendRequestsController extends AbstractController implements Obse
         FriendRequestDTO request = getSelectedReceivedRequest();
         if(request==null)
             return;
-        AcceptFriendRequestRunner runner = new AcceptFriendRequestRunner(request.getId(),this.service);
-        runner.execute();
+        pageActions.acceptFriendRequest(request);
     }
 
     public void handleButtonRejectFriendRequest(ActionEvent actionEvent) {
         FriendRequestDTO request = getSelectedReceivedRequest();
         if(request==null)
             return;
-        RejectFriendRequestRunner runner = new RejectFriendRequestRunner(request.getId(),this.service);
-        runner.execute();
+        pageActions.rejectFriendRequest(request);
     }
 
     public void handleButtonRemoveFriendRequest(ActionEvent actionEvent) {
         FriendRequestDTO request = getSelectedSentRequest();
         if(request==null)
             return;
-        RemovePendingFriendRequestRunner runner = new RemovePendingFriendRequestRunner(this.service,request.getId());
-        runner.execute();
+        pageActions.removeFriendRequest(request);
     }
 }

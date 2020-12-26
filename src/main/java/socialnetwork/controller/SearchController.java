@@ -13,9 +13,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
 import socialnetwork.service.PagingService;
@@ -50,10 +50,11 @@ public class SearchController extends AbstractController implements Observer<Use
     Label labelFriendRequests;
 
     @Override
-    public void initialize(MasterService service, User loggedUser){
-        super.initialize(service,loggedUser);
-        service.addUserObserver(this);
+    public void initialize(PageActions pageActions){
+        super.initialize(pageActions);
+        pageActions.getService().addUserObserver(this);
         initTable();
+        MasterService service = pageActions.getService();
         Platform.runLater(()->pagination.setPageCount((int)Math.ceil((double)service.getAllUsers().size()/ PagingService.pageSize)));
         pagination.setPageFactory(new Callback<Integer, Node>() {
             @Override
@@ -62,8 +63,7 @@ public class SearchController extends AbstractController implements Observer<Use
                 model.setAll(all);
                 tableViewUsers.setItems(model);
                 if(all.isEmpty()){
-                   // if(getAllUsers(service.getUsersPage(param-1)).isEmpty()) //the previous
-                        return null;
+                    return null;
                 }
                 return tableViewUsers;
             }
@@ -78,6 +78,7 @@ public class SearchController extends AbstractController implements Observer<Use
 
     @Override
     public void update(UserEvent e){
+        MasterService service = pageActions.getService();
         pagination.setPageCount((int)Math.ceil((double)service.getAllUsers().size()/ PagingService.pageSize));
         setTableViewData(service.getUsersPage(pagination.getCurrentPageIndex()));
     }
@@ -91,7 +92,7 @@ public class SearchController extends AbstractController implements Observer<Use
     private List<User> getAllUsers(List<User> listOfUsers){
         return listOfUsers
                 .stream()
-                .filter(user -> (!user.equals(loggedUser)))
+                .filter(user -> (!user.equals(pageActions.getLoggedUser())))
                 .collect(Collectors.toList());
     }
 
@@ -104,15 +105,16 @@ public class SearchController extends AbstractController implements Observer<Use
         User selected = getSelectedUser();
         if(selected==null)
             return;
-        SendFriendRequestRunner runner = new SendFriendRequestRunner(loggedUser.getId(),selected.getId(),service);
+        SendFriendRequestRunner runner = new SendFriendRequestRunner(pageActions.getLoggedUser().getId(),selected.getId(), pageActions.getService());
         runner.execute();
     }
 
     public void handleTextFieldNameKeyTyped(KeyEvent keyEvent) {
+        MasterService service = pageActions.getService();
         if(textFieldName.getText().equals(""))
             setTableViewData(service.getUsersPage(pagination.getCurrentPageIndex()));
         else {
-            model.setAll(this.getAllUsers(this.service.filterUsers(textFieldName.getText())));
+            model.setAll(this.getAllUsers(service.filterUsers(textFieldName.getText())));
         }
     }
 
@@ -149,7 +151,7 @@ public class SearchController extends AbstractController implements Observer<Use
             stage.setTitle("Activity Report");
 
             ReportActivityController controller = loader.getController();
-            controller.initialize(this.service,this.loggedUser);
+            controller.initialize(pageActions);
             stage.show();
         }catch (Exception e){
             e.printStackTrace();

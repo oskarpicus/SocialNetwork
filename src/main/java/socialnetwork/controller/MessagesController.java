@@ -12,13 +12,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.Entity;
 import socialnetwork.domain.Message;
 import socialnetwork.domain.User;
-import socialnetwork.service.MasterService;
 import socialnetwork.utils.events.message.MessageEvent;
 import socialnetwork.utils.observer.Observer;
-import socialnetwork.utils.runners.SendMessageRunner;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,9 +44,9 @@ public class MessagesController extends AbstractController implements Observer<M
     }
 
     @Override
-    public void initialize(MasterService service, User loggedUser) {
-        super.initialize(service, loggedUser);
-        service.addMessageObserver(this);
+    public void initialize(PageActions pageActions) {
+        super.initialize(pageActions);
+        pageActions.getService().addMessageObserver(this);
         tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         tableViewUsers.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); // it allows for selecting multiple rows at once with CTRL+Click
@@ -69,7 +68,7 @@ public class MessagesController extends AbstractController implements Observer<M
     }
 
     private void setTableViewData(){
-        model.setAll(this.getAllUsers(this.service.getAllUsers()));
+        model.setAll(this.getAllUsers(this.pageActions.getService().getAllUsers()));
         tableViewUsers.setItems(model);
     }
 
@@ -93,7 +92,7 @@ public class MessagesController extends AbstractController implements Observer<M
         if(textFieldSearchUser.getText().equals(""))
             setTableViewData();
         else {
-            model.setAll(this.getAllUsers(this.service.filterUsers(textFieldSearchUser.getText())));
+            model.setAll(this.getAllUsers(this.pageActions.getService().filterUsers(textFieldSearchUser.getText())));
         }
     }
 
@@ -105,7 +104,7 @@ public class MessagesController extends AbstractController implements Observer<M
     private List<User> getAllUsers(List<User> listOfUsers){
         return listOfUsers
                 .stream()
-                .filter(user -> (!user.equals(loggedUser)))
+                .filter(user -> (!user.equals(pageActions.getLoggedUser())))
                 .collect(Collectors.toList());
     }
 
@@ -133,9 +132,8 @@ public class MessagesController extends AbstractController implements Observer<M
         List<Long> selected = getSelectedUsersIds();
         if(selected==null || selected.isEmpty())
             return;
-        Message message = new Message(loggedUser.getId(),selected,textAreaMessage.getText());
-        SendMessageRunner runner = new SendMessageRunner(message,service);
-        runner.execute();
+        Message message = new Message(pageActions.getLoggedUser().getId(),selected,textAreaMessage.getText());
+        pageActions.sendMessage(message);
         textAreaMessage.setText("");
     }
 
@@ -158,7 +156,7 @@ public class MessagesController extends AbstractController implements Observer<M
             stage.setTitle("Your conversation with "+userSelected.getFirstName()+" "+userSelected.getLastName());
 
             ConversationController controller = loader.getController();
-            controller.initialize(service,loggedUser,userSelected);
+            controller.initialize(pageActions,userSelected);
             stage.show();
         }catch (Exception e){
             e.printStackTrace();
@@ -182,7 +180,7 @@ public class MessagesController extends AbstractController implements Observer<M
 
             stage.show();
             ReportMessagesController controller = loader.getController();
-            controller.initialize(service,loggedUser,getSelectedUsers().get(0));
+            controller.initialize(pageActions,getSelectedUsers().get(0));
         }catch (Exception e){
             e.printStackTrace();
         }

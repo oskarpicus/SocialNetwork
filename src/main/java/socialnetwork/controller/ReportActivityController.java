@@ -5,12 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.stage.Stage;
-import socialnetwork.domain.User;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
-import socialnetwork.service.MasterService;
 import socialnetwork.utils.pdf.PdfGenerator;
 
 import java.time.LocalDate;
@@ -26,11 +26,11 @@ public class ReportActivityController extends ReportMessagesController{
     ListView<FriendshipDTO> listViewFriendships;
 
     @Override
-    public void initialize(MasterService service, User loggedUser) {
-        super.initialize(service, loggedUser);
+    public void initialize(PageActions pageActions) {
+        super.initialize(pageActions);
         listViewFriendships.setItems(modelFriendships);
         listViewMessages.setItems(modelMessages);
-        labelInformation.setText("Report on "+loggedUser.getFirstName()+" "+loggedUser.getLastName()+"'s activity");
+        labelInformation.setText("Report on "+ pageActions.getLoggedUser().getFirstName()+" "+ pageActions.getLoggedUser().getLastName()+"'s activity");
         listViewFriendships.setPlaceholder(new Label("This is where your\nfriendships will be displayed"));
         listViewMessages.setPlaceholder(new Label("This is where your\nmessages will show up"));
     }
@@ -55,12 +55,12 @@ public class ReportActivityController extends ReportMessagesController{
             MyAllert.showMessage(null, Alert.AlertType.WARNING, "Warning", "You did not select both days");
             return;
         }
-        List<FriendshipDTO> friendships = service.filterFriendshipsIDDate(loggedUser.getId(),dateFrom,dateTo);
+        List<FriendshipDTO> friendships = pageActions.getFriendships(dateFrom,dateTo);
         setFriendshipData(friendships);
         if(friendships.isEmpty()){
             listViewFriendships.setPlaceholder(new Label("There are no friendships"));
         }
-        List<MessageDTO> messages = service.getOnesMessages(loggedUser,dateFrom,dateTo);
+        List<MessageDTO> messages = pageActions.getMessages(dateFrom,dateTo);
         setMessageData(messages);
         if(messages.isEmpty()){
             listViewMessages.setPlaceholder(new Label("There are no messages"));
@@ -71,7 +71,7 @@ public class ReportActivityController extends ReportMessagesController{
                 MyAllert.showErrorMessage(null, "You did not select a location");
             }
             else{
-                PdfGenerator.generateActivityReport(messages,friendships,path,loggedUser,dateFrom,dateTo);
+                PdfGenerator.generateActivityReport(messages,friendships,path, pageActions.getLoggedUser(),dateFrom,dateTo);
                 MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success","PDF saved successfully in "+path);
             }
         }
