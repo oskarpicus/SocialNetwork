@@ -52,6 +52,20 @@ public class MessagesController extends AbstractController implements Observer<M
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         tableViewUsers.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); // it allows for selecting multiple rows at once with CTRL+Click
         setTableViewData();
+        tableViewUsers.setRowFactory(tableView -> new TableRow<>(){
+            private final Tooltip tooltip = new Tooltip();
+
+            @Override
+            protected void updateItem(User item, boolean empty) {
+                super.updateItem(item, empty);
+                if(item==null)
+                    setTooltip(null);
+                else {
+                    tooltip.setText("Double click to chat with "+item.getFirstName()+" "+item.getLastName());
+                    setTooltip(tooltip);
+                }
+            }
+        });
     }
 
     private void setTableViewData(){
