@@ -36,11 +36,13 @@ public class MasterService{
     private final FriendshipObservable friendshipObservable = new FriendshipObservable();
     private final FriendRequestObservable friendRequestObservable = new FriendRequestObservable();
     private final MessageObservable messageObservable = new MessageObservable();
+    private final EventService eventService;
 
-    public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService,MessageService messageService) {
+    public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService, MessageService messageService, EventService eventService) {
         this.friendshipService = friendshipService;
         this.userService = userService;
         this.friendRequestService = friendRequestService;
+        this.eventService = eventService;
         friendRequestVerifier = new FriendRequestVerifier(friendshipService,userService,friendRequestService);
         this.messageService=messageService;
         this.messageVerifier=new MessageVerifier(userService,messageService);

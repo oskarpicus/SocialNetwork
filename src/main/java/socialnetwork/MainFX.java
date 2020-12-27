@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 import socialnetwork.controller.LoggingController;
 import socialnetwork.domain.*;
 import socialnetwork.domain.validators.*;
-import socialnetwork.repository.Repository;
 import socialnetwork.repository.database.*;
 import socialnetwork.repository.paging.PagingRepository;
 import socialnetwork.service.*;
@@ -32,19 +31,10 @@ public class MainFX extends Application {
     }
 
     private void initView(Stage primaryStage) throws IOException{
-       /* Parent root = FXMLLoader.load(getClass().getResource("/views/logging.fxml"));
-        primaryStage.setScene(new Scene(root,300,300));*/
         primaryStage.setTitle("Social Network");
-     /*   FXMLLoader loader = new FXMLLoader();
-        Pane p = loader.load(getClass().getResource("/views/logging.fxml"));
-        LoggingController controller = loader.getController();
-        controller.setService(service);
-        primaryStage.setScene(new Scene(p));*/
-
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/views/logging.fxml"));
-       // loader.setLocation(getClass().getResource("/views/home.fxml"));
         Pane pane = loader.load();
         primaryStage.setScene(new Scene(pane));
         LoggingController loggingController = loader.getController();
@@ -67,8 +57,9 @@ public class MainFX extends Application {
 
         EventValidator eventValidator = new EventValidator();
         PagingRepository<Long,Event> eventRepository = new EventDBRepository(eventValidator,"social_network");
+        EventService eventService = new EventService(eventRepository);
 
-        return new MasterService(friendshipService,userService, friendRequestService,messageService);
+        return new MasterService(friendshipService,userService, friendRequestService,messageService, eventService);
     }
 
 }
