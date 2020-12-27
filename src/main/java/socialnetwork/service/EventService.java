@@ -18,9 +18,10 @@ public class EventService implements PagingService<Long, Event> {
 
     @Override
     public List<Event> getEntities(int page) {
-        Pageable pageable = new PageableImplementation(page,pageSize);
-        Page<Event> all = repository.findAll(pageable);
-        return all.getContent().collect(Collectors.toList());
+        return this.findAll().stream()
+                .skip(page*PagingService.pageSize)
+                .limit(PagingService.pageSize)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -41,6 +42,15 @@ public class EventService implements PagingService<Long, Event> {
     @Override
     public List<Event> findAll() {
         Iterable<Event> all = repository.findAll();
-        return StreamSupport.stream(all.spliterator(),false).collect(Collectors.toList());
+        return StreamSupport.stream(all.spliterator(),false)
+                .sorted((event1,event2)->event2.getDate().compareTo(event1.getDate()))
+                .collect(Collectors.toList());
+    }
+
+    public boolean isParticipant(Long idEvent, Long idUser){
+        Optional<Event> event = findOne(idEvent);
+        if(event.isEmpty())
+            return false;
+        return event.get().getParticipants().contains(idUser);
     }
 }

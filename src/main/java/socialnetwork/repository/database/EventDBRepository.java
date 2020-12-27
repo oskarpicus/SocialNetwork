@@ -24,7 +24,7 @@ public class EventDBRepository extends AbstractDBRepository<Long, Event> {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDate = formatter.format(date);
         String location = entity.getLocation();
-        return "INSERT INTO Events(id,name,description,date,location)"+
+        return "INSERT INTO Events(id,name,description,date,location) "+
                 "VALUES("+id+",'"+name+"','"+description+"','"+formattedDate+"','"+location+"');";
     }
 

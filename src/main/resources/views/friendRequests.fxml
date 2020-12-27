@@ -3,15 +3,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="/style/style.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.FriendRequestsController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.FriendRequestsController">
     <SplitPane dividerPositions="0.12311557788944724" orientation="VERTICAL" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" styleClass="anchorPaneTop">
             <Label layoutX="40.0" layoutY="11.0" onMouseClicked="#handleLabelHome" styleClass="labelLogo" text="Social Network" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="14.0" />
-            <HBox prefHeight="19.0" prefWidth="311.0" spacing="20.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
+            <HBox prefHeight="19.0" prefWidth="370.0" spacing="20.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
                 <Label onMouseClicked="#handleLabelSearch" styleClass="labelTop" text="Search" />
                 <Label fx:id="labelFriends" onMouseClicked="#handleLabelFriends" styleClass="labelTop" text="Friends" />
                 <Label id="myLabelFriendRequests" fx:id="labelFriendRequests" styleClass="labelTop" text="Friend Requests" />
                 <Label onMouseClicked="#handleLabelMessages" styleClass="labelTop" text="Messages" />
+                <Label onMouseClicked="#handleLabelEvents" styleClass="labelTop" text="Events" />
             </HBox>
         </AnchorPane>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
@@ -63,7 +64,7 @@
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                     </columnResizePolicy>
                                 </TableView>
-                                <Pagination fx:id="paginationReceivedFriendRequests" VBox.vgrow="ALWAYS" prefWidth="273.0"  />
+                                <Pagination fx:id="paginationReceivedFriendRequests" prefWidth="273.0" VBox.vgrow="ALWAYS" />
                             </VBox>
                             </AnchorPane>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">

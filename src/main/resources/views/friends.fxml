@@ -8,11 +8,12 @@
    <SplitPane dividerPositions="0.09073359073359073" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="598.0" styleClass="anchorPaneTop">
          <Label layoutX="41.0" layoutY="13.0" onMouseClicked="#handleLabelHome" styleClass="labelLogo" text="Social Network" AnchorPane.leftAnchor="25.0" AnchorPane.topAnchor="14.0" />
-         <HBox prefHeight="19.0" prefWidth="311.0" spacing="20.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
+         <HBox prefHeight="19.0" prefWidth="370.0" spacing="20.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="14.0">
             <Label onMouseClicked="#handleLabelSearch" styleClass="labelTop" text="Search" />
             <Label id="myLabelFriends" styleClass="labelTop" text="Friends" />
             <Label onMouseClicked="#handleLabelFriendRequests" styleClass="labelTop" text="Friend Requests" />
             <Label onMouseClicked="#handleLabelMessages" styleClass="labelTop" text="Messages" />
+            <Label onMouseClicked="#handleLabelEvents" styleClass="labelTop" text="Events" />
          </HBox>
       </AnchorPane>
       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">

@@ -179,4 +179,8 @@ public class FriendRequestsController extends AbstractController implements Obse
             return;
         pageActions.removeFriendRequest(request);
     }
+
+    public void handleLabelEvents(MouseEvent mouseEvent) {
+        openWindow("events");
+    }
 }

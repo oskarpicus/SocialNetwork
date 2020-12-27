@@ -683,4 +683,16 @@ public class MasterService{
         List<Message> list = this.messageService.getMessagesPage(leftLimit,rightLimit,user1,user2);
         return filterMessages(list,user1,user2,message -> true);
     }
+
+    public List<Event> getAllEvents(){
+        return this.eventService.findAll();
+    }
+
+    public List<Event> getEventsPage(int pageNumber){
+        return this.eventService.getEntities(pageNumber);
+    }
+
+    public boolean isParticipant(Long idEvent, Long idUser){
+        return this.eventService.isParticipant(idEvent,idUser);
+    }
 }

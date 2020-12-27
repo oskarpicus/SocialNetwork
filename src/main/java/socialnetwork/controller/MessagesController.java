@@ -185,4 +185,8 @@ public class MessagesController extends AbstractController implements Observer<M
             e.printStackTrace();
         }
     }
+
+    public void handleLabelEvents(MouseEvent mouseEvent) {
+        openWindow("events");
+    }
 }

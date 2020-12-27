@@ -108,4 +108,8 @@ public class FriendsController extends AbstractController implements Observer<Fr
     public void handleLabelMessages(MouseEvent mouseEvent) {
         openWindow("messages");
     }
+
+    public void handleLabelEvents(MouseEvent mouseEvent) {
+        openWindow("events");
+    }
 }

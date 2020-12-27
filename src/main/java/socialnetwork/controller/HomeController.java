@@ -47,4 +47,8 @@ public class HomeController extends AbstractController{
     public void handleLabelMessages(MouseEvent mouseEvent) {
         openWindow("messages");
     }
+
+    public void handleLabelEvents(MouseEvent mouseEvent) {
+        openWindow("events");
+    }
 }

@@ -1,5 +1,6 @@
 package socialnetwork.controller.pages;
 
+import socialnetwork.domain.Event;
 import socialnetwork.domain.Message;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
@@ -103,5 +104,17 @@ public class PageActions {
 
     public List<MessageDTO> getMessages(LocalDate dateFrom, LocalDate dateTo){
         return getService().getOnesMessages(getLoggedUser(),dateFrom,dateTo);
+    }
+
+    public List<Event> getEvents(){
+        return getService().getAllEvents();
+    }
+
+    public List<Event> getEvents(int pageNumber){
+        return getService().getEventsPage(pageNumber);
+    }
+
+    public boolean isParticipant(Long idEvent){
+        return getService().isParticipant(idEvent,getLoggedUser().getId());
     }
 }

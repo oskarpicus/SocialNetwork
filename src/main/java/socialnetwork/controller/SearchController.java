@@ -157,4 +157,8 @@ public class SearchController extends AbstractController implements Observer<Use
             e.printStackTrace();
         }
     }
+
+    public void handleLabelEvents(MouseEvent mouseEvent) {
+        openWindow("events");
+    }
 }
