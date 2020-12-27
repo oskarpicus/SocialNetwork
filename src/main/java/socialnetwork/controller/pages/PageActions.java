@@ -12,6 +12,7 @@ import socialnetwork.utils.runners.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PageActions {
@@ -116,5 +117,9 @@ public class PageActions {
 
     public boolean isParticipant(Long idEvent){
         return getService().isParticipant(idEvent,getLoggedUser().getId());
+    }
+
+    public Optional<Event> addEvent(Event event){
+        return getService().addEvent(event);
     }
 }

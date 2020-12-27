@@ -695,4 +695,8 @@ public class MasterService{
     public boolean isParticipant(Long idEvent, Long idUser){
         return this.eventService.isParticipant(idEvent,idUser);
     }
+
+    public Optional<Event> addEvent(Event event){
+        return this.eventService.add(event);
+    }
 }

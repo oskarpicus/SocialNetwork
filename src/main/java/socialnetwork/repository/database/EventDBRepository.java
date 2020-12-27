@@ -45,7 +45,8 @@ public class EventDBRepository extends AbstractDBRepository<Long, Event> {
     protected String getFindAllCommand() {
         return "SELECT e.id,e.name,e.location,e.description,e.date,eu.idUser,"+
                         "eu.subscribedToNotification,eu.receivedNotification "+
-                "FROM Events e LEFT OUTER JOIN EventsUsers eu ON e.id=eu.idEvent";
+                "FROM Events e LEFT OUTER JOIN EventsUsers eu ON e.id=eu.idEvent "+
+                "ORDER BY e.id";
     }
 
     @Override

@@ -3,11 +3,15 @@ package socialnetwork.controller;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import socialnetwork.controller.pages.PageActions;
@@ -16,6 +20,7 @@ import socialnetwork.service.PagingService;
 import socialnetwork.utils.events.event.EventEvent;
 import socialnetwork.utils.observer.Observer;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -119,9 +124,11 @@ public class EventsController extends AbstractController implements Observer<Eve
         if(event!=null){
             if(event.getDate().isBefore(LocalDateTime.now())){
                 buttonParticipate.setDisable(true);
+                buttonUnsubscribe.setDisable(true);
                 return;
             }
             buttonParticipate.setDisable(false);
+            buttonUnsubscribe.setDisable(false);
             if(pageActions.isParticipant(event.getId()))
                 buttonParticipate.setText("Can't go anymore");
             else
@@ -131,5 +138,28 @@ public class EventsController extends AbstractController implements Observer<Eve
 
     private Event getSelectedEvent(){
         return tableViewEvents.getSelectionModel().getSelectedItem();
+    }
+
+    public void handleButtonAddEvent(ActionEvent actionEvent) {
+        try{
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/views/addEvent.fxml"));
+            Pane pane = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(pane));
+            stage.setTitle("Add Event");
+
+            Controller controller = loader.getController();
+            controller.initialize(pageActions);
+            stage.show();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void handleButtonParticipate(ActionEvent actionEvent) {
+    }
+
+    public void handleButtonUnsubscribe(ActionEvent actionEvent) {
     }
 }

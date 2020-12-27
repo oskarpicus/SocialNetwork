@@ -30,8 +30,8 @@
                     <VBox alignment="CENTER" layoutX="88.0" layoutY="74.0" prefHeight="200.0" prefWidth="100.0"
                           AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
                           AnchorPane.topAnchor="40.0">
-                        <TableView fx:id="tableViewEvents" onMouseClicked="#handleTableViewClicked"
-                                   prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="tableViewEvents" onMouseClicked="#handleTableViewClicked" prefHeight="200.0"
+                                   prefWidth="200.0" VBox.vgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="tableColumnName" prefWidth="75.0" text="Name"/>
                                 <TableColumn fx:id="tableColumnDate" prefWidth="75.0" text="Date"/>
@@ -44,13 +44,16 @@
                         <Pagination fx:id="pagination" VBox.vgrow="ALWAYS"/>
                         <VBox alignment="CENTER" spacing="10" styleClass="anchorPaneButtons">
                             <HBox alignment="CENTER" prefHeight="23.0" prefWidth="275.0" spacing="10">
-                                <Button fx:id="buttonParticipate" mnemonicParsing="false" text="Participate"/>
-                                <Button fx:id="buttonUnsubscribe" mnemonicParsing="false" text="Unsubscribe"/>
+                                <Button fx:id="buttonParticipate" mnemonicParsing="false"
+                                        onAction="#handleButtonParticipate" text="Participate"/>
+                                <Button fx:id="buttonUnsubscribe" mnemonicParsing="false"
+                                        onAction="#handleButtonUnsubscribe" text="Unsubscribe"/>
                                 <VBox.margin>
                                     <Insets top="10.0"/>
                                 </VBox.margin>
                             </HBox>
-                            <Button fx:id="buttonAddEvent" alignment="CENTER" mnemonicParsing="false" text="Add Event">
+                            <Button fx:id="buttonAddEvent" alignment="CENTER" mnemonicParsing="false"
+                                    onAction="#handleButtonAddEvent" text="Add Event">
                                 <VBox.margin>
                                     <Insets bottom="10.0"/>
                                 </VBox.margin>
