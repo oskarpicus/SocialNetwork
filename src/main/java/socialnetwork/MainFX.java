@@ -7,15 +7,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import socialnetwork.controller.LoggingController;
 import socialnetwork.domain.*;
-import socialnetwork.domain.validators.FriendRequestValidator;
-import socialnetwork.domain.validators.FriendshipValidator;
-import socialnetwork.domain.validators.MessageValidator;
-import socialnetwork.domain.validators.UserValidator;
+import socialnetwork.domain.validators.*;
 import socialnetwork.repository.Repository;
-import socialnetwork.repository.database.FriendRequestDBRepository;
-import socialnetwork.repository.database.FriendshipDBRepository;
-import socialnetwork.repository.database.MessageDBRepository;
-import socialnetwork.repository.database.UserDBRepository;
+import socialnetwork.repository.database.*;
 import socialnetwork.repository.paging.PagingRepository;
 import socialnetwork.service.*;
 
@@ -70,6 +64,9 @@ public class MainFX extends Application {
         MessageValidator messageValidator = new MessageValidator();
         PagingRepository<Long, Message> messageRepository = new MessageDBRepository(messageValidator,"social_network");
         MessageService messageService = new MessageService(messageRepository);
+
+        EventValidator eventValidator = new EventValidator();
+        PagingRepository<Long,Event> eventRepository = new EventDBRepository(eventValidator,"social_network");
 
         return new MasterService(friendshipService,userService, friendRequestService,messageService);
     }

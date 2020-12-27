@@ -83,8 +83,8 @@ create table EventsUsers -- table for participants
 (
     idEvent int,
     idUser int,
-    subscribedToNotification bit default 1,
-    receivedNotification bit default 0,
+    subscribedToNotification boolean default true,
+    receivedNotification boolean default false,
     constraint fk1_EventsUsers foreign key (idEvent) references Events(id)
         on delete cascade ,
     constraint fk2_EventsUsers foreign key (idUser) references Users(id)
