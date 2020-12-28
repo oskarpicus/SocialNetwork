@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class NotificationDBRepository extends AbstractDBRepository<Long, Notification> {
-    //todo
     public NotificationDBRepository(Validator<Notification> validator, String dataBaseName) {
         super(validator, dataBaseName);
     }

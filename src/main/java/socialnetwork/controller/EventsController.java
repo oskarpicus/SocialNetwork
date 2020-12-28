@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -13,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.Event;
@@ -21,6 +23,7 @@ import socialnetwork.service.PagingService;
 import socialnetwork.utils.events.event.EventEvent;
 import socialnetwork.utils.events.notification.NotificationEvent;
 import socialnetwork.utils.observer.Observer;
+import socialnetwork.utils.runners.SendNotificationRunner;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -30,6 +33,7 @@ public class EventsController extends AbstractController implements Observer<Eve
 
     private final ObservableList<Event> model = FXCollections.observableArrayList();
     private final NotificationsController notificationsController = new NotificationsController();
+    private Thread thread;
 
     @FXML
     TableColumn<String,String> tableColumnTextNotification;
@@ -60,6 +64,7 @@ public class EventsController extends AbstractController implements Observer<Eve
     public void initialize(PageActions pageActions) {
         super.initialize(pageActions);
         pageActions.getService().addEventObserver(this);
+        pageActions.getService().addNotificationObserver(this.notificationsController);
         tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
         tableColumnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         tableColumnLocation.setCellValueFactory(new PropertyValueFactory<>("location"));
@@ -99,7 +104,7 @@ public class EventsController extends AbstractController implements Observer<Eve
         tableColumnDateNotification.setCellValueFactory(new PropertyValueFactory<>("date"));
         tableViewNotifications.setItems(this.notificationsController.model);
 
-        paginationNotifications.setPageFactory(new Callback<Integer, Node>() { //TODO
+        paginationNotifications.setPageFactory(new Callback<Integer, Node>() {
             @Override
             public Node call(Integer param) {
                 List<Notification> list = pageActions.getNotifications(param);
@@ -109,12 +114,20 @@ public class EventsController extends AbstractController implements Observer<Eve
                 return tableViewNotifications;
             }
         });
+
+        thread = new Thread(new SendNotificationRunner(pageActions.getService()));
+        thread.start();
+        Platform.runLater(()->getStage().setOnCloseRequest(event -> thread.interrupt()));
     }
 
     @Override
     public void closeWindow() {
-        Stage stage = (Stage) paginationEvents.getScene().getWindow();
-        stage.close();
+        thread.interrupt();
+        getStage().close();
+    }
+
+    private Stage getStage(){
+        return (Stage) paginationEvents.getScene().getWindow();
     }
 
     public void handleLabelHome(MouseEvent mouseEvent) {
@@ -142,7 +155,10 @@ public class EventsController extends AbstractController implements Observer<Eve
     }
 
     public void setNotificationsPageCount(){
-        paginationNotifications.setPageCount((int)Math.ceil((double)pageActions.getNotifications().size()/PagingService.pageSize));
+        int nr = (int)Math.ceil((double)pageActions.getNotifications().size()/PagingService.pageSize);
+        if(nr==0)
+            nr=1;
+        paginationNotifications.setPageCount(nr);
     }
 
     @Override

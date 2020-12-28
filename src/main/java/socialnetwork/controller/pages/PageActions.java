@@ -147,4 +147,5 @@ public class PageActions {
     public List<Notification> getNotifications(int pageNumber){
         return getService().getNotificationsPage(pageNumber,getLoggedUser());
     }
+
 }

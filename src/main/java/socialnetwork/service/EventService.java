@@ -99,4 +99,8 @@ public class EventService implements PagingService<Long, Event> {
         event.getSubscribedToNotification().remove(idUser);
         return repository.update(event);
     }
+
+    public Optional<Event> update(Event event){
+        return repository.update(event);
+    }
 }

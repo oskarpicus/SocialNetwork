@@ -51,6 +51,13 @@ public class AddEventController extends AbstractController {
                     setValue(getValue().plusMinutes(steps));
             }
         });
+        datePicker.setDayCellFactory(picker -> new DateCell(){
+            @Override
+            public void updateItem(LocalDate item, boolean empty) {
+                super.updateItem(item, empty);
+                setDisable(empty || item.isBefore(LocalDate.now()));
+            }
+        });
     }
 
     public void handleButtonAddEvent(ActionEvent actionEvent) {

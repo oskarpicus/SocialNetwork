@@ -63,4 +63,13 @@ public class NotificationService implements PagingService<Long, Notification> {
                 .filter(notification -> notification.getReceivers().contains(user.getId()))
                 .collect(Collectors.toList());
     }
+
+    public Optional<Notification> sendNotification(Notification notification, Long idUser){
+        notification.getReceivers().add(idUser);
+        if(this.findOne(notification.getId()).isPresent()){
+            return repository.update(notification);
+        }
+        else
+            return repository.save(notification);
+    }
 }

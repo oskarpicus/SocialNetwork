@@ -693,6 +693,10 @@ public class MasterService{
         this.friendRequestObservable.addObserver(e);
     }
 
+    public void addNotificationObserver(Observer<NotificationEvent> e){
+        this.notificationObservable.addObserver(e);
+    }
+
     public void addMessageObserver(Observer<MessageEvent> e){
         this.messageObservable.addObserver(e);
     }
@@ -781,8 +785,20 @@ public class MasterService{
         return this.notificationService.getNotifications(user);
     }
 
-    public Optional<Notification> sendNotification(Event event,User user){
-        //this.notificationObservable.notifyObservers(new NotificationEvent(NotificationEventType.SEND,null));
-        return null;
+    public Optional<Notification> sendNotificationForEvent(Event event, Notification notification, Long idUser){
+        System.out.println(event.getName());
+        if(event.getReceivedNotification().contains(idUser)){ // the notification was already sent
+            System.out.println("Notification for "+event.getName()+" was already sent");
+            return Optional.of(notification);
+        }
+        if(!event.getSubscribedToNotification().contains(idUser)){ //the user does not want to get notified
+            return Optional.of(notification);
+        }
+        event.getReceivedNotification().add(idUser);
+        Optional<Notification> result = this.notificationService.sendNotification(notification,idUser);
+        this.eventService.update(event);
+        if(result.isEmpty())
+            this.notificationObservable.notifyObservers(new NotificationEvent(NotificationEventType.SEND,notification));
+        return result;
     }
 }
