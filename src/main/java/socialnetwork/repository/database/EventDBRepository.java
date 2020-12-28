@@ -88,7 +88,7 @@ public class EventDBRepository extends AbstractDBRepository<Long, Event> {
     @Override
     protected String getUpdateCommand(Event entity) {
         StringBuilder result = new StringBuilder();
-        result.append("DELETE FROM EventsUsers where idEvent=").append(entity.getId());
+        result.append("DELETE FROM EventsUsers where idEvent=").append(entity.getId()).append(";");
         for(Long idParticipant : entity.getParticipants()){
             var optionalSubscribed = entity.getSubscribedToNotification()
                     .stream()
@@ -104,7 +104,7 @@ public class EventDBRepository extends AbstractDBRepository<Long, Event> {
             if(optionalReceived.isPresent())
                 received = optionalReceived.get().getRight();
 
-            result.append("INSERT INTO EventsUsers(idEvent,idUser,subscribedToNotification,receivedNotification)" + "VALUES(")
+            result.append("INSERT INTO EventsUsers(idEvent,idUser,subscribedToNotification,receivedNotification) " + "VALUES(")
                     .append(entity.getId())
                     .append(",")
                     .append(idParticipant)

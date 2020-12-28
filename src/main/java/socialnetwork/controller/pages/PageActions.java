@@ -119,7 +119,19 @@ public class PageActions {
         return getService().isParticipant(idEvent,getLoggedUser().getId());
     }
 
+    public boolean isSubscribedToNotification(Long idEvent){
+        return getService().isSubscribedToNotification(idEvent,getLoggedUser().getId());
+    }
+
     public Optional<Event> addEvent(Event event){
         return getService().addEvent(event);
+    }
+
+    public Optional<Event> addParticipant(Long idEvent){
+        return getService().addParticipant(idEvent,getLoggedUser().getId());
+    }
+
+    public Optional<Event> removeParticipant(Long idEvent){
+        return getService().removeParticipant(idEvent,getLoggedUser().getId());
     }
 }

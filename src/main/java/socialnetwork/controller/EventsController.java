@@ -48,6 +48,7 @@ public class EventsController extends AbstractController implements Observer<Eve
     @Override
     public void initialize(PageActions pageActions) {
         super.initialize(pageActions);
+        pageActions.getService().addEventObserver(this);
         tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
         tableColumnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         tableColumnLocation.setCellValueFactory(new PropertyValueFactory<>("location"));
@@ -67,8 +68,6 @@ public class EventsController extends AbstractController implements Observer<Eve
                 }
             }
         });
-
-        buttonUnsubscribe.setDisable(true); //TODO to delete this line of code
 
         Platform.runLater(this::setPageCount);
         pagination.setPageFactory(new Callback<Integer, Node>() {
@@ -116,7 +115,8 @@ public class EventsController extends AbstractController implements Observer<Eve
 
     @Override
     public void update(EventEvent event) {
-        //TODO
+        Platform.runLater(this::setPageCount);
+        model.setAll(pageActions.getEvents(pagination.getCurrentPageIndex()));
     }
 
     public void handleTableViewClicked(MouseEvent mouseEvent) {
@@ -129,10 +129,17 @@ public class EventsController extends AbstractController implements Observer<Eve
             }
             buttonParticipate.setDisable(false);
             buttonUnsubscribe.setDisable(false);
-            if(pageActions.isParticipant(event.getId()))
+            if(pageActions.isParticipant(event.getId())) {
                 buttonParticipate.setText("Can't go anymore");
-            else
+                if(pageActions.isSubscribedToNotification(event.getId()))
+                    buttonUnsubscribe.setText("Unsubscribe");
+                else
+                    buttonUnsubscribe.setText("Subscribe");
+            }
+            else {
                 buttonParticipate.setText("Participate");
+                buttonUnsubscribe.setDisable(true);
+            }
         }
     }
 
@@ -158,8 +165,38 @@ public class EventsController extends AbstractController implements Observer<Eve
     }
 
     public void handleButtonParticipate(ActionEvent actionEvent) {
+        Event event = getSelectedEvent();
+        if(event==null){
+            MyAllert.showMessage(null, Alert.AlertType.WARNING,"Warning","You did not select an event");
+            return;
+        }
+        if(buttonParticipate.getText().equals("Participate"))
+            addParticipant(event);
+        else
+            removeParticipant(event);
     }
 
-    public void handleButtonUnsubscribe(ActionEvent actionEvent) {
+    public void handleButtonUnsubscribe(ActionEvent actionEvent) { //TODO
+    }
+
+    private void addParticipant(Event event){
+        if(pageActions.addParticipant(event.getId()).isEmpty()) {
+            MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION, "Confirmation", "You are now a participant at " + event.getName());
+            buttonUnsubscribe.setText("Unsubscribe");
+            buttonUnsubscribe.setDisable(false);
+            buttonParticipate.setText("Can't go anymore");
+        }
+        else
+            MyAllert.showErrorMessage(null,"Failed to add participant");
+    }
+
+    private void removeParticipant(Event event){
+        if(pageActions.removeParticipant(event.getId()).isEmpty()){
+            MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Confirmation","You are no longer going to "+event.getName());
+            buttonParticipate.setText("Participate");
+            buttonUnsubscribe.setDisable(true);
+        }
+        else
+            MyAllert.showErrorMessage(null,"Failed to remove participant");
     }
 }

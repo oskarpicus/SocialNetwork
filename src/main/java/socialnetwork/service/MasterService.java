@@ -6,6 +6,8 @@ import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
 import socialnetwork.domain.validators.FriendRequestVerifier;
 import socialnetwork.domain.validators.MessageVerifier;
+import socialnetwork.utils.events.event.EventEvent;
+import socialnetwork.utils.events.event.EventEventType;
 import socialnetwork.utils.events.friendRequest.FriendRequestEvent;
 import socialnetwork.utils.events.friendRequest.FriendRequestEventType;
 import socialnetwork.utils.events.friendship.FriendshipEvent;
@@ -36,6 +38,7 @@ public class MasterService{
     private final FriendshipObservable friendshipObservable = new FriendshipObservable();
     private final FriendRequestObservable friendRequestObservable = new FriendRequestObservable();
     private final MessageObservable messageObservable = new MessageObservable();
+    private final EventObservable eventObservable = new EventObservable();
     private final EventService eventService;
 
     public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService, MessageService messageService, EventService eventService) {
@@ -617,6 +620,25 @@ public class MasterService{
         }
     }
 
+    private static class EventObservable implements Observable<EventEvent>{
+        private final List<Observer<EventEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<EventEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<EventEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(EventEvent event) {
+            observers.forEach(e->e.update(event));
+        }
+    }
+
     /**
      * Observable class for user events
      */
@@ -653,6 +675,10 @@ public class MasterService{
 
     public void addFriendshipObserver(Observer<FriendshipEvent> e){
         this.friendshipObservable.addObserver(e);
+    }
+
+    public void addEventObserver(Observer<EventEvent> e){
+        this.eventObservable.addObserver(e);
     }
 
     public Optional<User> findUserByUserName(String userName){
@@ -696,7 +722,22 @@ public class MasterService{
         return this.eventService.isParticipant(idEvent,idUser);
     }
 
+    public boolean isSubscribedToNotification(Long idEvent, Long idUser){
+        return this.eventService.isSubscribedToNotification(idEvent,idUser);
+    }
+
+    public Optional<Event> addParticipant(Long idEvent, Long idUser){
+        return this.eventService.addParticipant(idEvent,idUser);
+    }
+
+    public Optional<Event> removeParticipant(Long idEvent, Long idUser){
+        return this.eventService.removeParticipant(idEvent,idUser);
+    }
+
     public Optional<Event> addEvent(Event event){
-        return this.eventService.add(event);
+        Optional<Event> result = this.eventService.add(event);
+        if(result.isEmpty())
+            this.eventObservable.notifyObservers(new EventEvent(EventEventType.ADD,event));
+        return result;
     }
 }
