@@ -60,8 +60,8 @@ public class EventDBRepository extends AbstractDBRepository<Long, Event> {
             Long idUser = (long)resultSet.getInt("idUser");
             if(resultSet.wasNull())
                 idUser=null;
-            Boolean subscribedToNotification = resultSet.getBoolean("subscribedToNotification");
-            Boolean receivedNotification = resultSet.getBoolean("receivedNotification");
+            boolean subscribedToNotification = resultSet.getBoolean("subscribedToNotification");
+            boolean receivedNotification = resultSet.getBoolean("receivedNotification");
 
             Optional<Event> optionalEvent = getEventInMemory(id);
             Event event;

@@ -59,7 +59,11 @@ public class MainFX extends Application {
         PagingRepository<Long,Event> eventRepository = new EventDBRepository(eventValidator,"social_network");
         EventService eventService = new EventService(eventRepository);
 
-        return new MasterService(friendshipService,userService, friendRequestService,messageService, eventService);
+        NotificationValidator notificationValidator = new NotificationValidator();
+        PagingRepository<Long,Notification> notificationRepository = new NotificationDBRepository(notificationValidator,"social_network");
+        NotificationService notificationService = new NotificationService(notificationRepository);
+
+        return new MasterService(friendshipService,userService, friendRequestService,messageService, eventService, notificationService);
     }
 
 }

@@ -1,9 +1,6 @@
 package socialnetwork.controller.pages;
 
-import socialnetwork.domain.Event;
-import socialnetwork.domain.Message;
-import socialnetwork.domain.Tuple;
-import socialnetwork.domain.User;
+import socialnetwork.domain.*;
 import socialnetwork.domain.dtos.FriendRequestDTO;
 import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
@@ -141,5 +138,13 @@ public class PageActions {
 
     public Optional<Event> removeSubscriber(Event event){
         return getService().removeSubscriber(event,getLoggedUser().getId());
+    }
+
+    public List<Notification> getNotifications(){
+        return getService().getNotifications(getLoggedUser());
+    }
+
+    public List<Notification> getNotifications(int pageNumber){
+        return getService().getNotificationsPage(pageNumber,getLoggedUser());
     }
 }

@@ -1,7 +1,6 @@
 package socialnetwork.service;
 
 import socialnetwork.domain.Event;
-import socialnetwork.domain.Tuple;
 import socialnetwork.repository.paging.*;
 
 import java.util.List;

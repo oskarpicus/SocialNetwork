@@ -14,6 +14,8 @@ import socialnetwork.utils.events.friendship.FriendshipEvent;
 import socialnetwork.utils.events.friendship.FriendshipEventType;
 import socialnetwork.utils.events.message.MessageEvent;
 import socialnetwork.utils.events.message.MessageEventType;
+import socialnetwork.utils.events.notification.NotificationEvent;
+import socialnetwork.utils.events.notification.NotificationEventType;
 import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observable;
 import socialnetwork.utils.observer.Observer;
@@ -40,12 +42,15 @@ public class MasterService{
     private final MessageObservable messageObservable = new MessageObservable();
     private final EventObservable eventObservable = new EventObservable();
     private final EventService eventService;
+    private final NotificationService notificationService;
+    private final NotificationObservable notificationObservable = new NotificationObservable();
 
-    public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService, MessageService messageService, EventService eventService) {
+    public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService, MessageService messageService, EventService eventService, NotificationService notificationService) {
         this.friendshipService = friendshipService;
         this.userService = userService;
         this.friendRequestService = friendRequestService;
         this.eventService = eventService;
+        this.notificationService = notificationService;
         friendRequestVerifier = new FriendRequestVerifier(friendshipService,userService,friendRequestService);
         this.messageService=messageService;
         this.messageVerifier=new MessageVerifier(userService,messageService);
@@ -639,6 +644,25 @@ public class MasterService{
         }
     }
 
+    private static class NotificationObservable implements Observable<NotificationEvent>{
+        private final List<Observer<NotificationEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<NotificationEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<NotificationEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(NotificationEvent event) {
+            observers.forEach(e->e.update(event));
+        }
+    }
+
     /**
      * Observable class for user events
      */
@@ -747,5 +771,18 @@ public class MasterService{
 
     public Optional<Event> removeSubscriber(Event event, Long idUser){
         return eventService.removeSubscriber(event,idUser);
+    }
+
+    public List<Notification> getNotificationsPage(int pageNumber, User user){
+        return this.notificationService.getNotificationsPage(pageNumber,user);
+    }
+
+    public List<Notification> getNotifications(User user){
+        return this.notificationService.getNotifications(user);
+    }
+
+    public Optional<Notification> sendNotification(Event event,User user){
+        //this.notificationObservable.notifyObservers(new NotificationEvent(NotificationEventType.SEND,null));
+        return null;
     }
 }

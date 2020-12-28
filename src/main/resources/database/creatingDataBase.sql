@@ -92,6 +92,24 @@ create table EventsUsers -- table for participants
     constraint pk_EventsUsers primary key (idEvent,idUser)
 );
 
+create table Notifications
+(
+    id int primary key ,
+    text varchar(50),
+    date timestamp
+);
+
+create table NotificationsUsers
+(
+     idNotification int,
+     idUser int,
+     constraint pk_NotificationsUsers primary key (idNotification,idUser),
+     constraint fk1_NotificationsUsers foreign key (idNotification) references Notifications(id)
+            on delete cascade ,
+     constraint fk2_NotificationsUsers foreign key (idUser) references Users(id)
+            on delete cascade
+);
+
 -- Inserting Entities
 
 insert into Users(id,firstName,secondName)

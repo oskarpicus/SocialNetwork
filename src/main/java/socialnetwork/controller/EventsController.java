@@ -16,8 +16,10 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.Event;
+import socialnetwork.domain.Notification;
 import socialnetwork.service.PagingService;
 import socialnetwork.utils.events.event.EventEvent;
+import socialnetwork.utils.events.notification.NotificationEvent;
 import socialnetwork.utils.observer.Observer;
 
 import java.io.IOException;
@@ -27,7 +29,16 @@ import java.util.List;
 public class EventsController extends AbstractController implements Observer<EventEvent>{
 
     private final ObservableList<Event> model = FXCollections.observableArrayList();
+    private final NotificationsController notificationsController = new NotificationsController();
 
+    @FXML
+    TableColumn<String,String> tableColumnTextNotification;
+    @FXML
+    TableColumn<LocalDateTime,String> tableColumnDateNotification;
+    @FXML
+    TableView<Notification> tableViewNotifications;
+    @FXML
+    Pagination paginationNotifications;
     @FXML
     TableView<Event> tableViewEvents;
     @FXML
@@ -43,7 +54,7 @@ public class EventsController extends AbstractController implements Observer<Eve
     @FXML
     Button buttonAddEvent;
     @FXML
-    Pagination pagination;
+    Pagination paginationEvents;
 
     @Override
     public void initialize(PageActions pageActions) {
@@ -69,8 +80,10 @@ public class EventsController extends AbstractController implements Observer<Eve
             }
         });
 
-        Platform.runLater(this::setPageCount);
-        pagination.setPageFactory(new Callback<Integer, Node>() {
+        Platform.runLater(this::setEventsPageCount);
+        Platform.runLater(this::setNotificationsPageCount);
+
+        paginationEvents.setPageFactory(new Callback<Integer, Node>() {
             @Override
             public Node call(Integer param) {
                 List<Event> list = pageActions.getEvents(param);
@@ -81,11 +94,26 @@ public class EventsController extends AbstractController implements Observer<Eve
                 return tableViewEvents;
             }
         });
+
+        tableColumnTextNotification.setCellValueFactory(new PropertyValueFactory<>("text"));
+        tableColumnDateNotification.setCellValueFactory(new PropertyValueFactory<>("date"));
+        tableViewNotifications.setItems(this.notificationsController.model);
+
+        paginationNotifications.setPageFactory(new Callback<Integer, Node>() { //TODO
+            @Override
+            public Node call(Integer param) {
+                List<Notification> list = pageActions.getNotifications(param);
+                notificationsController.model.setAll(list);
+                if(list.isEmpty())
+                    return null;
+                return tableViewNotifications;
+            }
+        });
     }
 
     @Override
     public void closeWindow() {
-        Stage stage = (Stage)pagination.getScene().getWindow();
+        Stage stage = (Stage) paginationEvents.getScene().getWindow();
         stage.close();
     }
 
@@ -109,14 +137,18 @@ public class EventsController extends AbstractController implements Observer<Eve
         openWindow("messages");
     }
 
-    public void setPageCount(){
-        pagination.setPageCount((int)Math.ceil((double)pageActions.getEvents().size()/ PagingService.pageSize));
+    public void setEventsPageCount(){
+        paginationEvents.setPageCount((int)Math.ceil((double)pageActions.getEvents().size()/ PagingService.pageSize));
+    }
+
+    public void setNotificationsPageCount(){
+        paginationNotifications.setPageCount((int)Math.ceil((double)pageActions.getNotifications().size()/PagingService.pageSize));
     }
 
     @Override
     public void update(EventEvent event) {
-        Platform.runLater(this::setPageCount);
-        model.setAll(pageActions.getEvents(pagination.getCurrentPageIndex()));
+        Platform.runLater(this::setEventsPageCount);
+        model.setAll(pageActions.getEvents(paginationEvents.getCurrentPageIndex()));
     }
 
     public void handleTableViewClicked(MouseEvent mouseEvent) {
@@ -197,7 +229,7 @@ public class EventsController extends AbstractController implements Observer<Eve
             MyAllert.showErrorMessage(null,"Failed to remove participant");
     }
 
-    public void handleButtonUnsubscribe(ActionEvent actionEvent) { //TODO
+    public void handleButtonUnsubscribe(ActionEvent actionEvent) {
         Event event = getSelectedEvent();
         if(event==null){
             MyAllert.showMessage(null, Alert.AlertType.WARNING,"Warning","You did not select an event");
@@ -226,6 +258,16 @@ public class EventsController extends AbstractController implements Observer<Eve
         }
         else{
             MyAllert.showErrorMessage(null,"Failed to remove subscription");
+        }
+    }
+
+    private class NotificationsController implements Observer<NotificationEvent> {
+        public final ObservableList<Notification> model = FXCollections.observableArrayList();
+
+        @Override
+        public void update(NotificationEvent event) {
+            Platform.runLater(EventsController.this::setNotificationsPageCount);
+            model.setAll(pageActions.getNotifications(paginationNotifications.getCurrentPageIndex()));
         }
     }
 }
