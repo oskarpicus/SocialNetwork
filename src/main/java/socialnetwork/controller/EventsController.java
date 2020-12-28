@@ -176,9 +176,6 @@ public class EventsController extends AbstractController implements Observer<Eve
             removeParticipant(event);
     }
 
-    public void handleButtonUnsubscribe(ActionEvent actionEvent) { //TODO
-    }
-
     private void addParticipant(Event event){
         if(pageActions.addParticipant(event.getId()).isEmpty()) {
             MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION, "Confirmation", "You are now a participant at " + event.getName());
@@ -198,5 +195,37 @@ public class EventsController extends AbstractController implements Observer<Eve
         }
         else
             MyAllert.showErrorMessage(null,"Failed to remove participant");
+    }
+
+    public void handleButtonUnsubscribe(ActionEvent actionEvent) { //TODO
+        Event event = getSelectedEvent();
+        if(event==null){
+            MyAllert.showMessage(null, Alert.AlertType.WARNING,"Warning","You did not select an event");
+            return;
+        }
+        if(buttonUnsubscribe.getText().equals("Unsubscribe"))
+            removeSubscriber(event);
+        else
+            addSubscriber(event);
+    }
+
+    private void addSubscriber(Event event){
+        if(pageActions.addSubscriber(event).isEmpty()){
+            MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Confirmation","You will receive notifications about this event");
+            buttonUnsubscribe.setText("Unsubscribe");
+        }
+        else{
+            MyAllert.showErrorMessage(null,"Failed to add subscription");
+        }
+    }
+
+    private void removeSubscriber(Event event){
+        if(pageActions.removeSubscriber(event).isEmpty()){
+            MyAllert.showMessage(null, Alert.AlertType.CONFIRMATION,"Confirmation","You will no longer receive notifications about this event");
+            buttonUnsubscribe.setText("Subscribe");
+        }
+        else{
+            MyAllert.showErrorMessage(null,"Failed to remove subscription");
+        }
     }
 }

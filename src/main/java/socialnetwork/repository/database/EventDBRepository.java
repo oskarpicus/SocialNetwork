@@ -76,8 +76,10 @@ public class EventDBRepository extends AbstractDBRepository<Long, Event> {
             //we set the other data
             if(idUser!=null) {
                 event.getParticipants().add(idUser);
-                event.getSubscribedToNotification().add(new Tuple<>(idUser, subscribedToNotification));
-                event.getReceivedNotification().add(new Tuple<>(idUser, receivedNotification));
+                if(subscribedToNotification)
+                    event.getSubscribedToNotification().add(idUser);
+                if(receivedNotification)
+                    event.getReceivedNotification().add(idUser);
             }
             return event;
         }catch (Exception e){
@@ -90,19 +92,8 @@ public class EventDBRepository extends AbstractDBRepository<Long, Event> {
         StringBuilder result = new StringBuilder();
         result.append("DELETE FROM EventsUsers where idEvent=").append(entity.getId()).append(";");
         for(Long idParticipant : entity.getParticipants()){
-            var optionalSubscribed = entity.getSubscribedToNotification()
-                    .stream()
-                    .filter(tuple-> tuple.getLeft().equals(idParticipant))
-                    .findFirst();
-            boolean subscribed = false;
-            if(optionalSubscribed.isPresent())
-                subscribed=optionalSubscribed.get().getRight();
-
-            var optionalReceived = entity.getReceivedNotification()
-                    .stream().filter(tuple -> tuple.getLeft().equals(idParticipant)).findFirst();
-            boolean received = false;
-            if(optionalReceived.isPresent())
-                received = optionalReceived.get().getRight();
+            boolean subscribed = entity.getSubscribedToNotification().contains(idParticipant);
+            boolean received = entity.getReceivedNotification().contains(idParticipant);
 
             result.append("INSERT INTO EventsUsers(idEvent,idUser,subscribedToNotification,receivedNotification) " + "VALUES(")
                     .append(entity.getId())

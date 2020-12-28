@@ -740,4 +740,12 @@ public class MasterService{
             this.eventObservable.notifyObservers(new EventEvent(EventEventType.ADD,event));
         return result;
     }
+
+    public Optional<Event> addSubscriber(Event event, Long idUser){
+        return eventService.addSubscriber(event,idUser);
+    }
+
+    public Optional<Event> removeSubscriber(Event event, Long idUser){
+        return eventService.removeSubscriber(event,idUser);
+    }
 }

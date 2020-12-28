@@ -11,8 +11,8 @@ public class Event extends Entity<Long>{
     private final LocalDateTime date;
     private final String description;
     private final String location;
-    private final List<Tuple<Long,Boolean>> subscribedToNotification;
-    private final List<Tuple<Long,Boolean>> receivedNotification;
+    private final List<Long> subscribedToNotification;
+    private final List<Long> receivedNotification;
     private static long NUMBER_OF_EVENTS = 1L;
 
     public Event(String name, LocalDateTime date, String description, String location) {
@@ -46,19 +46,12 @@ public class Event extends Entity<Long>{
         return location;
     }
 
-    public List<Tuple<Long, Boolean>> getSubscribedToNotification() {
+    public List<Long> getSubscribedToNotification() {
         return subscribedToNotification;
     }
 
-    public List<Tuple<Long, Boolean>> getReceivedNotification() {
+    public List<Long> getReceivedNotification() {
         return receivedNotification;
-    }
-
-    public void addParticipant(Long id){
-        if(!participants.contains(id)) {
-            participants.add(id);
-            subscribedToNotification.add(new Tuple<>(id,true));
-        }
     }
 
     public static void setNumberOfEvents(long numberOfEvents) {

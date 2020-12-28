@@ -134,4 +134,12 @@ public class PageActions {
     public Optional<Event> removeParticipant(Long idEvent){
         return getService().removeParticipant(idEvent,getLoggedUser().getId());
     }
+
+    public Optional<Event> addSubscriber(Event event){
+        return getService().addSubscriber(event,getLoggedUser().getId());
+    }
+
+    public Optional<Event> removeSubscriber(Event event){
+        return getService().removeSubscriber(event,getLoggedUser().getId());
+    }
 }

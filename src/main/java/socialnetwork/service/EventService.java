@@ -59,7 +59,7 @@ public class EventService implements PagingService<Long, Event> {
         Optional<Event> event = findOne(idEvent);
         if(event.isEmpty())
             return false;
-        return event.get().getSubscribedToNotification().contains(new Tuple<>(idUser,true));
+        return event.get().getSubscribedToNotification().contains(idUser);
     }
 
     public Optional<Event> addParticipant(Long idEvent, Long idUser){
@@ -69,7 +69,7 @@ public class EventService implements PagingService<Long, Event> {
         if(event.get().getParticipants().contains(idUser))
             return event;
         event.get().getParticipants().add(idUser);
-        event.get().getSubscribedToNotification().add(new Tuple<>(idUser,true));
+        event.get().getSubscribedToNotification().add(idUser);
         return repository.update(event.get());
     }
 
@@ -80,13 +80,24 @@ public class EventService implements PagingService<Long, Event> {
         if(!event.get().getParticipants().contains(idUser))
             return event;
         event.get().getParticipants().remove(idUser);
-        Optional<Tuple<Long,Boolean>> subscribed = event.get().getSubscribedToNotification()
-                .stream()
-                .filter(tuple-> tuple.getLeft().equals(idUser))
-                .findFirst();
-        if(subscribed.isEmpty())
-            return event;
-        event.get().getSubscribedToNotification().remove(subscribed.get());
+        //we remove the subscription
+        event.get().getSubscribedToNotification().remove(idUser);
         return repository.update(event.get());
+    }
+
+    public Optional<Event> addSubscriber(Event event, Long idUser){
+        if(event.getSubscribedToNotification().contains(idUser)){ //the user is already subscribed
+            return Optional.of(event);
+        }
+        event.getSubscribedToNotification().add(idUser);
+        return repository.update(event);
+    }
+
+    public Optional<Event> removeSubscriber(Event event,Long idUser){
+        if(!event.getSubscribedToNotification().contains(idUser)){ //the user wasn't subscribed in the first place
+            return Optional.of(event);
+        }
+        event.getSubscribedToNotification().remove(idUser);
+        return repository.update(event);
     }
 }
