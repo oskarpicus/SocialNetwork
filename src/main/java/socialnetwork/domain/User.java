@@ -8,6 +8,11 @@ public class User extends Entity<Long>{
     private String firstName;
     private String lastName;
     private String userName;
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     private String password;
     private final List<User> friends;
     private static Long NUMBEROFUSERS = 1L;

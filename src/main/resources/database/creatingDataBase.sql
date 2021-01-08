@@ -8,7 +8,7 @@ create table Users
 );
 
 alter table Users
-add column password varchar(30);
+add column password varchar(32);
 
 alter table Users
 add column userName varchar(30);

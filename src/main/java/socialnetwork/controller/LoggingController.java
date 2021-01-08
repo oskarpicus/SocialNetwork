@@ -13,6 +13,7 @@ import socialnetwork.controller.pages.PageActions;
 import socialnetwork.controller.pages.PageObject;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
+import socialnetwork.utils.Converter;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -41,7 +42,8 @@ public class LoggingController {
 
             if(result.isEmpty())
                 throw new Exception();
-            if(!result.get().getPassword().equals(passwordField.getText()))
+            String password = Converter.hashPassword(passwordField.getText());
+            if(!result.get().getPassword().equals(password))
                 throw new Exception();
             loggedUser=result.get();
             showHomeWindow();

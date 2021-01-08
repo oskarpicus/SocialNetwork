@@ -7,6 +7,7 @@ import socialnetwork.repository.paging.Page;
 import socialnetwork.repository.paging.Pageable;
 import socialnetwork.repository.paging.PageableImplementation;
 import socialnetwork.repository.paging.PagingRepository;
+import socialnetwork.utils.Converter;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class UserService implements PagingService<Long,User>{
      *                             - the user (id already exists)
      */
     public Optional<User> add(User user) {
+        user.setPassword(Converter.hashPassword(user.getPassword()));
         return repo.save(user);
     }
 
@@ -41,13 +43,8 @@ public class UserService implements PagingService<Long,User>{
         return StreamSupport.stream(all.spliterator(), false).collect(Collectors.toList());
     }
 
-    public List<User> filterUsersName(String s) {
-
-        return null;
-    }
-
     /**
-     *  removes the USer with the specified id
+     *  removes the User with the specified id
      * @param id
      *      id must be not null
      * @return an {@code Optional}
