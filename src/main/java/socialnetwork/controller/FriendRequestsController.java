@@ -14,6 +14,7 @@ import javafx.util.Callback;
 import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.dtos.FriendRequestDTO;
 import socialnetwork.service.PagingService;
+import socialnetwork.utils.Constants;
 import socialnetwork.utils.events.friendRequest.FriendRequestEvent;
 import socialnetwork.utils.observer.Observer;
 
@@ -82,6 +83,8 @@ public class FriendRequestsController extends AbstractController implements Obse
         initializeTableViewReceivedFriendRequests();
         initializeTableViewSentFriendRequests();
         Platform.runLater(this::setPageCount);
+        tableViewReceivedFriendRequests.setFixedCellSize(Constants.SMALL_TABLE_VIEW_CELL_SIZE);
+        tableViewSentFriendRequests.setFixedCellSize(Constants.SMALL_TABLE_VIEW_CELL_SIZE);
         paginationSentFriendRequests.setPageFactory(new Callback<Integer, Node>() {
             @Override
             public Node call(Integer param) {

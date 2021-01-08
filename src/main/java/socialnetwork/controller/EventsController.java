@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -14,12 +13,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.Event;
 import socialnetwork.domain.Notification;
 import socialnetwork.service.PagingService;
+import socialnetwork.utils.Constants;
 import socialnetwork.utils.events.event.EventEvent;
 import socialnetwork.utils.events.notification.NotificationEvent;
 import socialnetwork.utils.observer.Observer;
@@ -69,6 +68,7 @@ public class EventsController extends AbstractController implements Observer<Eve
         tableColumnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         tableColumnLocation.setCellValueFactory(new PropertyValueFactory<>("location"));
         tableViewEvents.setItems(model);
+        tableViewEvents.setFixedCellSize(Constants.SMALL_TABLE_VIEW_CELL_SIZE);
 
         tableViewEvents.setRowFactory(tableView -> new TableRow<>(){
             private final Tooltip tooltip = new Tooltip();
@@ -103,6 +103,7 @@ public class EventsController extends AbstractController implements Observer<Eve
         tableColumnTextNotification.setCellValueFactory(new PropertyValueFactory<>("text"));
         tableColumnDateNotification.setCellValueFactory(new PropertyValueFactory<>("date"));
         tableViewNotifications.setItems(this.notificationsController.model);
+        tableViewNotifications.setFixedCellSize(Constants.SMALL_TABLE_VIEW_CELL_SIZE);
 
         paginationNotifications.setPageFactory(new Callback<Integer, Node>() {
             @Override

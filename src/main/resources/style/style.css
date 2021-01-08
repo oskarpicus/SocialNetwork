@@ -74,6 +74,7 @@
 .table-row-cell .text, .list-view .text{
     -fx-font-family: Arial;
     -fx-text-fill: black;
+    -fx-font-weight: bold;
 }
 
 .table-view .column-header {
@@ -89,6 +90,22 @@
 .table-view .column-header .label {
     -fx-text-fill: blue;
     -fx-font-weight: bold;
+}
+
+.table-view .table-column{
+    -fx-alignment: center;
+}
+
+.table-row-cell {
+    -fx-cell-size: 90px;
+}
+
+.table-row-cell:empty {
+    -fx-background-color: white;
+}
+
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
 }
 
 .anchorPaneButtons{

@@ -149,8 +149,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             return Optional.of(entity);
         }
     }
-    //todo tabelele sa nu para goale
-    //todo sa fie taburi la page
+
     @Override
     public Page<E> findAll(Pageable pageable) {
         Paginator<E> paginator = new Paginator<>(pageable,this.findAll());

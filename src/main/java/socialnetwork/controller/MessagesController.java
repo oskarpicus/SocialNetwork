@@ -16,6 +16,7 @@ import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.Entity;
 import socialnetwork.domain.Message;
 import socialnetwork.domain.User;
+import socialnetwork.utils.Constants;
 import socialnetwork.utils.events.message.MessageEvent;
 import socialnetwork.utils.observer.Observer;
 
@@ -51,6 +52,7 @@ public class MessagesController extends AbstractController implements Observer<M
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         tableViewUsers.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE); // it allows for selecting multiple rows at once with CTRL+Click
         setTableViewData();
+        tableViewUsers.setFixedCellSize(Constants.SMALL_TABLE_VIEW_CELL_SIZE);
         tableViewUsers.setRowFactory(tableView -> new TableRow<>(){
             private final Tooltip tooltip = new Tooltip();
 
