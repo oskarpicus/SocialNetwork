@@ -4,19 +4,23 @@ import socialnetwork.domain.Friendship;
 import socialnetwork.domain.Tuple;
 import socialnetwork.domain.User;
 import socialnetwork.repository.Repository;
+import socialnetwork.repository.paging.Page;
+import socialnetwork.repository.paging.Pageable;
+import socialnetwork.repository.paging.PageableImplementation;
+import socialnetwork.repository.paging.PagingRepository;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class FriendshipService implements Service<Tuple<Long,Long>,Friendship> {
+public class FriendshipService implements PagingService<Tuple<Long,Long>,Friendship> {
 
     private final Community community;
-    private final Repository<Tuple<Long,Long>, Friendship> repo;
-    private final Repository<Long, User> userRepository;
+    private final PagingRepository<Tuple<Long,Long>, Friendship> repo;
+    private final PagingRepository<Long, User> userRepository;
 
-    public FriendshipService(Repository<Tuple<Long, Long>, Friendship> repo, Repository<Long, User> userRepository) {
+    public FriendshipService(PagingRepository<Tuple<Long, Long>, Friendship> repo, PagingRepository<Long, User> userRepository) {
         community = new Community(userRepository);
         this.repo = repo;
         this.userRepository = userRepository;
@@ -85,4 +89,20 @@ public class FriendshipService implements Service<Tuple<Long,Long>,Friendship> {
         return community.getMostSociableCommunity();
     }
 
+    @Override
+    public List<Friendship> getEntities(int page){
+        Pageable pageable = new PageableImplementation(page,pageSize);
+        Page<Friendship> all = repo.findAll(pageable);
+        return all.getContent().collect(Collectors.toList());
+    }
+
+    public List<Friendship> getFriendshipsPage(int pageNumber, User user){
+        Long id = user.getId();
+        return this.findAll().stream()
+                .filter(friendship -> friendship.getId().getRight().equals(id) ||
+                        friendship.getId().getLeft().equals(id))
+                .skip(pageNumber  * PagingService.pageSize)
+                .limit(PagingService.pageSize)
+                .collect(Collectors.toList());
+    }
 }

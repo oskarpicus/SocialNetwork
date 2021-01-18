@@ -11,16 +11,17 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.stage.Stage;
+import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.Message;
 import socialnetwork.domain.User;
 import socialnetwork.domain.dtos.MessageDTO;
-import socialnetwork.service.MasterService;
+import socialnetwork.utils.Constants;
 import socialnetwork.utils.events.message.MessageEvent;
+import socialnetwork.utils.events.message.MessageEventType;
 import socialnetwork.utils.observer.Observer;
-import socialnetwork.utils.runners.ReplyMessageRunner;
-import socialnetwork.utils.runners.Runner;
-import socialnetwork.utils.runners.SendMessageRunner;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +29,8 @@ public class ConversationController extends AbstractController implements Observ
 
     private final ObservableList<MessageDTO> model = FXCollections.observableArrayList();
     private User userToMessage;
+    private int rightLimit = Constants.ITEMS_LIST_VIEW_PAGE;
+    private int numberOfMessages;
 
     @FXML
     ListView<MessageDTO> listViewConversation;
@@ -37,24 +40,30 @@ public class ConversationController extends AbstractController implements Observ
     Label labelInformation;
 
 
-    public void initialize(MasterService service, User loggedUser,User userToMessage) {
-        super.initialize(service, loggedUser);
+    public void initialize(PageActions pageActions, User userToMessage) {
+        super.initialize(pageActions);
         this.userToMessage=userToMessage;
-        service.addMessageObserver(this);
+        numberOfMessages = pageActions.getMessages(userToMessage).size();
+        rightLimit=numberOfMessages;
+        pageActions.getService().addMessageObserver(this);
         labelInformation.setText("Below is a list of all your the messages with "+userToMessage.getFirstName()+" "+userToMessage.getLastName());
         setData();
     }
 
     private void setData(){
-        Platform.runLater(()->{
-            model.setAll(this.service.getConversation(loggedUser.getId(),userToMessage.getId()));
-            listViewConversation.setItems(model);
-        });
+        int nr = rightLimit-Constants.ITEMS_LIST_VIEW_PAGE;
+        if(nr<0) nr = 0;
+        model.setAll(pageActions.getMessages(nr,rightLimit,userToMessage));
+        listViewConversation.setItems(model);
     }
 
     @Override
     public void update(MessageEvent event) {
-        setData();
+        Platform.runLater(()->{
+        if(event.getType()==MessageEventType.SEND || event.getType()==MessageEventType.REPLY) {
+            rightLimit=(++numberOfMessages);
+        }
+        setData();});
     }
 
     @Override
@@ -69,7 +78,6 @@ public class ConversationController extends AbstractController implements Observ
 
     public void handleTextFieldKeyPressed(KeyEvent keyEvent) {
         if(keyEvent.getCode().equals(KeyCode.ENTER)) {
-            System.out.println("a apasat enter");
             handleButtonSendMessage(null);
         }
     }
@@ -81,15 +89,33 @@ public class ConversationController extends AbstractController implements Observ
         }
         MessageDTO message = getSelectedMessage();
         String text = textFieldMessage.getText();
-        Runner runner;
         if(message==null){
             List<Long> list = Collections.singletonList(userToMessage.getId());
-            runner = new SendMessageRunner(new Message(loggedUser.getId(),list,text),this.service);
+            pageActions.sendMessage(new Message(pageActions.getLoggedUser().getId(),list,text));
         }
         else{
-            runner = new ReplyMessageRunner(message.getMessageId(),loggedUser.getId(),text,service);
+            pageActions.replyMessage(message,text);
         }
-        runner.execute();
         textFieldMessage.setText("");
+    }
+
+    public void handleScroll(ScrollEvent scrollEvent) {
+        if(scrollEvent.getDeltaY()>0 && (rightLimit-Constants.ITEMS_LIST_VIEW_PAGE)>0){ //scroll up
+            rightLimit--;
+        }
+        if(scrollEvent.getDeltaY()<0 && rightLimit!=numberOfMessages){ //scroll down and there are messages left
+            rightLimit++;
+        }
+        setData();
+    }
+
+    public void handleKeyPressed(KeyEvent keyEvent) {
+        if(keyEvent.getCode().equals(KeyCode.UP) && (rightLimit-Constants.ITEMS_LIST_VIEW_PAGE)>0){
+            rightLimit--;
+        }
+        if(keyEvent.getCode().equals(KeyCode.DOWN) && rightLimit!=numberOfMessages ){
+            rightLimit++;
+        }
+        setData();
     }
 }

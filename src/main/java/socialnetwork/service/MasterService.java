@@ -6,12 +6,16 @@ import socialnetwork.domain.dtos.FriendshipDTO;
 import socialnetwork.domain.dtos.MessageDTO;
 import socialnetwork.domain.validators.FriendRequestVerifier;
 import socialnetwork.domain.validators.MessageVerifier;
+import socialnetwork.utils.events.event.EventEvent;
+import socialnetwork.utils.events.event.EventEventType;
 import socialnetwork.utils.events.friendRequest.FriendRequestEvent;
 import socialnetwork.utils.events.friendRequest.FriendRequestEventType;
 import socialnetwork.utils.events.friendship.FriendshipEvent;
 import socialnetwork.utils.events.friendship.FriendshipEventType;
 import socialnetwork.utils.events.message.MessageEvent;
 import socialnetwork.utils.events.message.MessageEventType;
+import socialnetwork.utils.events.notification.NotificationEvent;
+import socialnetwork.utils.events.notification.NotificationEventType;
 import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observable;
 import socialnetwork.utils.observer.Observer;
@@ -19,7 +23,6 @@ import socialnetwork.utils.observer.Observer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -37,11 +40,17 @@ public class MasterService{
     private final FriendshipObservable friendshipObservable = new FriendshipObservable();
     private final FriendRequestObservable friendRequestObservable = new FriendRequestObservable();
     private final MessageObservable messageObservable = new MessageObservable();
+    private final EventObservable eventObservable = new EventObservable();
+    private final EventService eventService;
+    private final NotificationService notificationService;
+    private final NotificationObservable notificationObservable = new NotificationObservable();
 
-    public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService,MessageService messageService) {
+    public MasterService(FriendshipService friendshipService, UserService userService, FriendRequestService friendRequestService, MessageService messageService, EventService eventService, NotificationService notificationService) {
         this.friendshipService = friendshipService;
         this.userService = userService;
         this.friendRequestService = friendRequestService;
+        this.eventService = eventService;
+        this.notificationService = notificationService;
         friendRequestVerifier = new FriendRequestVerifier(friendshipService,userService,friendRequestService);
         this.messageService=messageService;
         this.messageVerifier=new MessageVerifier(userService,messageService);
@@ -266,7 +275,7 @@ public class MasterService{
         Predicate<Friendship> predicate = friendship ->
                 friendship.getId().getLeft().equals(userID) ||
                 friendship.getId().getRight().equals(userID);
-        return filterFriendships(userID,predicate);
+        return filterFriendships(this.friendshipService.findAll(),userID,predicate);
     }
 
     /**
@@ -280,7 +289,7 @@ public class MasterService{
                 friendship.getId().getLeft().equals(userID) || friendship.getId().getRight().equals(userID);
         Predicate<Friendship> predicateUserMonth = predicateUser.and(friendship ->
                 friendship.getDate().getMonth().equals(month));
-        return filterFriendships(userID,predicateUserMonth);
+        return filterFriendships(this.friendshipService.findAll(),userID,predicateUserMonth);
     }
 
     /**
@@ -295,17 +304,17 @@ public class MasterService{
                 friendship.getId().getLeft().equals(userID) || friendship.getId().getRight().equals(userID);
         Predicate<Friendship> predicateDate = predicateUser.and(friendship ->
                 friendship.getDate().isAfter(dateFrom.atStartOfDay()) && friendship.getDate().isBefore(dateTo.plusDays(1).atStartOfDay()));
-        return filterFriendships(userID,predicateDate);
+        return filterFriendships(this.friendshipService.findAll(),userID,predicateDate);
     }
 
     /**
      * Generic method for filtering Friendships of one User and based on further conditions
      * @param userID : Long, ID of a User
-     * @param predicate : Predicat<Friendships>, the further conditions to be met
+     * @param predicate : Predicate<Friendships>, the further conditions to be met
      * @return List<FriendshipDTO>, contains all the entries that are correct
      */
-    private List<FriendshipDTO> filterFriendships(Long userID, Predicate<Friendship> predicate){
-        return this.friendshipService.findAll().stream()
+    private List<FriendshipDTO> filterFriendships(List<Friendship> list,Long userID, Predicate<Friendship> predicate){
+        return list.stream()
                 .filter(predicate)
                 .map(friendship -> {
                     Long id = friendship.getId().getLeft().equals(userID) ?
@@ -447,7 +456,7 @@ public class MasterService{
 //                    return new MessageDTO(message.getId(), user, message.getMessage(), message.getDate());
 //                })
 //                .collect(Collectors.toList());
-        List<MessageDTO> result = filterMessages(user1,user2,predicate);
+        List<MessageDTO> result = filterMessages(this.messageService.findAll(),user1,user2,predicate);
         result.sort(Comparator.comparing(MessageDTO::getDate));
         return result;
     }
@@ -462,12 +471,12 @@ public class MasterService{
      */
     public List<MessageDTO> getConversation(User user1, User user2, LocalDate dateFrom,LocalDate dateTo){
         Long id1 = user1.getId(), id2 = user2.getId();
-        LocalDateTime dateFrom1 = dateFrom.atStartOfDay().plusDays(1);
-        LocalDateTime dateTo1 = dateTo.atStartOfDay();
+        LocalDateTime dateFrom1 = dateFrom.atStartOfDay();
+        LocalDateTime dateTo1 = dateTo.atStartOfDay().plusDays(1);
         Predicate<Message> predicateFrom = message -> message.getFrom().equals(id2) && message.getTo().contains(id1);
         Predicate<Message> predicateDates = predicateFrom.and(message ->
                 message.getDate().isAfter(dateFrom1) && message.getDate().isBefore(dateTo1));
-        List<MessageDTO> result = filterMessages(user1,user2,predicateDates);
+        List<MessageDTO> result = filterMessages(messageService.findAll(),user1,user2,predicateDates);
         result.sort(Comparator.comparing(MessageDTO::getDate));
         return result;
     }
@@ -497,26 +506,15 @@ public class MasterService{
      * @param predicate : Predicate<Message>, the condition to be met
      * @return list of {@code FriendshipDTO} that respect the predicate
      */
-    private List<MessageDTO> filterMessages(User user1,User user2,Predicate<Message> predicate){
+    private List<MessageDTO> filterMessages(List<Message> list,User user1,User user2,Predicate<Message> predicate){
         Long id1 = user1.getId();
-        return this.messageService.findAll().stream()
+        return list.stream()
                 .filter(predicate)
                 .map(message -> {
                     User user = message.getFrom().equals(id1) ? user1 : user2;
                     return new MessageDTO(message.getId(),user,message.getMessage(),message.getDate());
                 })
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Method for finding a user by their id
-     * @param id : Long , id of the user
-     * @return an {@code Optional}
-     *              - the user, if id refers a user
-     *              - null , if there is no user with that id
-     */
-    public Optional<User> findOneUser(Long id){
-        return this.userService.findOne(id);
     }
 
     /**
@@ -535,8 +533,8 @@ public class MasterService{
      * Method for obtaining all the friend requests in a printable format
      * @return list: List<FriendRequestDTO>, containing all the friend requests that were sent
      **/
-    public List<FriendRequestDTO> getAllFriendRequestsDTO() {
-        return friendRequestService.findAll().stream()
+    public List<FriendRequestDTO> getFriendRequestsDTO(List<FriendRequest> list) {
+        return list.stream()
                 .map(request -> {
                     Optional<User> fromUser = userService.findOne(request.getFromUser());
                     Optional<User> toUser = userService.findOne(request.getToUser());
@@ -627,6 +625,44 @@ public class MasterService{
         }
     }
 
+    private static class EventObservable implements Observable<EventEvent>{
+        private final List<Observer<EventEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<EventEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<EventEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(EventEvent event) {
+            observers.forEach(e->e.update(event));
+        }
+    }
+
+    private static class NotificationObservable implements Observable<NotificationEvent>{
+        private final List<Observer<NotificationEvent>> observers = new ArrayList<>();
+
+        @Override
+        public void addObserver(Observer<NotificationEvent> e) {
+            observers.add(e);
+        }
+
+        @Override
+        public void removeObserver(Observer<NotificationEvent> e) {
+            observers.remove(e);
+        }
+
+        @Override
+        public void notifyObservers(NotificationEvent event) {
+            observers.forEach(e->e.update(event));
+        }
+    }
+
     /**
      * Observable class for user events
      */
@@ -657,6 +693,10 @@ public class MasterService{
         this.friendRequestObservable.addObserver(e);
     }
 
+    public void addNotificationObserver(Observer<NotificationEvent> e){
+        this.notificationObservable.addObserver(e);
+    }
+
     public void addMessageObserver(Observer<MessageEvent> e){
         this.messageObservable.addObserver(e);
     }
@@ -665,4 +705,100 @@ public class MasterService{
         this.friendshipObservable.addObserver(e);
     }
 
+    public void addEventObserver(Observer<EventEvent> e){
+        this.eventObservable.addObserver(e);
+    }
+
+    public Optional<User> findUserByUserName(String userName){
+        return userService.findUserByUserName(userName);
+    }
+
+    //paging
+    public List<User> getUsersPage(int pageNumber){
+        return this.userService.getEntities(pageNumber);
+    }
+
+    public List<FriendshipDTO> getFriendshipsPage(int pageNumber,User loggedUser){
+        return filterFriendships(this.friendshipService.getFriendshipsPage(pageNumber,loggedUser),
+                loggedUser.getId(),friendship -> true);
+    }
+
+    public List<FriendRequestDTO> getSentFriendRequestsPage(int pageNumber, User loggedUser){
+        List<FriendRequest> list =  this.friendRequestService.getSentFriendRequestsPage(pageNumber, loggedUser);
+        return getFriendRequestsDTO(list);
+    }
+
+    public List<FriendRequestDTO> getReceivedFriendRequestsPage(int pageNumber, User loggedUser){
+        List<FriendRequest> list = this.friendRequestService.getReceivedFriendRequestsPage(pageNumber,loggedUser);
+        return getFriendRequestsDTO(list);
+    }
+
+    public List<MessageDTO> getMessagesPage(int leftLimit, int rightLimit, User user1, User user2){
+        List<Message> list = this.messageService.getMessagesPage(leftLimit,rightLimit,user1,user2);
+        return filterMessages(list,user1,user2,message -> true);
+    }
+
+    public List<Event> getAllEvents(){
+        return this.eventService.findAll();
+    }
+
+    public List<Event> getEventsPage(int pageNumber){
+        return this.eventService.getEntities(pageNumber);
+    }
+
+    public boolean isParticipant(Long idEvent, Long idUser){
+        return this.eventService.isParticipant(idEvent,idUser);
+    }
+
+    public boolean isSubscribedToNotification(Long idEvent, Long idUser){
+        return this.eventService.isSubscribedToNotification(idEvent,idUser);
+    }
+
+    public Optional<Event> addParticipant(Long idEvent, Long idUser){
+        return this.eventService.addParticipant(idEvent,idUser);
+    }
+
+    public Optional<Event> removeParticipant(Long idEvent, Long idUser){
+        return this.eventService.removeParticipant(idEvent,idUser);
+    }
+
+    public Optional<Event> addEvent(Event event){
+        Optional<Event> result = this.eventService.add(event);
+        if(result.isEmpty())
+            this.eventObservable.notifyObservers(new EventEvent(EventEventType.ADD,event));
+        return result;
+    }
+
+    public Optional<Event> addSubscriber(Event event, Long idUser){
+        return eventService.addSubscriber(event,idUser);
+    }
+
+    public Optional<Event> removeSubscriber(Event event, Long idUser){
+        return eventService.removeSubscriber(event,idUser);
+    }
+
+    public List<Notification> getNotificationsPage(int pageNumber, User user){
+        return this.notificationService.getNotificationsPage(pageNumber,user);
+    }
+
+    public List<Notification> getNotifications(User user){
+        return this.notificationService.getNotifications(user);
+    }
+
+    public Optional<Notification> sendNotificationForEvent(Event event, Notification notification, Long idUser){
+        System.out.println(event.getName());
+        if(event.getReceivedNotification().contains(idUser)){ // the notification was already sent
+            System.out.println("Notification for "+event.getName()+" was already sent");
+            return Optional.of(notification);
+        }
+        if(!event.getSubscribedToNotification().contains(idUser)){ //the user does not want to get notified
+            return Optional.of(notification);
+        }
+        event.getReceivedNotification().add(idUser);
+        Optional<Notification> result = this.notificationService.sendNotification(notification,idUser);
+        this.eventService.update(event);
+        if(result.isEmpty())
+            this.notificationObservable.notifyObservers(new NotificationEvent(NotificationEventType.SEND,notification));
+        return result;
+    }
 }

@@ -7,6 +7,15 @@ create table Users
     secondName varchar(30)
 );
 
+alter table Users
+add column password varchar(32);
+
+alter table Users
+add column userName varchar(30);
+
+alter table Users
+add constraint unique_UserName unique (userName);
+
 create table Friendships
 (
     id1 int,
@@ -21,15 +30,15 @@ create table Friendships
 
 create table FriendRequests
 (
-  id int,
-  fromUser int,
-  toUser int,
-  status varchar(20),
-  constraint fk1_FriendRequests foreign key(fromUser) references Users(id)
+    id int,
+    fromUser int,
+    toUser int,
+    status varchar(20),
+    constraint fk1_FriendRequests foreign key(fromUser) references Users(id)
         on delete cascade,
-  constraint fk2_FriendRequests foreign key(toUser) references Users(id)
+    constraint fk2_FriendRequests foreign key(toUser) references Users(id)
         on delete cascade,
-  constraint pk_FriendRequests primary key(id)
+    constraint pk_FriendRequests primary key(id)
 );
 
 alter table FriendRequests
@@ -39,10 +48,10 @@ add date date;
 
 create table Messages
 (
-  id int,
-  text varchar(100),
-  data date,
-  constraint pk_Messages primary key(id)
+    id int,
+    text varchar(100),
+    data date,
+    constraint pk_Messages primary key(id)
 );
 
 create table MessagesUsers
@@ -59,6 +68,46 @@ create table MessagesUsers
         on delete cascade ,
     constraint pk_MessagesUsers primary key (fromUserId,MessageId,toUserId),
     constraint fk4_MessagesUsers foreign key (replyId) references Messages(id)
+);
+
+create table Events
+(
+    id int primary key,
+    name varchar(30),
+    location varchar(30),
+    description varchar(100),
+    date timestamp
+);
+
+create table EventsUsers -- table for participants
+(
+    idEvent int,
+    idUser int,
+    subscribedToNotification boolean default true,
+    receivedNotification boolean default false,
+    constraint fk1_EventsUsers foreign key (idEvent) references Events(id)
+        on delete cascade ,
+    constraint fk2_EventsUsers foreign key (idUser) references Users(id)
+        on delete cascade ,
+    constraint pk_EventsUsers primary key (idEvent,idUser)
+);
+
+create table Notifications
+(
+    id int primary key ,
+    text varchar(50),
+    date timestamp
+);
+
+create table NotificationsUsers
+(
+     idNotification int,
+     idUser int,
+     constraint pk_NotificationsUsers primary key (idNotification,idUser),
+     constraint fk1_NotificationsUsers foreign key (idNotification) references Notifications(id)
+            on delete cascade ,
+     constraint fk2_NotificationsUsers foreign key (idUser) references Users(id)
+            on delete cascade
 );
 
 -- Inserting Entities

@@ -35,7 +35,7 @@
     -fx-font-weight: lighter;
 }
 
-#myLabelHome, #myLabelFriendRequests, #myLabelFriends, #myLabelSearch, #myLabelMessages{
+#myLabelHome, #myLabelFriendRequests, #myLabelFriends, #myLabelSearch, #myLabelMessages, #myLabelEvents{
     -fx-text-fill: #3f72af;
 }
 
@@ -58,7 +58,6 @@
 }
 
 .button{
-    -fx-border-color: #07689f;
     -fx-font-weight: bold;
 }
 
@@ -75,6 +74,7 @@
 .table-row-cell .text, .list-view .text{
     -fx-font-family: Arial;
     -fx-text-fill: black;
+    -fx-font-weight: bold;
 }
 
 .table-view .column-header {
@@ -90,6 +90,22 @@
 .table-view .column-header .label {
     -fx-text-fill: blue;
     -fx-font-weight: bold;
+}
+
+.table-view .table-column{
+    -fx-alignment: center;
+}
+
+.table-row-cell {
+    -fx-cell-size: 90px;
+}
+
+.table-row-cell:empty {
+    -fx-background-color: white;
+}
+
+.table-row-cell:empty .table-cell {
+    -fx-border-width: 0px;
 }
 
 .anchorPaneButtons{
@@ -108,4 +124,23 @@
 
 .list-cell:selected{
     -fx-background-color: darkorange;
+}
+
+.pagination .pagination-control .left-arrow, .right-arrow{
+    -fx-background-color: #f9f7f7, #3f72af;
+}
+
+.pagination .pagination-control{
+    -fx-background-color: #f9f7f7;
+}
+
+.pagination .pagination-control .toggle-button:selected{
+    -fx-background-color: #112d4e;
+    -fx-text-fill: #f9f7f7;
+    -fx-font-weight: bold;
+}
+
+.pagination{
+    -fx-max-page-indicator-count: 5;
+    -fx-page-information-visible: false;
 }

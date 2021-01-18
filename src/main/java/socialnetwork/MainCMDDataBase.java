@@ -17,7 +17,7 @@ import socialnetwork.ui.ConsoleUI;
 public class MainCMDDataBase {
 
     public static void main(String[] args) {
-        Repository<Long, User> userDBRepository = new UserDBRepository(new UserValidator(),"social_network");
+       /* Repository<Long, User> userDBRepository = new UserDBRepository(new UserValidator(),"social_network");
         Repository<Tuple<Long,Long>, Friendship> friendshipDBRepository = new FriendshipDBRepository(new FriendshipValidator(),"social_network");
         UserService userService = new UserService(userDBRepository);
         FriendshipService friendshipService = new FriendshipService(friendshipDBRepository,userDBRepository);
@@ -32,6 +32,6 @@ public class MainCMDDataBase {
 
         MasterService masterService = new MasterService(friendshipService,userService, friendRequestService,messageService);
         ConsoleUI ui = new ConsoleUI(masterService);
-        ui.run();
+        ui.run();*/
     }
 }

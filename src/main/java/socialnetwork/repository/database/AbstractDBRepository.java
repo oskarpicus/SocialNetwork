@@ -3,10 +3,15 @@ package socialnetwork.repository.database;
 import socialnetwork.domain.Entity;
 import socialnetwork.domain.validators.Validator;
 import socialnetwork.repository.Repository;
+import socialnetwork.repository.paging.Page;
+import socialnetwork.repository.paging.Pageable;
+import socialnetwork.repository.paging.Paginator;
+import socialnetwork.repository.paging.PagingRepository;
+
 import java.sql.*;
 import java.util.*;
 
-public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements Repository<ID,E> {
+public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements PagingRepository<ID,E> {
 
     protected Map<ID,E> allEntities = null;
     String dataBaseName;
@@ -75,7 +80,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             resultSet.close();
             return Optional.of(entity);
         }catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -99,7 +104,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             allEntities.put(entity.getId(),entity);
             return Optional.empty();
         }catch (Exception e){
-            e.printStackTrace();
+            //e.printStackTrace();
             return Optional.of(entity);
         }
     }
@@ -123,7 +128,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
             allEntities.remove(id);
             return entity;
         }catch (Exception e){
-            e.printStackTrace();
+           // e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -143,6 +148,12 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
         }catch (Exception e){
             return Optional.of(entity);
         }
+    }
+
+    @Override
+    public Page<E> findAll(Pageable pageable) {
+        Paginator<E> paginator = new Paginator<>(pageable,this.findAll());
+        return paginator.paginate();
     }
 
     /**

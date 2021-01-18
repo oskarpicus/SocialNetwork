@@ -3,16 +3,22 @@ package socialnetwork.service;
 import socialnetwork.domain.User;
 import socialnetwork.domain.validators.ValidationException;
 import socialnetwork.repository.Repository;
+import socialnetwork.repository.paging.Page;
+import socialnetwork.repository.paging.Pageable;
+import socialnetwork.repository.paging.PageableImplementation;
+import socialnetwork.repository.paging.PagingRepository;
+import socialnetwork.utils.Converter;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class UserService implements Service<Long,User>{
-    private final Repository<Long, User> repo;
+public class UserService implements PagingService<Long,User>{
+    private final PagingRepository<Long, User> repo;
 
-    public UserService(Repository<Long, User> repo) {
+    public UserService(PagingRepository<Long, User> repo) {
         this.repo = repo;
     }
 
@@ -23,6 +29,7 @@ public class UserService implements Service<Long,User>{
      *                             - the user (id already exists)
      */
     public Optional<User> add(User user) {
+        user.setPassword(Converter.hashPassword(user.getPassword()));
         return repo.save(user);
     }
 
@@ -36,13 +43,8 @@ public class UserService implements Service<Long,User>{
         return StreamSupport.stream(all.spliterator(), false).collect(Collectors.toList());
     }
 
-    public List<User> filterUsersName(String s) {
-
-        return null;
-    }
-
     /**
-     *  removes the USer with the specified id
+     *  removes the User with the specified id
      * @param id
      *      id must be not null
      * @return an {@code Optional}
@@ -62,4 +64,17 @@ public class UserService implements Service<Long,User>{
         return this.repo.findOne(id);
     }
 
+    public Optional<User> findUserByUserName(String userName){
+        Iterable<User> users = repo.findAll();
+        return StreamSupport.stream(users.spliterator(),false)
+                .filter(user -> user.getUserName().equals(userName))
+                .findFirst();
+    }
+
+    @Override
+    public List<User> getEntities(int page){
+        Pageable pageable = new PageableImplementation(page,pageSize);
+        Page<User> all = repo.findAll(pageable);
+        return all.getContent().collect(Collectors.toList());
+    }
 }

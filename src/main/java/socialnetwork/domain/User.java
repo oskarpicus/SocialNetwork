@@ -7,6 +7,13 @@ import java.util.Objects;
 public class User extends Entity<Long>{
     private String firstName;
     private String lastName;
+    private String userName;
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    private String password;
     private final List<User> friends;
     private static Long NUMBEROFUSERS = 1L;
 
@@ -15,6 +22,20 @@ public class User extends Entity<Long>{
         this.lastName = lastName;
         super.setId((NUMBEROFUSERS++));
         this.friends = new ArrayList<>();
+    }
+
+    public User(String firstName, String lastName, String userName, String password, List<User> friends) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userName = userName;
+        this.password = password;
+        this.friends = friends;
+    }
+
+    public User(String firstName, String lastName, String userName, String password) {
+        this(firstName,lastName);
+        this.userName = userName;
+        this.password = password;
     }
 
     public String getFirstName() {
@@ -69,4 +90,11 @@ public class User extends Entity<Long>{
         NUMBEROFUSERS = numberofusers;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }

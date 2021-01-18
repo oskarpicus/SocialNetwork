@@ -5,31 +5,29 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../style/style.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="socialnetwork.controller.ConversationController">
-   <children>
-      <VBox layoutX="90.0" layoutY="60.0" prefHeight="400.0" prefWidth="600.0" spacing="14.0" styleClass="anchorPaneButtons" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
-         <children>
-            <Label id="labelConversation" fx:id="labelInformation" prefHeight="15.0" prefWidth="550.0" text="Your Conversation with" textFill="WHITE">
-               <VBox.margin>
-                  <Insets left="5.0" top="5.0" />
-               </VBox.margin></Label>
-            <ListView fx:id="listViewConversation" prefHeight="358.0" prefWidth="572.0">
-               <VBox.margin>
-                  <Insets left="5.0" right="5.0" />
-               </VBox.margin></ListView>
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0">
-               <children>
-                  <TextField fx:id="textFieldMessage" onKeyPressed="#handleTextFieldKeyPressed" prefHeight="25.0" prefWidth="411.0" promptText="Write your message here and press Enter to send (or push the button)" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets left="5.0" />
-                     </HBox.margin></TextField>
-                  <Button onAction="#handleButtonSendMessage" text="Send Message" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets right="5.0" />
-                     </HBox.margin></Button>
-               </children>
-            </HBox>
-            
-         </children>
-      </VBox>
-   </children>
+   <VBox layoutX="90.0" layoutY="60.0" prefHeight="400.0" prefWidth="600.0" spacing="14.0" styleClass="anchorPaneButtons" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+      <Label id="labelConversation" fx:id="labelInformation" prefHeight="15.0" prefWidth="550.0" text="Your Conversation with" textFill="WHITE">
+         <VBox.margin>
+            <Insets left="5.0" top="5.0" />
+         </VBox.margin>
+      </Label>
+      <ListView fx:id="listViewConversation" onKeyPressed="#handleKeyPressed" onScroll="#handleScroll" prefHeight="358.0" prefWidth="572.0">
+         <VBox.margin>
+            <Insets left="5.0" right="5.0" />
+         </VBox.margin>
+      </ListView>
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0">
+         <TextField fx:id="textFieldMessage" onKeyPressed="#handleTextFieldKeyPressed" prefHeight="25.0" prefWidth="411.0" promptText="Write your message here and press Enter to send (or push the button)" HBox.hgrow="ALWAYS">
+            <HBox.margin>
+               <Insets left="5.0" />
+            </HBox.margin>
+         </TextField>
+         <Button onAction="#handleButtonSendMessage" text="Send Message" HBox.hgrow="ALWAYS">
+            <HBox.margin>
+               <Insets right="5.0" />
+            </HBox.margin>
+         </Button>
+      </HBox>
+
+   </VBox>
 </AnchorPane>

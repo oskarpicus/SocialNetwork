@@ -1,10 +1,12 @@
 package socialnetwork.controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -12,8 +14,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
+import socialnetwork.service.PagingService;
 import socialnetwork.utils.events.user.UserEvent;
 import socialnetwork.utils.observer.Observer;
 import socialnetwork.utils.runners.SendFriendRequestRunner;
@@ -25,6 +30,8 @@ public class SearchController extends AbstractController implements Observer<Use
 
     private final ObservableList<User> model = FXCollections.observableArrayList();
 
+    @FXML
+    Pagination pagination;
     @FXML
     Button buttonSendFriendRequest;
     @FXML
@@ -43,10 +50,24 @@ public class SearchController extends AbstractController implements Observer<Use
     Label labelFriendRequests;
 
     @Override
-    public void initialize(MasterService service, User loggedUser){
-        super.initialize(service,loggedUser);
-        service.addUserObserver(this);
+    public void initialize(PageActions pageActions){
+        super.initialize(pageActions);
+        pageActions.getService().addUserObserver(this);
         initTable();
+        MasterService service = pageActions.getService();
+        Platform.runLater(()->pagination.setPageCount((int)Math.ceil((double)service.getAllUsers().size()/ PagingService.pageSize)));
+        pagination.setPageFactory(new Callback<Integer, Node>() {
+            @Override
+            public Node call(Integer param) {
+                List<User> all = getAllUsers(service.getUsersPage(param));
+                model.setAll(all);
+                tableViewUsers.setItems(model);
+                if(all.isEmpty()){
+                    return null;
+                }
+                return tableViewUsers;
+            }
+        });
     }
 
     @Override
@@ -57,40 +78,43 @@ public class SearchController extends AbstractController implements Observer<Use
 
     @Override
     public void update(UserEvent e){
-        setTableViewData();
+        MasterService service = pageActions.getService();
+        pagination.setPageCount((int)Math.ceil((double)service.getAllUsers().size()/ PagingService.pageSize));
+        setTableViewData(service.getUsersPage(pagination.getCurrentPageIndex()));
     }
 
-    private void setTableViewData(){
-        model.setAll(getAllUsers(this.service.getAllUsers()));
+    private void setTableViewData(List<User> list){
+        model.setAll(getAllUsers(list));
         tableViewUsers.setItems(model);
     }
+
 
     private List<User> getAllUsers(List<User> listOfUsers){
         return listOfUsers
                 .stream()
-                .filter(user -> (!user.equals(loggedUser)))
+                .filter(user -> (!user.equals(pageActions.getLoggedUser())))
                 .collect(Collectors.toList());
     }
 
     private void initTable(){
         tableColumnFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         tableColumnLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        setTableViewData();
     }
 
     public void handleSendFriendRequest(ActionEvent actionEvent) {
         User selected = getSelectedUser();
         if(selected==null)
             return;
-        SendFriendRequestRunner runner = new SendFriendRequestRunner(loggedUser.getId(),selected.getId(),service);
+        SendFriendRequestRunner runner = new SendFriendRequestRunner(pageActions.getLoggedUser().getId(),selected.getId(), pageActions.getService());
         runner.execute();
     }
 
     public void handleTextFieldNameKeyTyped(KeyEvent keyEvent) {
+        MasterService service = pageActions.getService();
         if(textFieldName.getText().equals(""))
-            setTableViewData();
+            setTableViewData(service.getUsersPage(pagination.getCurrentPageIndex()));
         else {
-            model.setAll(this.getAllUsers(this.service.filterUsers(textFieldName.getText())));
+            model.setAll(this.getAllUsers(service.filterUsers(textFieldName.getText())));
         }
     }
 
@@ -127,10 +151,14 @@ public class SearchController extends AbstractController implements Observer<Use
             stage.setTitle("Activity Report");
 
             ReportActivityController controller = loader.getController();
-            controller.initialize(this.service,this.loggedUser);
+            controller.initialize(pageActions);
             stage.show();
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void handleLabelEvents(MouseEvent mouseEvent) {
+        openWindow("events");
     }
 }

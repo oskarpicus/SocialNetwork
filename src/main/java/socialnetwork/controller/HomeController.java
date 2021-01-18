@@ -4,8 +4,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import socialnetwork.controller.pages.PageActions;
 import socialnetwork.domain.User;
-import socialnetwork.service.MasterService;
 
 public class HomeController extends AbstractController{
 
@@ -19,8 +19,9 @@ public class HomeController extends AbstractController{
     Label labelFriendRequests;
 
     @Override
-    public void initialize(MasterService service, User loggedUser) {
-        super.initialize(service, loggedUser);
+    public void initialize(PageActions pageActions) {
+        super.initialize(pageActions);
+        User loggedUser = pageActions.getLoggedUser();
         labelGreeting.setText("Hello "+loggedUser.getFirstName()+" "+loggedUser.getLastName()+"!");
     }
 
@@ -45,5 +46,9 @@ public class HomeController extends AbstractController{
 
     public void handleLabelMessages(MouseEvent mouseEvent) {
         openWindow("messages");
+    }
+
+    public void handleLabelEvents(MouseEvent mouseEvent) {
+        openWindow("events");
     }
 }

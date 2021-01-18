@@ -9,8 +9,11 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import socialnetwork.controller.pages.PageActions;
+import socialnetwork.controller.pages.PageObject;
 import socialnetwork.domain.User;
 import socialnetwork.service.MasterService;
+import socialnetwork.utils.Converter;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -27,25 +30,22 @@ public class LoggingController {
     @FXML
     Button buttonLogIn;
     @FXML
-    PasswordField passwordFieldId;
+    PasswordField passwordField;
     @FXML
-    TextField textFieldFirstName;
-    @FXML
-    TextField textFieldLastName;
+    TextField textFieldUsername;
     @FXML
     Button buttonAddUser;
 
     public void handleButtonLogInClicked(ActionEvent actionEvent) {
         try {
-            Optional<User> result = this.service.findOneUser(Long.parseLong(passwordFieldId.getText()));
+            Optional<User> result = this.service.findUserByUserName(textFieldUsername.getText());
 
             if(result.isEmpty())
                 throw new Exception();
-            if(!result.get().getFirstName().equals(textFieldFirstName.getText())||
-                !result.get().getLastName().equals(textFieldLastName.getText()))
+            String password = Converter.hashPassword(passwordField.getText());
+            if(!result.get().getPassword().equals(password))
                 throw new Exception();
             loggedUser=result.get();
-           // closeWindow();
             showHomeWindow();
         }catch (NumberFormatException e){
             MyAllert.showErrorMessage(null,"Invalid Id");
@@ -58,7 +58,6 @@ public class LoggingController {
     }
 
     public void handleButtonAddUserClicked(ActionEvent actionEvent) {
-        closeWindow();
         showCreateAccountWindow();
     }
 
@@ -90,16 +89,15 @@ public class LoggingController {
             homeStage.setTitle("Home");
             homeStage.setScene(new Scene(root));
 
+            PageObject pageObject = new PageObject(service,loggedUser);
+            PageActions pageActions = new PageActions(pageObject);
+
             HomeController homeController = loader.getController();
-            homeController.initialize(service,loggedUser);
+            homeController.initialize(pageActions);
             homeStage.show();
         }catch (IOException e){
             e.printStackTrace();
         }
     }
 
-    private void closeWindow(){
-        Stage stage = (Stage)buttonLogIn.getScene().getWindow();
-        stage.close();
-    }
 }
