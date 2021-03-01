@@ -117,13 +117,14 @@ public class EventsController extends AbstractController implements Observer<Eve
         });
 
         thread = new Thread(new SendNotificationRunner(pageActions.getService()));
+        thread.setDaemon(true);
         thread.start();
         Platform.runLater(()->getStage().setOnCloseRequest(event -> thread.interrupt()));
     }
 
     @Override
     public void closeWindow() {
-        thread.interrupt();
+        //thread.interrupt();
         getStage().close();
     }
 
