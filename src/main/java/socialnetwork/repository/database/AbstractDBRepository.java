@@ -2,12 +2,12 @@ package socialnetwork.repository.database;
 
 import socialnetwork.domain.Entity;
 import socialnetwork.domain.validators.Validator;
-import socialnetwork.repository.Repository;
 import socialnetwork.repository.paging.Page;
 import socialnetwork.repository.paging.Pageable;
 import socialnetwork.repository.paging.Paginator;
 import socialnetwork.repository.paging.PagingRepository;
 
+import java.io.FileReader;
 import java.sql.*;
 import java.util.*;
 
@@ -46,11 +46,13 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
      * Method for connecting to a data base
      */
     private void connectToDataBase(){
+        Properties properties = new Properties();
         try {
-            Class.forName("org.postgresql.Driver");
+            properties.load(new FileReader("src/main/resources/database/database.properties"));
+            Class.forName(properties.getProperty("jdbc.driver"));
             c = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/"+ dataBaseName,
-                            "postgres", "florenta28");
+                    .getConnection(properties.getProperty("jdbc.url"),
+                            properties.getProperty("jdbc.username"), properties.getProperty("jdbc.password"));
         } catch (Exception e) {
             e.printStackTrace();
         }
